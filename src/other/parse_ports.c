@@ -18,7 +18,7 @@ int count_ports(char * str) {
             int first = atoi(strtok_r(token, "-", &token));
             int second = atoi(strtok_r(token, "-", &token));
             if (second < first) {
-                ERR_PRINT("Could not parse ports\n", NULL);
+                ERR_PRINT("%s\n", "Could not parse ports");
             }
             len += second - first + 1;
         } else {
@@ -47,7 +47,7 @@ int parse_ports(char* str, int** ports) {
             int second = atoi(strtok_r(token, "-", &token));
 
             if (second < first) {
-                ERR_PRINT("Could not parse ports\n", NULL);
+                ERR_PRINT("%s\n", "Could not parse ports");
             }
             for (; first <= second; first++) {
 

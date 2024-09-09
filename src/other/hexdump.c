@@ -11,11 +11,11 @@ void hexdump (const unsigned char * payload, const int len, int perLine) {
 
     // Length checks.
     if (len == 0) {
-        ERR_PRINT("Hexdump: ZERO LENGTH\n", NULL);
+        ERR_PRINT("%s\n", "Hexdump: ZERO LENGTH");
         return;
     }
     if (len < 0) {
-        ERR_PRINT("Hexdump: NEGATIVE LENGTH: %d\n", len);
+        ERR_PRINT("%s %d\n", "Hexdump: NEGATIVE LENGTH:", len);
         return;
     }
 
@@ -44,7 +44,7 @@ void hexdump (const unsigned char * payload, const int len, int perLine) {
 
     // Print out empty space
     while ((i % perLine) != 0) {
-        PRINT("   ", NULL);
+        PRINT("%s", "   ");
         i++;
     }
 

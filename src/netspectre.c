@@ -10,7 +10,7 @@
 int main(int argc, char *argv[]) {
     // Always 1 or more becase name of file is first
     if (argc < 2) {
-        ERR_PRINT("No arguments detected! Exiting! \n", NULL);
+        ERR_PRINT("%s\n", "No arguments detected! Exiting!");
         exit(0);
     }
     
@@ -37,16 +37,11 @@ int main(int argc, char *argv[]) {
     }else if (strcasecmp(argv[1], "scan") == 0) {
         scan(argc -1, processed_argv);
     }else if (strcasecmp(argv[1], "test") == 0) {
-        int * ports = NULL;
-        int port_len;
-        char * str = "1-1000";
-        port_len = parse_ports(str, &ports);
-        for (int i = 0; i < port_len; i++) {
-            printf("%d\n", ports[i]);
-        }
-        free(ports);
+        struct in_addr addr;
+        inet_pton(AF_INET, "127.0.0.1", &addr);
+        PRINT("%s\n", ping(addr, "lo"));
     } else {
-        ERR_PRINT("Did not recognice command! Exiting! \n", NULL);
+        ERR_PRINT("%s\n", "Did not recognice command! Exiting!");
         exit(0);
     }
 

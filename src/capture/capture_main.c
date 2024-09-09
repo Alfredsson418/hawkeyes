@@ -8,7 +8,7 @@
 pcap_t *package_handle;
 
 void handle_sigint(int sig) { 
-    PRINT("STOPPING PROGRAM!!!\n", NULL);
+    PRINT("%s\n", "STOPPING PROGRAM!!!");
     pcap_breakloop(package_handle);
 } 
 
@@ -54,7 +54,7 @@ int capture(int argc, char *argv[]) {
     struct capture_arguments *arguments = malloc(sizeof(struct capture_arguments));
 
     if (arguments == NULL) {
-        ERR_PRINT("Failed to allocate memory for arguments\n", NULL);
+        ERR_PRINT("%s\n", "Failed to allocate memory for arguments");
         exit(0);
     }
 
@@ -80,28 +80,28 @@ int capture(int argc, char *argv[]) {
 
     argp_parse(&capture_argp, argc, argv, 0, 0, arguments);
 
-    DEBUG_MESSAGE("-------OUTPUT SETTINGS-------\n", NULL);
-    DEBUG_MESSAGE("Debug is set to: %d\n", g_debug_enabled);
-    DEBUG_MESSAGE("Verbose is set to: %d\n", g_verbose_enabled);
-    DEBUG_MESSAGE("Output is set to: %d\n", g_no_terminal_output);
-    DEBUG_MESSAGE("-------ARGUMENT SETTINGS-------\n", NULL);
-    DEBUG_MESSAGE("Format is set to: \n%s\n", arguments->format);
-    DEBUG_MESSAGE("Device is set to: %s\n", arguments->device);
-    DEBUG_MESSAGE("Output hexdump is set to: %d\n", arguments->hexdump);
-    DEBUG_MESSAGE("Load Pcap is set to: %s\n", arguments->pcap_load);
-    DEBUG_MESSAGE("Capture amount is set to: %d\n", arguments->capture_amount);
-    if (arguments->capture_amount == 0) VERBOSE_MESSAGE("WARNING: --capture-amount is set to 0, will loop forever\n", NULL);
+    DEBUG_MESSAGE("%s\n", "-------OUTPUT SETTINGS-------");
+    DEBUG_MESSAGE("%s %d\n", "Debug is set to:", g_debug_enabled);
+    DEBUG_MESSAGE("%s %d\n", "Verbose is set to:", g_verbose_enabled);
+    DEBUG_MESSAGE("%s %d\n", "Output is set to:", g_no_terminal_output);
+    DEBUG_MESSAGE("%s\n", "-------ARGUMENT SETTINGS-------", NULL);
+    DEBUG_MESSAGE("%s \n%s\n", "Format is set to:", arguments->format);
+    DEBUG_MESSAGE("%s %s\n", "Device is set to:", arguments->device);
+    DEBUG_MESSAGE("%s %d\n", "Output hexdump is set to:", arguments->hexdump);
+    DEBUG_MESSAGE("%s %s\n", "Load Pcap is set to:", arguments->pcap_load);
+    DEBUG_MESSAGE("%s %d\n", "Capture amount is set to:", arguments->capture_amount);
+    if (arguments->capture_amount == 0) VERBOSE_MESSAGE("%s\n", "WARNING: --capture-amount is set to 0, will loop forever");
     
 
 
     /* Determines how to load packages */
     if (arguments->pcap_load != NULL) { /* Load pcap file */
-        PRINT("Opening pcap file: %s\n", arguments->pcap_load);
+        PRINT("%s %s\n", "Opening pcap file:", arguments->pcap_load);
 
         package_handle = pcap_open_offline(arguments->pcap_load, errbuff);
 
         if (package_handle == NULL) {
-            ERR_PRINT("Error opening pcap file\n", NULL);
+            ERR_PRINT("%s\n", "Error opening pcap file");
             DEBUG_MESSAGE("%s\n", errbuff);
             exit(0);
         }
@@ -109,22 +109,22 @@ int capture(int argc, char *argv[]) {
         if (arguments->device == NULL) {
             arguments->device = get_first_network_dev();
             if (arguments->device == NULL) {
-                ERR_PRINT("Found no network device\n", NULL);
+                ERR_PRINT("%s\n", "Found no network device");
                 exit(0);
             } else {
-                DEBUG_MESSAGE("Device was not set, first found is %s\n", arguments->device);
+                DEBUG_MESSAGE("%s %s\n", "Device was not set, first found is", arguments->device);
             }
         }
-        DEBUG_MESSAGE("Trying to capture on interface: %s\n", arguments->device);
+        DEBUG_MESSAGE("%s %s\n", "Trying to capture on interface:", arguments->device);
 
         package_handle = pcap_open_live(arguments->device, snap_len, promisc, to_ms, errbuff);
 
         if (package_handle == NULL) {
-            ERR_PRINT("Error opening pcap handle: %s\n", errbuff);
+            ERR_PRINT("%s %s\n", "Error opening pcap handle:", errbuff);
             exit(0);
         }
 
-        PRINT("Capture on interface: %s\n", arguments->device);
+        PRINT("%s %s\n", "Capture on interface:", arguments->device);
 
     }
 
@@ -134,33 +134,33 @@ int capture(int argc, char *argv[]) {
 
     /* Filtering */
     if (arguments->filter != NULL) {
-        VERBOSE_MESSAGE("Compiling filter: %s\n", arguments->filter); 
+        VERBOSE_MESSAGE("%s %s\n", "Compiling filter:", arguments->filter); 
         if (pcap_compile(package_handle, &filter, arguments->filter, 0, 0) == -1) {
-            ERR_PRINT("Bad filter - %s\n", pcap_geterr(package_handle));
+            ERR_PRINT("%s %s\n", "Bad filter -", pcap_geterr(package_handle));
             return 2;
         }
-        VERBOSE_MESSAGE("Filter compiled!\n", NULL);
+        VERBOSE_MESSAGE("%s\n", "Filter compiled!");
 
-        VERBOSE_MESSAGE("Adding filter...\n", NULL);
+        VERBOSE_MESSAGE("%s\n", "Adding filter...");
         if (pcap_setfilter(package_handle, &filter) == -1) {
-            ERR_PRINT("Error setting filter - %s\n", pcap_geterr(package_handle));
+            ERR_PRINT("%s %s\n", "Error setting filter -", pcap_geterr(package_handle));
             return 2;
         }
-        VERBOSE_MESSAGE("Filter added!\n", NULL);
+        VERBOSE_MESSAGE("%s\n", "Filter added!");
     } else {
-        VERBOSE_MESSAGE("No filters found, skipping filter compiling\n", NULL);
+        VERBOSE_MESSAGE("%s\n", "No filters found, skipping filter compiling");
     }
 
-    PRINT("Press CTRL+C to exit capture\n", NULL);
+    PRINT("%s\n", "Press CTRL+C to exit capture");
 
     pcap_loop(package_handle, arguments->capture_amount,(pcap_handler) packet_handler, (unsigned char *) arguments);
 
     
-    DEBUG_MESSAGE("Freeing varibles...\n", NULL);
+    DEBUG_MESSAGE("%s\n", "Freeing varibles...");
     pcap_close(package_handle);
-    free(arguments->device);
+    free_dev(arguments->device);
     free(arguments);
-    DEBUG_MESSAGE("Varibles freed!\n", NULL);
+    DEBUG_MESSAGE("%s\n", "Varibles freed!");
 
     return 0;
 }

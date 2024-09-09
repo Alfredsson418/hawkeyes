@@ -26,7 +26,7 @@ int tcp_scan(char ip[IPV4_ADDR_STR_LEN], int port) {
 
 
     if (sock < 0) {
-        ERR_PRINT("ERROR creating TCP socket!", NULL);
+        ERR_PRINT("%s\n", "ERROR creating TCP socket!");
         return -1;
     }
 
@@ -37,15 +37,15 @@ int tcp_scan(char ip[IPV4_ADDR_STR_LEN], int port) {
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
     if (inet_pton(AF_INET, ip, &addr.sin_addr) <= 0) {
-        ERR_PRINT("Invalid address/ Address not supported \n", NULL);
+        ERR_PRINT("%s\n", "Invalid address/ Address not supported");
         return -1;
     }
 
     if (connect(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
         // No connection
         close(sock);
-        return 0;
+        return 1;
     }
     close(sock);
-    return 1;
+    return 0;
 }

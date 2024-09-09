@@ -2,7 +2,7 @@
 #define NEXT_BEST_PACKET_H
 
 #include "../netspectre.h"
-#include "network_device.h"
+#include "../other/network_device.h"
 
 /*
     Gives the first package from a given filter.

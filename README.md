@@ -4,7 +4,7 @@ NetSpectre is a swiss army knife of network tools
 ## Usage
 `netspec [tool] [options]`
 ### Example
-`netspec capture -f tcp -x`
+`netspec capture -f tcp -x`  
 `netspec scan -t 127.0.0.1 -d lo -p 53`
 
 ## Tools

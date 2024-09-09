@@ -2,7 +2,7 @@
 #define CAPTURE_ARGUMENTS_H
 
 #include "../../include/netspectre.h"
-#include "network_device.h"
+#include "../other/network_device.h"
 
 extern const struct argp_option capture_options[];
 

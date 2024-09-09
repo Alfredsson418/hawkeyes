@@ -45,6 +45,25 @@ net_packet * next_best_packet(char * network_device ,char * filter, int timeout)
     int snap_len = MAX_PACKET_SIZE;
     int promisc = 1;
     int net_dev_alloc = 0;
+
+    net_packet * return_arg = calloc(1, sizeof(net_packet));
+    if (return_arg == NULL) {
+        ERR_PRINT("%s\n", "Failed to allocate memory for return_arg");
+        return NULL;
+    }
+    return_arg->packet_payload = calloc(MAX_PACKET_SIZE + 1, sizeof(char));
+    if (return_arg->packet_payload == NULL) {
+        ERR_PRINT("%s\n", "Failed to allocate memory for packet_payload");
+        free(return_arg);
+        return NULL;
+    }
+    return_arg->packet_header = calloc(1, sizeof(struct pcap_pkthdr));
+    if (return_arg->packet_header == NULL) {
+        ERR_PRINT("%s\n", "Failed to allocate memory for packet_header");
+        free(return_arg->packet_payload);
+        free(return_arg);
+        return NULL;
+    }
     
     if (network_device == NULL) {
         network_device = get_first_network_dev();
@@ -57,18 +76,18 @@ net_packet * next_best_packet(char * network_device ,char * filter, int timeout)
 
     // Compiles and setting filter
     if (package_handle == NULL) {
-        ERR_PRINT("Error opening pcap file\n", NULL);
+        ERR_PRINT("%s\n", "Error opening pcap file");
         ERR_PRINT("%s\n", errbuff);
-        return;
+        return NULL;
     }
     if (filter != NULL) {
         if (pcap_compile(package_handle, &pcap_filter, filter, 0, 0) == -1)  {
-            ERR_PRINT("Bad filter - %s\n", pcap_geterr(package_handle));
-            return;
+            ERR_PRINT("%s %s\n", "Bad filter -", pcap_geterr(package_handle));
+            return NULL;
         }
         if (pcap_setfilter(package_handle, &pcap_filter) == -1) {
-            ERR_PRINT("Error setting filter - %s\n", pcap_geterr(package_handle));
-            return;
+            ERR_PRINT("%s %s\n", "Error setting filter -", pcap_geterr(package_handle));
+            return NULL;
         }
     }
 
@@ -80,26 +99,7 @@ net_packet * next_best_packet(char * network_device ,char * filter, int timeout)
     timeout_args.handle = package_handle;
     // Timeout counter if packages takes longer that expected
     if (pthread_create(&thread_id, NULL, sleep_timeout, &timeout_args) != 0) {
-        ERR_PRINT("Failed to create thread\n", NULL);
-        return;
-    }
-
-    net_packet * return_arg = calloc(1, sizeof(net_packet));
-    if (return_arg == NULL) {
-        ERR_PRINT("Failed to allocate memory for return_arg\n", NULL);
-        return NULL;
-    }
-    return_arg->packet_payload = calloc(MAX_PACKET_SIZE + 1, sizeof(char));
-    if (return_arg->packet_payload == NULL) {
-        ERR_PRINT("Failed to allocate memory for packet_payload\n", NULL);
-        free(return_arg);
-        return NULL;
-    }
-    return_arg->packet_header = calloc(1, sizeof(struct pcap_pkthdr));
-    if (return_arg->packet_header == NULL) {
-        ERR_PRINT("Failed to allocate memory for packet_header\n", NULL);
-        free(return_arg->packet_payload);
-        free(return_arg);
+        ERR_PRINT("%s\n", "Failed to create thread", NULL);
         return NULL;
     }
 
@@ -115,7 +115,7 @@ net_packet * next_best_packet(char * network_device ,char * filter, int timeout)
     pcap_close(package_handle);
     pcap_freecode(&pcap_filter);
     if (net_dev_alloc == 1) {
-        free(network_device);
+        free_dev(network_device);
     } 
     
     return return_arg;

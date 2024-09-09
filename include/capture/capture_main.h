@@ -3,7 +3,7 @@
 
 #include "../netspectre.h"
 #include "capture_arguments.h"
-#include "network_device.h"
+#include "../other/network_device.h"
 #include "packet_info.h"
 #include "../other/replace.h"
 #include "../other/hexdump.h"
