@@ -12,14 +12,6 @@ do{\
     if(g_verbose_enabled && !g_no_terminal_output) fprintf(stdout, fmt, __VA_ARGS__);\
 }while(0)
 
-#define DEBUG_MESSAGE(fmt, ...)\
-do{\
-    if(g_debug_enabled) {\
-        fprintf(stdout, "DEBUG: ");\
-        fprintf(stdout, fmt, __VA_ARGS__);\
-    }\
-}while(0)
-
 #define PRINT(fmt, ...)\
 do{\
     if (!g_no_terminal_output) {\

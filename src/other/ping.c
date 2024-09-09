@@ -1,5 +1,4 @@
 #include "../../include/other/ping.h"
-#include <linux/if.h>
 
 unsigned short calculate_icmp_checksum(void *b, int len) {    
     unsigned short *buf = b;
@@ -16,25 +15,27 @@ unsigned short calculate_icmp_checksum(void *b, int len) {
     return result;
 }
 
+char * guess_ping(struct in_addr ip_addr) {
+
+}
+
 int ping(struct in_addr ip_addr, const char * interface) {
+
     int sock = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
     if (sock < 0) {
         ERR_PRINT("%s\n", "An error occured when truing to open a Raw socket, make sure to run the program as root!");
         return NULL;
     }
-    PRINT("%s\n", "Created socket");
 
     // Bind the socket to the specified network interface
-    
     if (setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, interface, strlen(interface)) < 0) {
         ERR_PRINT("Failed to bind to device %s: %s\n", interface, strerror(errno));
         close(sock);
-        return NULL;
+        return -1;
     }
 
-    PRINT("%s\n", "Bound interface");
 
-        // Set a timeout for recvfrom
+    // Set a timeout for recvfrom
     struct timeval timeout;
     timeout.tv_sec = 5; // 5 seconds timeout
     timeout.tv_usec = 0;
@@ -44,6 +45,7 @@ int ping(struct in_addr ip_addr, const char * interface) {
         return -1;
     }
     
+    // Setting up ICMP echo package
     struct sockaddr_in addr;
     addr.sin_family = AF_INET;
     addr.sin_port = htons(0);
@@ -54,11 +56,13 @@ int ping(struct in_addr ip_addr, const char * interface) {
     icmp_hdr.un.echo.sequence = 1;
     icmp_hdr.checksum = calculate_icmp_checksum(&icmp_hdr, sizeof(icmp_hdr));
 
+    // Creating buffer for recvfrom
     char buffer[1024];
     struct sockaddr_in sender_addr;
     socklen_t sender_addr_len = sizeof(sender_addr);
 
-    PRINT("%s\n", "Sent data");
+
+    // Pinging adress on interface
     ssize_t sent = sendto(sock, &icmp_hdr, sizeof(icmp_hdr), 0, (struct sockaddr *)&addr, sizeof(addr));
     if (sent < 0) {
         ERR_PRINT("%s\n", "An error occured when trying to send a ICMP packet from an raw socket");
@@ -66,29 +70,28 @@ int ping(struct in_addr ip_addr, const char * interface) {
         return -1;
     }
     
-
+    // Recovering echo packet
     ssize_t received = recvfrom(sock, buffer, sizeof(buffer), 0, (struct sockaddr *)&sender_addr, &sender_addr_len);
     if (received < 0) {
         ERR_PRINT("%s\n", "recvfrom");
         close(sock);
         return -1;
     }
-    PRINT("%s\n", "Recived data");
 
     // Process the received packet (e.g., check ICMP header, etc.)
     struct iphdr *ip_hdr = (struct iphdr *)buffer;
     struct icmphdr *recv_icmp_hdr = (struct icmphdr *)(buffer + (ip_hdr->ihl * 4));
 
+
     close(sock);
-
-
-    PRINT("%s\n", "Socket closed");
 
 
     // recv_icmp_hdr->type == ICMP_ECHOREPLY && 
     if (recv_icmp_hdr->un.echo.id == 1234) {
-        printf("Received ICMP ECHO REPLY from %s\n", inet_ntoa(sender_addr.sin_addr));
+        // printf("Received ICMP ECHO REPLY from %s\n", inet_ntoa(sender_addr.sin_addr));
         return 0;
     }
+
     return -1;
+
 }

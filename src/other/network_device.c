@@ -5,7 +5,7 @@ char * get_first_network_dev() {
     char errbuf[PCAP_ERRBUF_SIZE];
     if (pcap_findalldevs(&all_devices, errbuf) == -1) {
         ERR_PRINT("%s\n", "Error finding devices");
-        DEBUG_MESSAGE("%s\n", "pcap_findalldevs failed");
+        ERR_PRINT("%s\n", errbuf);
         exit(0);
     }
     

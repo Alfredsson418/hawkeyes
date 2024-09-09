@@ -6,7 +6,6 @@ const char scan_docs[] = "Scan for open ports on target device";
 
 const struct argp_option scan_options[] = {
     {"verbose", 'v', 0, 0, "Verbose output"},
-    {"debug", 500, 0, 0, "Debug output"},
     {"quiet", 501, 0, 0, "No terminal output"},
     {"device", 502, "DEVICE", 0, "Source network device to scan from, e.g lo"},
     {"port", 'p', "PORT(S)", 0, "Define what port(s) to scan, e.g -p 22; -p 1-100; -p 22,53,23"},
@@ -28,9 +27,6 @@ error_t scan_parse_opt(int key, char *arg, struct argp_state *state){
     switch (key) {
     case 'v':
         g_verbose_enabled = 1;
-        break;
-    case 500:
-        g_debug_enabled = 1;
         break;
     case 501:
         g_no_terminal_output = 1;

@@ -18,11 +18,10 @@ int scan(int argc, char *argv[]) {
     arguments->timeout = 10;
 
     argp_parse(&scan_argp, argc, argv, 0, 0, arguments);
-    DEBUG_MESSAGE("%s\n", "-------OUTPUT SETTINGS-------");
-    DEBUG_MESSAGE("%s %d\n", "Debug is set to:", g_debug_enabled);
-    DEBUG_MESSAGE("%s %d\n", "Verbose is set to:", g_verbose_enabled);
-    DEBUG_MESSAGE("%s %d\n", "Output is set to:", g_no_terminal_output);
-    DEBUG_MESSAGE("%s\n", "-------ARGUMENT SETTINGS-------");
+    VERBOSE_MESSAGE("%s\n", "-------OUTPUT SETTINGS-------");
+    VERBOSE_MESSAGE("%s %d\n", "Verbose is set to:", g_verbose_enabled);
+    VERBOSE_MESSAGE("%s %d\n", "Output is set to:", g_no_terminal_output);
+    VERBOSE_MESSAGE("%s\n", "-------ARGUMENT SETTINGS-------");
 
     if (arguments->target == NULL) {
         ERR_PRINT("%s\n", "No target found!");
@@ -35,12 +34,12 @@ int scan(int argc, char *argv[]) {
             ERR_PRINT("%s\n", "Found no network device");
             exit(0);
         } else {
-            DEBUG_MESSAGE("%s %s\n", "Device was not set, first found is", arguments->device);
+            VERBOSE_MESSAGE("%s %s\n", "Device was not set, first found is", arguments->device);
         }
     }
     if (arguments->ports_format == NULL) {
         arguments->ports_format = "1-1000";
-        DEBUG_MESSAGE("%s %s\n", "Port range was not set, using default", arguments->ports_format);
+        VERBOSE_MESSAGE("%s %s\n", "Port range was not set, using default", arguments->ports_format);
         
     }
     PRINT("%s %s\n", "Scanning on ports:", arguments->ports_format);
@@ -48,7 +47,7 @@ int scan(int argc, char *argv[]) {
 
     if (arguments->scan_protocol == NULL) {
         arguments->scan_protocol = "TCP";
-        DEBUG_MESSAGE("%s %s\n", "Scanning protocol was given, using default", arguments->scan_protocol);
+        VERBOSE_MESSAGE("%s %s\n", "Scanning protocol was given, using default", arguments->scan_protocol);
     }
 
 

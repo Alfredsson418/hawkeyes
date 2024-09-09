@@ -31,7 +31,6 @@ const char capture_docs[] = "Capture packets from and to your device.";
 */
 const struct argp_option capture_options[] = {
     {"verbose", 'v', 0, 0, "Verbose output"},
-    {"debug", 503, 0, 0, "Debug output"},
     {"quiet", 501, 0, 0, "No output to terminal (Error and Debug will still display)"},
     {"format", 500, "FORMAT", 0, "Specifies output FORMAT for packet capturing"},
     {"device", 'd', "DEVICE", 0, "Specifies the DEVICE to capture from"},
@@ -70,9 +69,6 @@ error_t capture_parse_opt(int key, char *arg, struct argp_state *state){
         break;
     case 'f':
         arguments->filter = arg;
-        break;
-    case 503:
-        g_debug_enabled = 1;
         break;
     case 504:
         arguments->capture_amount = atoi(arg);

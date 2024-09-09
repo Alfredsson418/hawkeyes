@@ -20,6 +20,8 @@
 #include <pthread.h> 
 #include <unistd.h>
 #include <ifaddrs.h>
+#include <netinet/ip_icmp.h>
+#include <linux/if.h>
 
 #include "other/outputs.h"
 #include "other/parse_ports.h"

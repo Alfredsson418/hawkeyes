@@ -1,10 +1,6 @@
 #ifndef PING_H
 #define PING_H
 
-
-#include <netinet/ip_icmp.h>
-#include <linux/if.h>
-
 #include "../netspectre.h"
 
 
