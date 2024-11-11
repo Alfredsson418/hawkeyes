@@ -1,25 +1,14 @@
 # Usage
 `netspec capture [options]`
 ### For help
-`netspec capture --usage`  
-`netspec capture --help`    
+`netspec capture --usage`
+`netspec capture --help`
 
-# Options 
-## Verbose
-`--verbose` `-v`  
-Produce verbose output.
-
-## Debug
-`--debug`  
-Show debug information at runtime.
-
-## Quiet
-`--quiet` 
-Do not produce any output except DEBUG and ERROR messages.
+# Options
 
 ## Format
-`--format FORMAT`  
-Specifies output FORMAT for captured package.  
+`--format FORMAT`
+Specifies output FORMAT for captured package.
 Default `FOMRAT` value:
 
 ```
@@ -51,25 +40,25 @@ Valid `FILTER` arguments
 * `ttl` Time to live
 
 ## Device
-`--device DEVICE` `-d DEVICE`  
+`--device DEVICE` `-d DEVICE`
 Specifies the `DEVICE` to capture from.
-Default value will be the first device found.  
+Default value will be the first device found.
 Default `DEVICE` value: `None`
 ## Hexdump
-`--hexdump`  
+`--hexdump`
 Output hexdump from package.
 
 ## Pcap Load
-`--pcap-load FILE`  
-Load already captured packages from `FILE`.  
+`--pcap-load FILE`
+Load already captured packages from `FILE`.
 Default value: `None`
 
 # Filter
-`--filter FILTER` `-f FILTER`  
-Will filter captured traffic after `FILTER`.  
+`--filter FILTER` `-f FILTER`
+Will filter captured traffic after `FILTER`.
 Default `FILTER` value: `None`
 
 ## Capture Amount
-`--capture-amount AMOUNT`  
-Capture ONLY the `AMOUNT` specified. If 0 is passed as an value, then the program will capture forever.  
+`--capture-amount AMOUNT`
+Capture ONLY the `AMOUNT` specified. If 0 is passed as an value, then the program will capture forever.
 Default `AMOUNT`value: `0`

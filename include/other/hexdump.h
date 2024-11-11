@@ -1,5 +1,4 @@
-#ifndef HEXDUMP_H
-#define HEXDUMP_H
+#pragma once
 
 #include "../netspectre.h"
 /*
@@ -14,5 +13,3 @@
     This function is also modified
 */
 void hexdump(const unsigned char * payload, const int len, int perLine);
-
-#endif

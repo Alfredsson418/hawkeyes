@@ -31,7 +31,7 @@ const char capture_docs[] = "Capture packets from and to your device.";
 */
 const struct argp_option capture_options[] = {
     {"verbose", 'v', 0, 0, "Verbose output"},
-    {"quiet", 501, 0, 0, "No output to terminal (Error and Debug will still display)"},
+    {"quiet", 501, 0, 0, "No output to terminal (STDERR will still display)"},
     {"format", 500, "FORMAT", 0, "Specifies output FORMAT for packet capturing"},
     {"device", 'd', "DEVICE", 0, "Specifies the DEVICE to capture from"},
     {"hexdump", 'x', 0, 0, "Output hexdump from package"},
@@ -45,12 +45,12 @@ struct argp capture_argp = { capture_options, capture_parse_opt, 0, capture_docs
 
 
 error_t capture_parse_opt(int key, char *arg, struct argp_state *state){
-    /*  
+    /*
         Get the input argument from capture_argp_parse, which we
         know is a pointer to our arguments structure.
     */
     struct capture_arguments *arguments = state->input;
-    
+
     switch (key) {
     case 'v':
         g_verbose_enabled = 1;
@@ -80,5 +80,5 @@ error_t capture_parse_opt(int key, char *arg, struct argp_state *state){
         return ARGP_ERR_UNKNOWN;
     }
     return 0;
-    
+
 }

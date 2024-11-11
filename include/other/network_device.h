@@ -1,5 +1,4 @@
-#ifndef NETWORK_DEVICE_H
-#define NETWORK_DEVICE_H
+#pragma once
 
 #include "../netspectre.h"
 
@@ -26,5 +25,3 @@ char * get_first_network_dev();
 char * get_net_dev_by_ip(char ip[IPV4_ADDR_STR_LEN]);
 
 void free_dev(char * mem);
-
-#endif

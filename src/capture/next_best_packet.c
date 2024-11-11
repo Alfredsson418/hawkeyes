@@ -1,122 +1,129 @@
 #include "../../include/capture/next_best_packet.h"
+#include <pthread.h>
 
+typedef struct{
+    pcap_t *package_handle;
+    unsigned int timeout_s;
+}exit_pcap_loop_arg;
 
-typedef struct {
-    int timeout;
-    pcap_t * handle;
-    int running;
-} timeout_arg;
+void * exit_pcap_loop(void * arg) {
+    exit_pcap_loop_arg * in_arg = (exit_pcap_loop_arg *)arg;
+    sleep(in_arg->timeout_s);
 
-
-void * sleep_timeout(void * args) {
-    timeout_arg * arg = (timeout_arg *) args;
-
-    arg->running = 1;
-    int time = 0;
-    while(time < arg->timeout) {
-        if (arg->running == 0) {
-            break;
-        }
-        sleep(1);
-        time++;
+    if (in_arg->package_handle != NULL) {
+        pcap_breakloop(in_arg->package_handle);
     }
-
-    pcap_breakloop(arg->handle);
-
+    return NULL;
 }
 
-
-
 void loop_back(net_packet * arg ,const struct pcap_pkthdr *packet_header, const unsigned char *payload) {
-
     // We need to copy the value, not the pointer
-    *(arg->packet_payload) = *payload;
-    *(arg->packet_header) = *packet_header;
-
-    PRINT("FOUND SOMETHING\n", NULL);
-    
-
+    arg->packet_header = calloc(1, sizeof(struct pcap_pkthdr));
+    if (arg->packet_header == NULL) {
+        ERR_PRINT("%s\n", "Failed to allocate memory in thread for next_best_packet");
+    }
+    arg->packet_payload = calloc(packet_header->len, sizeof(char));
+    if (arg->packet_payload == NULL) {
+        ERR_PRINT("%s\n", "Failed to allocate memory in thread for next_best_packet");
+    }
+    memcpy(arg->packet_payload, payload, packet_header->len);
+    memcpy(arg->packet_header, packet_header, sizeof(struct pcap_pkthdr));
+    printf("FOUND SOMETHING\n");
 }
 
 // ONLY FOR ONE PACKET
-net_packet * next_best_packet(char * network_device ,char * filter, int timeout) {
+net_packet * next_best_packet(const char * network_interface,char * filter, int timeout) {
     char errbuff[PCAP_ERRBUF_SIZE]; // Error Buffer
     pcap_t *package_handle = NULL;
     int snap_len = MAX_PACKET_SIZE;
     int promisc = 1;
-    int net_dev_alloc = 0;
+    const u_char *packet;
+    struct pcap_pkthdr *header;
+
+    // printf("%s\n %s\n", network_interface, filter);
 
     net_packet * return_arg = calloc(1, sizeof(net_packet));
     if (return_arg == NULL) {
         ERR_PRINT("%s\n", "Failed to allocate memory for return_arg");
         return NULL;
     }
-    return_arg->packet_payload = calloc(MAX_PACKET_SIZE + 1, sizeof(char));
-    if (return_arg->packet_payload == NULL) {
-        ERR_PRINT("%s\n", "Failed to allocate memory for packet_payload");
-        free(return_arg);
-        return NULL;
-    }
-    return_arg->packet_header = calloc(1, sizeof(struct pcap_pkthdr));
-    if (return_arg->packet_header == NULL) {
-        ERR_PRINT("%s\n", "Failed to allocate memory for packet_header");
-        free(return_arg->packet_payload);
-        free(return_arg);
-        return NULL;
-    }
-    
-    if (network_device == NULL) {
-        network_device = get_first_network_dev();
-        net_dev_alloc = 1;
-    }
 
     struct bpf_program pcap_filter;
-    
-    package_handle = pcap_open_live(network_device, snap_len, promisc, 500, errbuff);
 
-    // Compiles and setting filter
+    package_handle = pcap_open_live(network_interface, snap_len, promisc, 500, errbuff);
+    /*
+    package_handle = pcap_create(network_interface, errbuff);
     if (package_handle == NULL) {
-        ERR_PRINT("%s\n", "Error opening pcap file");
-        ERR_PRINT("%s\n", errbuff);
+        ERR_PRINT("pcap_create failed: %s\n", errbuff);
+
+        free(return_arg);
         return NULL;
     }
-    if (filter != NULL) {
-        if (pcap_compile(package_handle, &pcap_filter, filter, 0, 0) == -1)  {
-            ERR_PRINT("%s %s\n", "Bad filter -", pcap_geterr(package_handle));
-            return NULL;
-        }
-        if (pcap_setfilter(package_handle, &pcap_filter) == -1) {
-            ERR_PRINT("%s %s\n", "Error setting filter -", pcap_geterr(package_handle));
-            return NULL;
-        }
+
+    pcap_set_snaplen(package_handle, snap_len);
+    pcap_set_promisc(package_handle, promisc);
+
+    if (pcap_set_timeout(package_handle, timeout * 1000) < 0){
+        ERR_PRINT("Could not set timeout: %s\n", pcap_geterr(package_handle));
     }
+
+    if (pcap_activate(package_handle) != 0) {
+        ERR_PRINT("pcap_activate failed: %s\n", pcap_geterr(package_handle));
+        pcap_close(package_handle);
+
+        free(return_arg);
+        return NULL;
+    }
+    */
+
+    if (filter != NULL) {
+        if (pcap_compile(package_handle, &pcap_filter, filter, 0, PCAP_NETMASK_UNKNOWN) < 0)  {
+            ERR_PRINT("%s %s\n", "Bad filter -", pcap_geterr(package_handle));
+            pcap_close(package_handle);
+
+            free(return_arg);
+            return NULL;
+        }
+        if (pcap_setfilter(package_handle, &pcap_filter) < 0) {
+            ERR_PRINT("%s %s\n", "Error setting filter -", pcap_geterr(package_handle));
+            pcap_freecode(&pcap_filter);
+            pcap_close(package_handle);
+
+            free(return_arg);
+            return NULL;
+        }
+
+    }
+
+    // Start scanning for matching packages
+    // pthread_t thread_ID;
+
+    // pthread_create(&thread_ID, NULL, timeout_thread, &timeout);
+    // pcap_dispatch(package_handle, 1, (pcap_handler) loop_back, (unsigned char *) return_arg);
 
 
     pthread_t thread_id;
 
-    timeout_arg timeout_args;
-    timeout_args.timeout = timeout;
-    timeout_args.handle = package_handle;
+    exit_pcap_loop_arg timeout_args;
+    timeout_args.timeout_s = timeout;
+    timeout_args.package_handle = package_handle;
     // Timeout counter if packages takes longer that expected
-    if (pthread_create(&thread_id, NULL, sleep_timeout, &timeout_args) != 0) {
+    if (pthread_create(&thread_id, NULL, exit_pcap_loop, &timeout_args) != 0) {
+        pcap_close(package_handle);
         ERR_PRINT("%s\n", "Failed to create thread", NULL);
         return NULL;
     }
 
     // Start scanning for matching packages
     pcap_dispatch(package_handle, 1, (pcap_handler) loop_back, (unsigned char *) return_arg);
-
-    // This it to make sure the "sleep" thread exists as expected
-    timeout_args.running = 0;
-    pthread_join(thread_id, NULL);
-
-
-
     pcap_close(package_handle);
+
+    pthread_cancel(thread_id);
+    // This it to make sure the "sleep" thread exists as expected
+    // pthread_join(thread_id, NULL);
+
+
+
     pcap_freecode(&pcap_filter);
-    if (net_dev_alloc == 1) {
-        free_dev(network_device);
-    } 
-    
     return return_arg;
 }

@@ -1,5 +1,4 @@
-#ifndef OUTPUTS_H
-#define OUTPUTS_H
+#pragma once
 
 #include "../netspectre.h"
 
@@ -24,5 +23,3 @@ do{\
     fprintf(stderr, "ERR: ");\
     fprintf(stderr, fmt, __VA_ARGS__);\
 }while(0)
-
-#endif

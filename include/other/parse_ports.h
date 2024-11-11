@@ -1,5 +1,4 @@
-#ifndef PARSE_PORTS_H
-#define PARSE_PORTS_H
+#pragma once
 
 #include "../netspectre.h"
 
@@ -8,7 +7,7 @@
         str:  The string from where to count the amount of ports
     Return:
         Amount of ports.
-        
+
 */
 int count_ports(char * str);
 
@@ -18,8 +17,6 @@ int count_ports(char * str);
         ports:  An empty array of integers.
     Return:
         Length of array.
-        
+
 */
 int parse_ports(char * str, int ** ports);
-
-#endif

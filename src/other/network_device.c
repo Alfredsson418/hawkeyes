@@ -1,32 +1,21 @@
 #include "../../include/other/network_device.h"
 
 char * get_first_network_dev() {
-    pcap_if_t *all_devices = NULL;
-    char errbuf[PCAP_ERRBUF_SIZE];
-    if (pcap_findalldevs(&all_devices, errbuf) == -1) {
-        ERR_PRINT("%s\n", "Error finding devices");
-        ERR_PRINT("%s\n", errbuf);
-        exit(0);
-    }
-    
-    if (all_devices == NULL) {
-        ERR_PRINT("%s\n", "No network devices found");
-        exit(0);
+    struct ifaddrs *network_devices;
+    char * device = NULL;
+
+    if (getifaddrs(&network_devices) <  0) {
+        ERR_PRINT("%s\n", "ifaddrs");
+        return NULL;
     }
 
-    char *dev_string = NULL;
-    if (all_devices->name != NULL) {
-        dev_string = calloc(strlen(all_devices->name) + 1, sizeof(char));
-        if (dev_string == NULL) {
-            ERR_PRINT("%s\n", "Memory allocation failed");
-            exit(0);
-        }
-        strncpy(dev_string, all_devices->name, strlen(all_devices->name));
+    for (; network_devices != NULL; network_devices = network_devices->ifa_next) {
+        if (network_devices->ifa_addr == NULL) { continue; }
+        if (strcmp(network_devices->ifa_name, "lo") < 0) { continue; }
+        device = calloc(strlen(network_devices->ifa_name), sizeof(char));
+        strcpy(device, network_devices->ifa_name);
     }
-
-    pcap_freealldevs(all_devices);
-
-    return dev_string;
+    return device;
 }
 
 // Kolla på hur den funkar
@@ -50,7 +39,7 @@ char* get_net_dev_by_ip(char target_ip[IPV4_ADDR_STR_LEN]) {
             // Check if the target IP is reachable through this interface
             // This is a simplified check; you might need to compare subnet masks for a precise match
             if (strcmp(ifa_ip, target_ip) == 0) {
-                device = calloc(strlen(ifa->ifa_name) + 1, sizeof(char));
+                device = calloc(strlen(ifa->ifa_name), sizeof(char));
                 if (device == NULL) {
                     ERR_PRINT("%s\n", "Memory allocation failed");
                     exit(0);

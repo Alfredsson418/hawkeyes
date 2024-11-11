@@ -1,4 +1,5 @@
 #include "../../include/capture/capture_main.h"
+#include <pcap/pcap.h>
 
 /*
     The use for this is to capture packtes that is comming to the device
@@ -7,10 +8,10 @@
 
 pcap_t *package_handle;
 
-void handle_sigint(int sig) { 
+void handle_sigint(int sig) {
     PRINT("%s\n", "STOPPING PROGRAM!!!");
     pcap_breakloop(package_handle);
-} 
+}
 
 
 
@@ -40,10 +41,10 @@ int capture(int argc, char *argv[]) {
     /*
         If promisc is set to 1, the interface will be put into promiscuous mode.
         This means that all packets on the network, not just those destined
-        for your machine, will be captured. 
+        for your machine, will be captured.
         If set to 0, only packets destined for your machine will be captured.
-    */ 
-    int promisc = 1;  
+    */
+    int promisc = 1;
     int to_ms = -1; // The read timeout in milliseconds. A value of -1 means to wait indefinitely for a packet.
     package_handle = NULL; // Packet capture handle
 
@@ -59,7 +60,7 @@ int capture(int argc, char *argv[]) {
     }
 
     // Default values
-    arguments->format = 
+    arguments->format =
     "Package header: \n"
     "   Time of capture: {head-time}\n"
     "   Package Length: {head-origin-len}\n"
@@ -90,7 +91,7 @@ int capture(int argc, char *argv[]) {
     VERBOSE_MESSAGE("%s %s\n", "Load Pcap is set to:", arguments->pcap_load);
     VERBOSE_MESSAGE("%s %d\n", "Capture amount is set to:", arguments->capture_amount);
     if (arguments->capture_amount == 0) VERBOSE_MESSAGE("%s\n", "WARNING: --capture-amount is set to 0, will loop forever");
-    
+
 
 
     /* Determines how to load packages */
@@ -116,6 +117,12 @@ int capture(int argc, char *argv[]) {
         }
         VERBOSE_MESSAGE("%s %s\n", "Trying to capture on interface:", arguments->device);
 
+        /*package_handle = pcap_create(arguments->device, errbuff);
+        if (package_handle == NULL) {
+               ERR_PRINT("pcap_create failed: %s\n", errbuf);
+               return 1;
+           }
+        */
         package_handle = pcap_open_live(arguments->device, snap_len, promisc, to_ms, errbuff);
 
         if (package_handle == NULL) {
@@ -133,7 +140,7 @@ int capture(int argc, char *argv[]) {
 
     /* Filtering */
     if (arguments->filter != NULL) {
-        VERBOSE_MESSAGE("%s %s\n", "Compiling filter:", arguments->filter); 
+        VERBOSE_MESSAGE("%s %s\n", "Compiling filter:", arguments->filter);
         if (pcap_compile(package_handle, &filter, arguments->filter, 0, 0) == -1) {
             ERR_PRINT("%s %s\n", "Bad filter -", pcap_geterr(package_handle));
             return 2;
@@ -154,7 +161,7 @@ int capture(int argc, char *argv[]) {
 
     pcap_loop(package_handle, arguments->capture_amount,(pcap_handler) packet_handler, (unsigned char *) arguments);
 
-    
+
     VERBOSE_MESSAGE("%s\n", "Freeing varibles...");
     pcap_close(package_handle);
     free_dev(arguments->device);

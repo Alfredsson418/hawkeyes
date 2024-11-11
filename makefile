@@ -9,7 +9,7 @@ CFLAGS = -Wall -g
 LDFLAGS = -lpcap -pthread
 
 # Get all the source files in the SRC directory and its subdirectories
-SRCFILES = $(wildcard $(SRC)/*.c) $(wildcard $(SRC)/**/*.c) 
+SRCFILES = $(wildcard $(SRC)/*.c) $(wildcard $(SRC)/**/*.c)
 
 # Generate object file names from source file names
 OBJFILES = $(patsubst $(SRC)/%.c, $(BUILD)/%.o, $(SRCFILES))

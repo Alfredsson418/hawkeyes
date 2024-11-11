@@ -1,5 +1,4 @@
-#ifndef REPLACE_H
-#define REPLACE_H
+#pragma once
 
 #include "../netspectre.h"
 
@@ -22,5 +21,3 @@ void replace_substring(char **str, const char *old_sub, const char *new_sub);
         Formated string
 */
 void replace_format(char **format, char *substring, char *replacement);
-
-#endif

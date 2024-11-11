@@ -1,8 +1,8 @@
-#ifndef SCAN_MAIN_H
-#define SCAN_MAIN_H
+#pragma once
 
 #include "../netspectre.h"
-#include "scan_arguments.h"
+#include "terminal_scan_arguments.h"
+#include "multithread_scanning.h"
 #include "tcp_scan.h"
 #include "udp_scan.h"
 
@@ -14,5 +14,3 @@
         If run
 */
 int scan(int argc, char *argv[]);
-
-#endif
