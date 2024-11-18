@@ -1,5 +1,4 @@
-#ifndef NEXT_BEST_PACKET_H
-#define NEXT_BEST_PACKET_H
+#pragma once
 
 #include "../netspectre.h"
 #include "../other/network_device.h"
@@ -16,6 +15,3 @@
         The packet with the packet_header.
 */
 net_packet * next_best_packet(const char * network_interface,char * filter, int timeout);
-
-
-#endif

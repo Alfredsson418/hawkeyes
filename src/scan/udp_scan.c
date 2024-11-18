@@ -88,7 +88,7 @@ int udp_scan(scan_function_arguments arg) {
         close(sock);
         return -1;
     }
-    PRINT("%s\n", "Package Send!");
+
     net_packet * packet = NULL;
     pthread_join(thread_id, (void **)&packet);
 
@@ -100,13 +100,11 @@ int udp_scan(scan_function_arguments arg) {
         // This needs the && because the first check is for if its empty or not
         // The second is only run when its not empty
     }else if (packet->packet_header != NULL && packet->packet_header->len > 0) {
-        PRINT("%s\n", "ICMP PACKET FOUND, PORT CLOSED");
         free(packet->packet_payload);
         free(packet->packet_header);
         free(packet);
         result = 0;
     } else {
-        PRINT("%s\n", "NO PACKET RECEIVED, PORT COULD BE OPEN");
         result = 1;
     }
     close(sock);

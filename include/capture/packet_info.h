@@ -1,14 +1,13 @@
-#ifndef PACKET_INFO_H
-#define PACKET_INFO_H
+#pragma once
 
 #include "../../include/netspectre.h"
-#include "protocol_maps.h"
+#include "../other/protocol_maps.h"
 #include "capture_arguments.h"
 #include "capture_main.h"
 #include "../other/replace.h"
 
 /*
-    
+
     Parameters:
         arguments: The program arguments
         packet_header: Metadata about captured packet
@@ -36,5 +35,3 @@ void packet_header_info(const struct pcap_pkthdr *packet_header, char **format);
 */
 void l2_packet_info(const unsigned char *packet, char **format);
 void l3_packet_info(const unsigned char *packet, char **format);
-
-#endif

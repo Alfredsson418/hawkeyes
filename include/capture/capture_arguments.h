@@ -1,5 +1,4 @@
-#ifndef CAPTURE_ARGUMENTS_H
-#define CAPTURE_ARGUMENTS_H
+#pragma once
 
 #include "../../include/netspectre.h"
 #include "../other/network_device.h"
@@ -16,11 +15,9 @@ struct capture_arguments {
 };
 /*
     error_t capture_parse_opt(int key, char *arg, struct argp_state *state);
-    
+
     Used as an callback function in argp_parse
 */
 error_t capture_parse_opt(int key, char *arg, struct argp_state *state);
 
 extern struct argp capture_argp;
-
-#endif

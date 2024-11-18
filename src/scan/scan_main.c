@@ -16,7 +16,6 @@ int scan(int argc, char *argv[]) {
     arguments->ports = NULL;
     arguments->timeout = 3;
     arguments->no_ping = false;
-    arguments->no_threading = false;
     arguments->thread_workers = 3;
 
     // If this is one, we know that the network device was given as a parameter
@@ -28,12 +27,12 @@ int scan(int argc, char *argv[]) {
     VERBOSE_MESSAGE("%s %d\n", "Output is set to:", g_no_terminal_output);
     VERBOSE_MESSAGE("%s\n", "-------ARGUMENT SETTINGS-------");
     VERBOSE_MESSAGE("Target: %s\n", inet_ntoa(arguments->target));
-    VERBOSE_MESSAGE("No Threading: %d\n", arguments->no_threading);
     VERBOSE_MESSAGE("No Ping before scanning: %d\n", arguments->no_threading);
     VERBOSE_MESSAGE("Thread Workers: %d\n", arguments->thread_workers);
+
     if (arguments->device == NULL) {
         VERBOSE_MESSAGE("%s\n", "No network device set");
-        if (arguments->no_ping == false) {
+        if (!arguments->no_ping && is_root()) {
             arguments->device = guess_ping(arguments->target);
         } else {
             VERBOSE_MESSAGE("%s\n", "Could not guess network device, using first");
@@ -49,8 +48,6 @@ int scan(int argc, char *argv[]) {
 
     PRINT("%s %s\n", "Scanning on ports:", arguments->ports_format);
     arguments->ports_len = parse_ports(arguments->ports_format, &(arguments->ports));
-
-
 
 
     scan_function_arguments function_argument;
@@ -78,16 +75,24 @@ int scan(int argc, char *argv[]) {
         ports_result = multithread_scanning(arguments->thread_workers, arguments->ports, arguments->ports_len, function, function_argument);
     }
 
+    PRINT("%s\n", "----Open Ports----");
+
     for (int i = 0; i < arguments->ports_len; i++) {
         if (*(ports_result + i) == 1) {
-            PRINT("%d is open\n", *(arguments->ports + i));
+            PRINT(" -> %d/ ", *(arguments->ports + i));
+            char a[32];
+            if (find_port(arguments->scan_protocol, *(arguments->ports + i), a)) {
+                PRINT("%s", a);
+            }
+            PRINT("%s", "\n");
         }
     }
+    PRINT("%s\n", "------------------");
 
     if (!parameter_device) {
         free_dev(arguments->device);
     }
-    PRINT("%s\n", "exit");
+
     free(ports_result);
     free(arguments->ports);
     free(arguments);

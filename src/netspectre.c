@@ -41,9 +41,7 @@ int main(int argc, char *argv[]) {
     }else if (strcasecmp(argv[1], "scan") == 0) {
         scan(argc -1, processed_argv);
     }else if (strcasecmp(argv[1], "test") == 0) {
-        struct in_addr addr;
-        inet_pton(AF_INET, "192.168.1.5", &addr);
-        PRINT("%d\n", ping(addr, "wlp61s0"));
+        printf("%ld, %ld, %ld", sizeof(short), sizeof(int), sizeof(long));
 
     } else {
         ERR_PRINT("%s\n", "Did not recognice command! Exiting!");

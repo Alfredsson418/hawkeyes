@@ -8,21 +8,21 @@ void packet_handler(struct capture_arguments * arguments ,const struct pcap_pkth
         sniff_ip 	X + SIZE_ETHERNET
         sniff_tcp 	X + SIZE_ETHERNET + {IP header length}
         payload 	X + SIZE_ETHERNET + {IP header length} + {TCP header length}
-    
+
     */
-    
+
     // String does not change
     char * string = calloc(strlen(arguments->format) + 1, sizeof(char));
-    memset(string, '\0', sizeof(string));
+    memset(string, '\0', strlen(string));
     strcpy(string, arguments->format);
     if (strstr(string, "\\n")) {
-        replace_substring(string, "\\n", "\n");
+        replace_substring(&string, "\\n", "\n");
     }
     if (strstr(string, "\\t")) {
-        replace_substring(string, "\\t", "\t");
+        replace_substring(&string, "\\t", "\t");
     }
     if (strstr(string, "\\v")) {
-        replace_substring(string, "\\v", "\v");
+        replace_substring(&string, "\\v", "\v");
     }
 
     packet_header_info(packet_header, &string);
@@ -35,19 +35,19 @@ void packet_handler(struct capture_arguments * arguments ,const struct pcap_pkth
     l2_packet_info(packet, &string);
     l3_packet_info(packet, &string);
     PRINT("%s\n", string);
-    
+
     if (arguments->hexdump) {
         // unsigned char *payload = (unsigned char *)(packet + sizeof(struct ether_header) + sizeof(struct iphdr));
         // int payload_length = packet_header->len - sizeof(struct ether_header) + sizeof(struct iphdr);
         PRINT("%s\n", "HEXDUMP:");
         hexdump((unsigned *) packet, packet_header->len, 16);
     }
-    
+
     free(string);
-}   
+}
 
 void packet_header_info(const struct pcap_pkthdr *packet_header, char **format) {
-    
+
     char time_sec[20]; // Enough for a timestamp
     char origin_len[20]; // Enough for an int
     char capture_len[20]; // Enough for an int
@@ -65,9 +65,9 @@ void packet_header_info(const struct pcap_pkthdr *packet_header, char **format) 
 void l2_packet_info(const unsigned char *packet, char **format) {
     char mac_src[18] = {0};
     char mac_dst[18] = {0};
-    
+
     struct ether_header *eth = (struct ether_header *)packet;
-    
+
 
     if (eth != NULL) {
         bin_to_mac(eth->ether_dhost, mac_dst);
@@ -94,6 +94,7 @@ void l3_packet_info(const unsigned char *packet, char **format) {
         unsigned int daddr: The destination IP address.
     */
     struct ether_header *eth = (struct ether_header *)packet;
+
     struct iphdr * ip = (struct iphdr *)(packet + sizeof(struct ether_header)); // Skip the Ethernet header;
 
     char src_ip[INET_ADDRSTRLEN];
@@ -111,13 +112,13 @@ void l3_packet_info(const unsigned char *packet, char **format) {
         // inet_ntoa will overwrite if not copied to other value
         src_addr.s_addr = ip->saddr;
         strncpy(src_ip, inet_ntoa(src_addr), INET_ADDRSTRLEN);
-        
+
         ip_protocol = determine_packet_protocol(ip->protocol, 3);
         sprintf(str, "%u", ip->protocol);
         sprintf(ttl, "%u", ip->ttl);
         sprintf(version, "%u", ip->version);
-    } 
-    
+    }
+
     replace_format(format, "{ipv4-src}", src_ip);
     replace_format(format, "{ipv4-dst}", dst_ip);
     replace_format(format, "{l3-prot}", ip_protocol);
@@ -125,4 +126,3 @@ void l3_packet_info(const unsigned char *packet, char **format) {
     replace_format(format, "{l3-prot-num}", str);
     replace_format(format, "{ttl}", ttl);
 }
-

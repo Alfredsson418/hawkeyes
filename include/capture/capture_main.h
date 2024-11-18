@@ -1,5 +1,4 @@
-#ifndef CAPTURE_MAIN_H
-#define CAPTURE_MAIN_H
+#pragma once
 
 #include "../netspectre.h"
 #include "capture_arguments.h"
@@ -31,5 +30,3 @@ void bin_to_mac(uint8_t mac_bin[6], char mac[18]);
         If run successfully.
 */
 int capture(int argc, char *argv[]);
-
-#endif

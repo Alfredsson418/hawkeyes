@@ -21,4 +21,4 @@ NetSpectre is a swiss army knife of network tools
 * argp
 
 # Contribution
-* [`Zed`](https://zed.dev/channel/Netspectre-14900)
+TBA

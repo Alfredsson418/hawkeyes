@@ -1,4 +1,4 @@
-#include "../../include/capture/protocol_maps.h"
+#include "../../include/other/protocol_maps.h"
 
 struct protocol_mapping {
     uint16_t ether_type;
@@ -37,7 +37,7 @@ const struct protocol_mapping l2_protocol_map[] = {
     {0x88A2, "AoE"}, // ATA over Ethernet
     {0x88A4, "EtherCAT"},
     {0x88A8, "IEEE 802.1ad"}, // Service VLAN tag identifier (S-Tag) on Q-in-Q tunnel
-    {0x88AB, "Ethernet Powerlink"}, 
+    {0x88AB, "Ethernet Powerlink"},
     {0x88B8, "GOOSE"}, // Generic Object Oriented Substation event
     {0x88B9, "GSE"}, // Generic Substation Events
     {0x88BA, "IEC 61850"}, // SV (Sampled Value Transmission)
@@ -48,10 +48,10 @@ const struct protocol_mapping l2_protocol_map[] = {
     {0x88E3, "IEC62439-2"}, // Media Redundancy Protocol
     {0x88E5, "IEEE 802.1AE"}, // MAC security (MACsec)
     {0x88E7, "IEEE 802.1ah"}, // Provider Backbone Bridges (PBB)
-    {0x88F7, "PTP"}, // Precision Time Protocol (PTP) over IEEE 802.3 Ethernet 
+    {0x88F7, "PTP"}, // Precision Time Protocol (PTP) over IEEE 802.3 Ethernet
     {0x88F8, "NC-SI"},
     {0x88FB, "PRP"}, // Parallel Redundancy Protocol
-    {0x8902, "IEEE 802.1ag CFM / ITU-T Y.1731"}, // IEEE 802.1ag Connectivity Fault Management (CFM) Protocol / ITU-T Recommendation Y.1731 (OAM) 
+    {0x8902, "IEEE 802.1ag CFM / ITU-T Y.1731"}, // IEEE 802.1ag Connectivity Fault Management (CFM) Protocol / ITU-T Recommendation Y.1731 (OAM)
     {0x8906, "FCoE"}, // Fibre Channel over Ethernet
     {0x8914, "FCoE Initialization Protocol"},
     {0x8915, "RoCE"}, //RDMA over Converged Ethernet
@@ -59,7 +59,7 @@ const struct protocol_mapping l2_protocol_map[] = {
     {0x893a, "IEEE 1905.1"},
     {0x892F, "HSR"}, // High-availability Seamless Redundancy
     {0x9000, "Ethernet Configuration Testing Protocol"},
-    {0xF1C1, "Redundancy Tag"} // Redundancy Tag (IEEE 802.1CB Frame Replication and Elimination for Reliability) 
+    {0xF1C1, "Redundancy Tag"} // Redundancy Tag (IEEE 802.1CB Frame Replication and Elimination for Reliability)
 };
 
 
@@ -118,7 +118,7 @@ const struct protocol_mapping l3_protocol_map[] = {
     {0x32, "ESP"}, // Encap Security Payload
     {0x33, "AH"}, // Authentication Header
     {0x34, "I-NLSP"}, // Integrated Net Layer Security TUBA
-    {0x35, "SWIPE"}, // IP with Encryption (deprecated) 
+    {0x35, "SWIPE"}, // IP with Encryption (deprecated)
     {0x36, "NARP"}, // NBMA Address Resolution Protocol
     {0x37, "Min-IPv4"}, // Minimal IPv4 Encapsulation
     {0x38, "TLSP"}, // Transport Layer Security Protocol using Kryptonet key management
@@ -214,7 +214,7 @@ const struct protocol_mapping l3_protocol_map[] = {
     // This goes up to 255 but the rest are unassigned
 };
 
-// Determine 
+// Determine
 char * determine_packet_protocol(uint16_t packet_protocol, int layer) {
     // https://en.wikipedia.org/wiki/EtherType
     /*

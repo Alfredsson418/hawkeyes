@@ -28,7 +28,6 @@ void loop_back(net_packet * arg ,const struct pcap_pkthdr *packet_header, const 
     }
     memcpy(arg->packet_payload, payload, packet_header->len);
     memcpy(arg->packet_header, packet_header, sizeof(struct pcap_pkthdr));
-    printf("FOUND SOMETHING\n");
 }
 
 // ONLY FOR ONE PACKET
@@ -40,8 +39,6 @@ net_packet * next_best_packet(const char * network_interface,char * filter, int 
     const u_char *packet;
     struct pcap_pkthdr *header;
 
-    // printf("%s\n %s\n", network_interface, filter);
-
     net_packet * return_arg = calloc(1, sizeof(net_packet));
     if (return_arg == NULL) {
         ERR_PRINT("%s\n", "Failed to allocate memory for return_arg");
@@ -51,30 +48,7 @@ net_packet * next_best_packet(const char * network_interface,char * filter, int 
     struct bpf_program pcap_filter;
 
     package_handle = pcap_open_live(network_interface, snap_len, promisc, 500, errbuff);
-    /*
-    package_handle = pcap_create(network_interface, errbuff);
-    if (package_handle == NULL) {
-        ERR_PRINT("pcap_create failed: %s\n", errbuff);
 
-        free(return_arg);
-        return NULL;
-    }
-
-    pcap_set_snaplen(package_handle, snap_len);
-    pcap_set_promisc(package_handle, promisc);
-
-    if (pcap_set_timeout(package_handle, timeout * 1000) < 0){
-        ERR_PRINT("Could not set timeout: %s\n", pcap_geterr(package_handle));
-    }
-
-    if (pcap_activate(package_handle) != 0) {
-        ERR_PRINT("pcap_activate failed: %s\n", pcap_geterr(package_handle));
-        pcap_close(package_handle);
-
-        free(return_arg);
-        return NULL;
-    }
-    */
 
     if (filter != NULL) {
         if (pcap_compile(package_handle, &pcap_filter, filter, 0, PCAP_NETMASK_UNKNOWN) < 0)  {
@@ -94,13 +68,6 @@ net_packet * next_best_packet(const char * network_interface,char * filter, int 
         }
 
     }
-
-    // Start scanning for matching packages
-    // pthread_t thread_ID;
-
-    // pthread_create(&thread_ID, NULL, timeout_thread, &timeout);
-    // pcap_dispatch(package_handle, 1, (pcap_handler) loop_back, (unsigned char *) return_arg);
-
 
     pthread_t thread_id;
 

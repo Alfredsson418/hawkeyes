@@ -1,5 +1,4 @@
-#ifndef PROTOCOL_MAPS_H
-#define PROTOCOL_MAPS_H
+#pragma once
 
 #include "../netspectre.h"
 
@@ -11,5 +10,3 @@
         Returns the name of the protocol
 */
 char * determine_packet_protocol(uint16_t packet_protocol, int layer);
-
-#endif

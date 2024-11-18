@@ -59,8 +59,23 @@ char * guess_ping(struct in_addr ip_addr) {
 
 // Sometimes this gets no responce, even though target is up
 int ping(struct in_addr ip_addr, const char * interface) {
-
+    int echo_ID = 8765;
     int sock = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
+    int tries = 2;
+
+
+    struct sockaddr_in addr;
+    struct icmphdr icmp_hdr;
+
+    char buffer[1024];
+    struct sockaddr_in sender_addr;
+    socklen_t sender_addr_len = sizeof(sender_addr);
+
+    // Set a timeout for recvfrom
+    struct timeval timeout;
+    timeout.tv_sec = 5; // 5 seconds timeout
+    timeout.tv_usec = 0;
+
     if (sock < 0) {
         ERR_PRINT("%s\n", "An error occured when truing to open a Raw socket, make sure to run the program as root!");
         return -1;
@@ -74,11 +89,6 @@ int ping(struct in_addr ip_addr, const char * interface) {
         return -1;
     }
 
-
-    // Set a timeout for recvfrom
-    struct timeval timeout;
-    timeout.tv_sec = 5; // 5 seconds timeout
-    timeout.tv_usec = 0;
     if (setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0) {
         ERR_PRINT("%s\n", "Failed to set a timeout to socket");
         close(sock);
@@ -86,24 +96,22 @@ int ping(struct in_addr ip_addr, const char * interface) {
     }
 
     // Setting up ICMP echo package
-    struct sockaddr_in addr;
+
     addr.sin_family = AF_INET;
     addr.sin_port = htons(0);
     addr.sin_addr = ip_addr;
-    //memcpy(&addr.sin_addr.s_addr, &ip_addr.s_addr, sizeof(ip_addr.s_addr));
-    struct icmphdr icmp_hdr;
+    // memcpy(&addr.sin_addr.s_addr, &ip_addr.s_addr, sizeof(ip_addr.s_addr));
+
     memset(&icmp_hdr, 0, sizeof(icmp_hdr));
     icmp_hdr.type = ICMP_ECHO;
-    icmp_hdr.un.echo.id = getpid();
+    icmp_hdr.un.echo.id = echo_ID;
     icmp_hdr.un.echo.sequence = htons(1);
     icmp_hdr.code = 0;
     icmp_hdr.checksum = checksum(&icmp_hdr, sizeof(icmp_hdr));
 
 
     // Creating buffer for recvfrom
-    char buffer[1024];
-    struct sockaddr_in sender_addr;
-    socklen_t sender_addr_len = sizeof(sender_addr);
+
 
     // Pinging adress on interface
     ssize_t sent = sendto(sock, &icmp_hdr, sizeof(icmp_hdr), 0, (struct sockaddr *)&addr, sizeof(addr));
@@ -113,14 +121,12 @@ int ping(struct in_addr ip_addr, const char * interface) {
         return -1;
     }
 
-    int tries = 2;
-
     // This is needed because the first packet could be the package sent
     for (int i = 0; i < tries; i++) {
         // Recovering echo packet
         ssize_t received = recvfrom(sock, buffer, sizeof(buffer), 0, (struct sockaddr *)&sender_addr, &sender_addr_len);
         if (received < 0) {
-            // perror("recvfrom failed");
+            perror("recvfrom failed");
             ERR_PRINT("%s\n", "Did not recover any data before timeout");
             close(sock);
             return -1;
@@ -129,10 +135,8 @@ int ping(struct in_addr ip_addr, const char * interface) {
         // Process the received packet (e.g., check ICMP header, etc.)
         struct iphdr *ip_hdr = (struct iphdr *)buffer;
         struct icmphdr *recv_icmp_hdr = (struct icmphdr *)(buffer + (ip_hdr->ihl * 4));
-
-        // printf("%d %d \n", recv_icmp_hdr->type, recv_icmp_hdr->un.echo.id);
-
-        if (recv_icmp_hdr->type == ICMP_ECHOREPLY && recv_icmp_hdr->un.echo.id == getpid()) {
+        // printf("\n%d, %d, %d \n", recv_icmp_hdr->type, recv_icmp_hdr->un.echo.id, echo_ID);
+        if (recv_icmp_hdr->type == ICMP_ECHOREPLY && recv_icmp_hdr->un.echo.id == echo_ID) {
             close(sock);
             return 1;
         }

@@ -17,10 +17,8 @@ If the `no-ping` option is true, the program will use the first given network de
 
 `--port PORT(S)` `-p PORT(S)` Give the program a set number or a range of ports. Default ports are `1-1000`
 
-`--timeout TIME(sec)` `-w TIME(sec)` This is the time before the connection with each port scan will refuse. Defaults to `10` seconds.
+`--timeout TIME(sec)` `-w TIME(sec)` This is the time before the connection with each port scan will refuse. Defaults to `3` seconds.
 
 `--no-ping` This flag will not ping the target before a scan. Defaults to `false`
-
-`--no-threading` This flag determines if the program should use threading or not. Defaults to `false`
 
 `--threading-workers WORKERS` `-n WORKERS` The amount of threads that should scan the target. Defaults to `3`

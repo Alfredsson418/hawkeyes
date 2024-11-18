@@ -47,9 +47,6 @@ int * multithread_scanning(int max_consumers, int * ports, int port_len, void * 
     in_arg->function = function;
     in_arg->in_arg = function_arg;
 
-    // in_arg->in_arg.port = 53;
-    // PRINT("%d\n", in_arg->function(in_arg->in_arg));
-
 
     pthread_t consumers[max_consumers];
     for(int i = 0; i < max_consumers; i++) {

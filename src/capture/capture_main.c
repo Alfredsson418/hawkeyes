@@ -84,7 +84,7 @@ int capture(int argc, char *argv[]) {
     VERBOSE_MESSAGE("%s\n", "-------OUTPUT SETTINGS-------");
     VERBOSE_MESSAGE("%s %d\n", "Verbose is set to:", g_verbose_enabled);
     VERBOSE_MESSAGE("%s %d\n", "Output is set to:", g_no_terminal_output);
-    VERBOSE_MESSAGE("%s\n", "-------ARGUMENT SETTINGS-------", NULL);
+    VERBOSE_MESSAGE("%s\n", "-------ARGUMENT SETTINGS-------");
     VERBOSE_MESSAGE("%s \n%s\n", "Format is set to:", arguments->format);
     VERBOSE_MESSAGE("%s %s\n", "Device is set to:", arguments->device);
     VERBOSE_MESSAGE("%s %d\n", "Output hexdump is set to:", arguments->hexdump);
