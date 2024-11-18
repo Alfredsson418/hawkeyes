@@ -1,19 +1,19 @@
 #include "../../include/other/network_device.h"
 
 char * get_first_network_dev() {
-    struct ifaddrs *network_devices;
+    struct ifaddrs *ifaddr;
     char * device = NULL;
 
-    if (getifaddrs(&network_devices) <  0) {
-        ERR_PRINT("%s\n", "ifaddrs");
+    if (getifaddrs(&ifaddr) <  0) {
+        ERR_PRINT("Failed to featch network interfaces\n");
         return NULL;
     }
 
-    for (; network_devices != NULL; network_devices = network_devices->ifa_next) {
-        if (network_devices->ifa_addr == NULL) { continue; }
-        if (strcmp(network_devices->ifa_name, "lo") < 0) { continue; }
-        device = calloc(strlen(network_devices->ifa_name), sizeof(char));
-        strcpy(device, network_devices->ifa_name);
+    for (; ifaddr != NULL; ifaddr = ifaddr->ifa_next) {
+        if (ifaddr->ifa_addr == NULL) { continue; }
+        if (strcmp(ifaddr->ifa_name, "lo") < 0) { continue; }
+        device = calloc(strlen(ifaddr->ifa_name), sizeof(char));
+        strcpy(device, ifaddr->ifa_name);
     }
     return device;
 }
@@ -25,7 +25,7 @@ char* get_net_dev_by_ip(char target_ip[IPV4_ADDR_STR_LEN]) {
 
     // Get list of network interfaces
     if (getifaddrs(&ifaddr) == -1) {
-        ERR_PRINT("%s\n", "ifaddrs");
+        ERR_PRINT("Failed to featch network interfaces\n");
         return NULL;
     }
 
@@ -41,7 +41,7 @@ char* get_net_dev_by_ip(char target_ip[IPV4_ADDR_STR_LEN]) {
             if (strcmp(ifa_ip, target_ip) == 0) {
                 device = calloc(strlen(ifa->ifa_name), sizeof(char));
                 if (device == NULL) {
-                    ERR_PRINT("%s\n", "Memory allocation failed");
+                    ERR_PRINT("Failed to allocate memory\n");
                     exit(0);
                 }
                 strcpy(device, ifa->ifa_name);

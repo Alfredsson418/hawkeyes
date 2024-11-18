@@ -13,12 +13,12 @@ int find_port(int protocol, int port, char * service) {
             file_ptr = fopen("data/services/udp_services.txt", "r");
             break;
         default:
-            ERR_PRINT("%s\n", "No protocol file");
+            ERR_PRINT("No protocol file \n");
             return -1;
     }
 
     if (file_ptr == NULL) {
-        ERR_PRINT("%s\n", "Error opening file");
+        ERR_PRINT("Error opening file \n");
         return -1;
     }
 

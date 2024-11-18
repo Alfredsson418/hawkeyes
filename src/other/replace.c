@@ -32,7 +32,7 @@ void replace_substring(char **str, const char *old_sub, const char *new_sub) {
 
 void replace_format(char **format, char *substring, char *replacement) {
     if (replacement == NULL) {
-        ERR_PRINT("%s %s\n", substring, "cant be replaced with NULL");
+        ERR_PRINT("%s cant be replaced with NULL\n", substring);
         replace_substring(format, substring, "NULL");
 
     }else if (strstr(*format, substring) != NULL) {
@@ -40,5 +40,5 @@ void replace_format(char **format, char *substring, char *replacement) {
     } else {
         replace_substring(format, substring, "NULL");
     }
-    
+
 }

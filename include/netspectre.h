@@ -33,16 +33,23 @@
 #include <netinet/ip_icmp.h>
 #include <linux/if.h>
 
+#define TCP_NUM 0
+#define UDP_NUM 1
+#define HALF_SYNC_NUM 2
+
+
+#define IPV4_ADDR_STR_LEN 16 // 15 characters for the address and 1 for the null terminator
+#define INTERFACE_LEN 32
+#define PORTS_FORMAT_LEN 32
+
+#define MAX_PACKET_SIZE 65663
+
 #include "other/outputs.h"
 #include "other/parse_ports.h"
 #include "other/ping.h"
 #include "other/read_csv.h"
 #include "other/is_root.h"
 
-#define IPV4_ADDR_STR_LEN 16 // 15 characters for the address and 1 for the null terminator
-#define MAX_NETWORK_INTERFACE_LEN 32
-
-#define MAX_PACKET_SIZE 65663
 
 typedef struct {
     struct pcap_pkthdr * packet_header;

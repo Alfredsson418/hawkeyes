@@ -10,15 +10,14 @@ extern const struct argp_option terminal_scan_options[];
 */
 
 struct terminal_scan_arguments {
-    char * device;
+    char interface[INTERFACE_LEN];
     int * ports;
     int ports_len;
-    char * ports_format;
+    char ports_format[PORTS_FORMAT_LEN];
     struct in_addr target;
     int scan_protocol;
     unsigned int timeout;
     bool no_ping;
-    bool no_threading;
     unsigned int thread_workers;
 };
 

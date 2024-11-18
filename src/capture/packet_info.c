@@ -39,8 +39,8 @@ void packet_handler(struct capture_arguments * arguments ,const struct pcap_pkth
     if (arguments->hexdump) {
         // unsigned char *payload = (unsigned char *)(packet + sizeof(struct ether_header) + sizeof(struct iphdr));
         // int payload_length = packet_header->len - sizeof(struct ether_header) + sizeof(struct iphdr);
-        PRINT("%s\n", "HEXDUMP:");
-        hexdump((unsigned *) packet, packet_header->len, 16);
+        PRINT("HEXDUMP:\n");
+        hexdump(packet, packet_header->len, 16);
     }
 
     free(string);

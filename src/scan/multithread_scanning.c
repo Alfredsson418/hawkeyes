@@ -57,10 +57,6 @@ int * multithread_scanning(int max_consumers, int * ports, int port_len, void * 
         pthread_join(consumers[i], NULL);
     }
 
-
-
-    printf("Exits program\n");
-
     pthread_mutex_destroy(&read_mutex);
     pthread_mutex_destroy(&write_mutex);
     return in_arg->ports_result;

@@ -6,92 +6,90 @@ int scan(int argc, char *argv[]) {
     struct terminal_scan_arguments *arguments = malloc(sizeof(struct terminal_scan_arguments));
 
     if (arguments == NULL) {
-        ERR_PRINT("%s\n", "Failed to allocate memory for arguments");
+        ERR_PRINT("Failed to allocate memory for arguments\n");
         exit(0);
     }
 
-    arguments->device = NULL;
-    arguments->ports_format = NULL;
+    memset(arguments->interface, '\0', INTERFACE_LEN);
+    memset(arguments->ports_format, '\0', PORTS_FORMAT_LEN);
     arguments->scan_protocol = 0;
     arguments->ports = NULL;
     arguments->timeout = 3;
     arguments->no_ping = false;
     arguments->thread_workers = 3;
 
-    // If this is one, we know that the network device was given as a parameter
-    bool parameter_device = true;
-
     argp_parse(&terminal_scan_argp, argc, argv, 0, 0, arguments);
-    VERBOSE_MESSAGE("%s\n", "-------OUTPUT SETTINGS-------");
-    VERBOSE_MESSAGE("%s %d\n", "Verbose is set to:", g_verbose_enabled);
-    VERBOSE_MESSAGE("%s %d\n", "Output is set to:", g_no_terminal_output);
-    VERBOSE_MESSAGE("%s\n", "-------ARGUMENT SETTINGS-------");
-    VERBOSE_MESSAGE("Target: %s\n", inet_ntoa(arguments->target));
-    VERBOSE_MESSAGE("No Ping before scanning: %d\n", arguments->no_threading);
-    VERBOSE_MESSAGE("Thread Workers: %d\n", arguments->thread_workers);
+    VERBOSE_MESSAGE("-------OUTPUT SETTINGS-------\n");
+    VERBOSE_MESSAGE("Verbose is set to: %d\n", g_verbose_enabled);
+    VERBOSE_MESSAGE("Output is set to: %d\n", g_no_terminal_output);
+    VERBOSE_MESSAGE("-------ARGUMENT SETTINGS-------\n");
+    VERBOSE_MESSAGE("Scanning Method: %d \n", arguments->scan_protocol);
+    VERBOSE_MESSAGE("Target: %s \n", inet_ntoa(arguments->target));
+    VERBOSE_MESSAGE("No Ping before scanning: %s \n", arguments->no_ping ? "True" : "False");
+    VERBOSE_MESSAGE("Thread Workers: %d \n", arguments->thread_workers);
 
-    if (arguments->device == NULL) {
-        VERBOSE_MESSAGE("%s\n", "No network device set");
-        if (!arguments->no_ping && is_root()) {
-            arguments->device = guess_ping(arguments->target);
-        } else {
-            VERBOSE_MESSAGE("%s\n", "Could not guess network device, using first");
-            arguments->device = get_first_network_dev();
+    if (arguments->interface[0] == '\0') {
+        VERBOSE_MESSAGE("No network device set \n");
+
+        if ((!arguments->no_ping && is_root()) && guess_ping(arguments->target, &(arguments->interface)) < 0) {
+            ERR_PRINT("Failed to ping target, try using --no-ping options\n");
         }
-        parameter_device = false;
+        if (arguments->interface[0] == '\0'){
+            VERBOSE_MESSAGE("Not network interface set, using first\n");
+            // arguments->interface = get_first_network_dev();
+        }
     }
-    VERBOSE_MESSAGE("Network Device: %s\n", arguments->device);
-    if (arguments->ports_format == NULL) {
-        arguments->ports_format = "1-1000";
-        VERBOSE_MESSAGE("%s %s\n", "Port range was not set, using default", arguments->ports_format);
+    VERBOSE_MESSAGE("Network interface: %s\n", arguments->interface);
+    if (arguments->ports_format[0] == '\0') {
+        strncpy(arguments->ports_format, "1-1000", INTERFACE_LEN);
+        VERBOSE_MESSAGE("Port range was not set, using default %s \n", arguments->ports_format);
     }
 
-    PRINT("%s %s\n", "Scanning on ports:", arguments->ports_format);
     arguments->ports_len = parse_ports(arguments->ports_format, &(arguments->ports));
+    if (arguments->ports_len < 1) {
+        ERR_PRINT("Failed to parse ports\n");
+        exit(0);
+    }
+    PRINT("Scanning on ports: %s \n", arguments->ports_format);
+
 
 
     scan_function_arguments function_argument;
     function_argument.ipv4 = arguments->target;
-    function_argument.network_interface = arguments->device;
+    function_argument.network_interface = arguments->interface;
     function_argument.timeout = arguments->timeout;
     // This will be where the scanning starts
     int * ports_result;
     int (*function)(scan_function_arguments);
     switch (arguments->scan_protocol) {
-        case (0):
+        case (TCP_NUM):
             function = tcp_scan;
             break;
-        case (1):
+        case (UDP_NUM):
             function = udp_scan;
             break;
         default:
-            ERR_PRINT("%s\n", "An error occured when trying to determine scanning protocol");
+            ERR_PRINT("An error occured when trying to determine scanning protocol\n");
             exit(0);
     }
 
-    if (arguments->no_threading){
-        ; // This will be implemented laterS
-    } else {
-        ports_result = multithread_scanning(arguments->thread_workers, arguments->ports, arguments->ports_len, function, function_argument);
-    }
 
-    PRINT("%s\n", "----Open Ports----");
+    ports_result = multithread_scanning(arguments->thread_workers, arguments->ports, arguments->ports_len, function, function_argument);
+
+
+    PRINT("----Open Ports----\n");
 
     for (int i = 0; i < arguments->ports_len; i++) {
         if (*(ports_result + i) == 1) {
             PRINT(" -> %d/ ", *(arguments->ports + i));
-            char a[32];
+            char a[INTERFACE_LEN];
             if (find_port(arguments->scan_protocol, *(arguments->ports + i), a)) {
                 PRINT("%s", a);
             }
-            PRINT("%s", "\n");
+            PRINT("\n");
         }
     }
-    PRINT("%s\n", "------------------");
-
-    if (!parameter_device) {
-        free_dev(arguments->device);
-    }
+    PRINT("------------------\n");
 
     free(ports_result);
     free(arguments->ports);

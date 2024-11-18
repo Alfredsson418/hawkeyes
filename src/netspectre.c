@@ -41,7 +41,12 @@ int main(int argc, char *argv[]) {
     }else if (strcasecmp(argv[1], "scan") == 0) {
         scan(argc -1, processed_argv);
     }else if (strcasecmp(argv[1], "test") == 0) {
-        printf("%ld, %ld, %ld", sizeof(short), sizeof(int), sizeof(long));
+        int * a;
+        int len = parse_ports("50,51,52,53,54,55,56,57,58,59,60,61", &a);
+        for (int i = 0; i < len; i++) {
+            printf("%d\n", a[i]);
+        }
+        printf("%d\n", len);
 
     } else {
         ERR_PRINT("%s\n", "Did not recognice command! Exiting!");

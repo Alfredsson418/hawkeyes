@@ -6,10 +6,11 @@
 /*
     Parameters:
         ip: The IP to ping
+        interface: pointer to address to copy too
     Return:
-        The interface that can ping the target, null if not
+    Returns -1 if error, else 0
 */
-char * guess_ping(struct in_addr ip_addr);
+int guess_ping(struct in_addr ip_addr, char (*interface)[INTERFACE_LEN]);
 
 /*
     Parameters:

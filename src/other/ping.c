@@ -1,5 +1,4 @@
 #include "../../include/other/ping.h"
-#include <unistd.h>
 
 unsigned short checksum(void *b, int len) {
     unsigned short *buf = b;
@@ -16,43 +15,45 @@ unsigned short checksum(void *b, int len) {
     return result;
 }
 
-char * guess_ping(struct in_addr ip_addr) {
+int guess_ping(struct in_addr ip_addr, char (*interface)[INTERFACE_LEN]) {
 
     // Get network interfaces
-    struct ifaddrs * network_devices;
-    if (getifaddrs(&network_devices) < 0) {
-        ERR_PRINT("%s\n", "ifaddrs");
-        return NULL;
+    struct ifaddrs * network_interfaces;
+    if (getifaddrs(&network_interfaces) < 0) {
+        ERR_PRINT("Failed to featch network interfaces\n");
+        return -1;
     }
 
     // Start looping though interfaces to ping
-    for (; network_devices != NULL; network_devices = network_devices->ifa_next) {
+    for (struct ifaddrs * ifa = network_interfaces; ifa != NULL; ifa = ifa->ifa_next) {
         // If the network interface has an IPv4 adress
 
-        if (network_devices->ifa_addr != NULL && network_devices->ifa_addr->sa_family == AF_INET) {
-            // VERBOSE_MESSAGE("Trying on %s\n", network_devices->ifa_name);
+        if (ifa->ifa_addr != NULL && ifa->ifa_addr->sa_family == AF_INET) {
 
             int respone;
-            VERBOSE_MESSAGE("PING REQUEST: Trying on '%s'\n", network_devices->ifa_name);
+            VERBOSE_MESSAGE("PING REQUEST: Trying on '%s': ", ifa->ifa_name);
             for (int i = 1; i <= 2; i++) {
-                VERBOSE_MESSAGE("PING REQUEST: Attempt %d", i);
-                respone = ping(ip_addr, network_devices->ifa_name);
+                respone = ping(ip_addr, ifa->ifa_name);
                 if (respone > 0) {
-                   VERBOSE_MESSAGE(" %s\n", "SUCCESSFULL");
+                   VERBOSE_MESSAGE("SUCCESSFULL\n");
                     break;
                 }
-                VERBOSE_MESSAGE(" %s\n", "FAILED");
-
             }
             if (respone == true) {
-                char * device = calloc(strlen(network_devices->ifa_name) + 1, sizeof(char));
-                strcpy(device, network_devices->ifa_name);
-                return device;
+                if (strlen(ifa->ifa_name) > INTERFACE_LEN) {
+                    ERR_PRINT("Too long interface name\n");
+                    freeifaddrs(network_interfaces);
+                    return -1;
+                }
+                strncpy(*interface, ifa->ifa_name, INTERFACE_LEN);
+                freeifaddrs(network_interfaces);
+                return 1;
             }
-            // sleep(1);
+            VERBOSE_MESSAGE("FAILED\n");
         }
     }
     VERBOSE_MESSAGE("Target %s cant be reached\n", inet_ntoa(ip_addr));
+    freeifaddrs(network_interfaces);
     return 0;
 }
 
@@ -77,12 +78,11 @@ int ping(struct in_addr ip_addr, const char * interface) {
     timeout.tv_usec = 0;
 
     if (sock < 0) {
-        ERR_PRINT("%s\n", "An error occured when truing to open a Raw socket, make sure to run the program as root!");
+        ERR_PRINT("Falied opening UDP socket for ping\n");
         return -1;
     }
 
     // Bind the socket to the specified network interface
-    //printf("TEST INTERFACE %s\n", interface);
     if (setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, interface, strlen(interface)) < 0) {
         ERR_PRINT("Failed to bind to device %s: %s\n", interface, strerror(errno));
         close(sock);
@@ -90,7 +90,7 @@ int ping(struct in_addr ip_addr, const char * interface) {
     }
 
     if (setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0) {
-        ERR_PRINT("%s\n", "Failed to set a timeout to socket");
+        ERR_PRINT("Failed to set a timeout to socket\n");
         close(sock);
         return -1;
     }
@@ -116,7 +116,7 @@ int ping(struct in_addr ip_addr, const char * interface) {
     // Pinging adress on interface
     ssize_t sent = sendto(sock, &icmp_hdr, sizeof(icmp_hdr), 0, (struct sockaddr *)&addr, sizeof(addr));
     if (sent < 0) {
-        ERR_PRINT("%s\n", "An error occured when trying to send a ICMP packet from an raw socket");
+        ERR_PRINT("Failed to send ICMP/ping packet\n");
         close(sock);
         return -1;
     }
@@ -126,8 +126,7 @@ int ping(struct in_addr ip_addr, const char * interface) {
         // Recovering echo packet
         ssize_t received = recvfrom(sock, buffer, sizeof(buffer), 0, (struct sockaddr *)&sender_addr, &sender_addr_len);
         if (received < 0) {
-            perror("recvfrom failed");
-            ERR_PRINT("%s\n", "Did not recover any data before timeout");
+            ERR_PRINT("Failed to recover any ICMP/ping packages\n");
             close(sock);
             return -1;
         }

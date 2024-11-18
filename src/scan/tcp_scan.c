@@ -6,7 +6,7 @@ int tcp_scan(scan_function_arguments arg) {
 
 
     if (sock < 0) {
-        ERR_PRINT("%s\n", "ERROR creating TCP socket!");
+        ERR_PRINT("Failed to create TCP socket \n");
         return -1;
     }
 
@@ -17,7 +17,7 @@ int tcp_scan(scan_function_arguments arg) {
     int ret;
     ret = setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
     if (ret < 0) {
-        ERR_PRINT("%s\n", "setsockopt SO_RCVTIMEO");
+        ERR_PRINT("TCP Setup timeout error \n");
         close(sock);
         return -1;
     }

@@ -1,41 +1,18 @@
 #include "../../include/other/parse_ports.h"
 
-/*
-    These functions works, but could be optimised
-*/
-
-int count_ports(char * str) {
-    int len = 0;
-    char * token;
-    char* port_str = calloc(strlen(str) + 1, 1);
-    strcpy(port_str, str);
-
-    char * save_ptr = port_str;
-
-    // counts ports
-    while ((token = strtok_r(port_str, ",", &port_str))) {
-        if (strstr(token, "-") != NULL) {
-            int first = atoi(strtok_r(token, "-", &token));
-            int second = atoi(strtok_r(token, "-", &token));
-            if (second < first) {
-                ERR_PRINT("%s\n", "Could not parse ports");
-            }
-            len += second - first + 1;
-        } else {
-            len++;
-        }
-    }
-    free(save_ptr); // Free the allocated memory for port_str
-    return len;
-}
-
 int parse_ports(char* str, int** ports) {
-    int len = count_ports(str);
+    int len = 0;
+
+    // Return array
     *ports = calloc(len, sizeof(int));
     char * token;
-    int port_i = 0;
-    
-    char* str_copy = calloc(strlen(str) + 1, sizeof(char));
+    int port_index = 0;
+
+    char* str_copy = calloc(strlen(str), sizeof(char));
+    if (str_copy == NULL) {
+        ERR_PRINT("Failed to allocate memory\n");
+        return -1;
+    }
     strcpy(str_copy, str);
 
     char * save_ptr = str_copy;
@@ -43,20 +20,39 @@ int parse_ports(char* str, int** ports) {
     // parse port_str to ports array
     while ((token = strtok_r(str_copy, ",", &str_copy))) {
         if (strstr(token, "-") != NULL) {
+            if (strlen(token) <= 1) {
+                ERR_PRINT("Bad port input\n");
+                free(save_ptr);
+                free(*ports);
+                return -1;
+            }
+
             int first = atoi(strtok_r(token, "-", &token));
             int second = atoi(strtok_r(token, "-", &token));
 
+
             if (second < first) {
-                ERR_PRINT("%s\n", "Could not parse ports");
+                ERR_PRINT("Bad port input\n");
+                free(save_ptr);
+                free(*ports);
+                return -1;
             }
+
+            // Count the amount of ports
+            len += second - first + 1;
+
+            *ports = realloc(*ports, len * sizeof(int));
+
             for (; first <= second; first++) {
 
-                (*ports)[port_i] = first;
-                port_i++;
+                (*ports)[port_index] = first;
+                port_index++;
             }
         } else {
-            (*ports)[port_i] = atoi(token);
-            port_i++;
+            len++;
+            *ports = realloc(*ports, len * sizeof(int));
+            (*ports)[port_index] = atoi(token);
+            port_index++;
         }
     }
     free(save_ptr);

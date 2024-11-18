@@ -58,15 +58,15 @@ int udp_scan(scan_function_arguments arg) {
     // PRINT("%s\n", packet_capture_arg->filter);
 
     if (pthread_create(&thread_id, NULL, run_next_best_packet, packet_capture_arg) != 0) {
-        ERR_PRINT("%s\n", "Failed to create thread");
-        return 1;
+        ERR_PRINT("Failed to create capture thread \n");
+        return -1;
     }
 
     int sock = socket(AF_INET, SOCK_DGRAM, 0);
 
 
     if (sock < 0) {
-        ERR_PRINT("%s\n", "ERROR creating TCP socket!");
+        ERR_PRINT("Failed to create UDP socket \n");
         return -1;
     }
 
@@ -84,7 +84,7 @@ int udp_scan(scan_function_arguments arg) {
     sleep(2);
 
     if (sendto(sock, 0, 0, 0, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
-        ERR_PRINT("%s\n", "ERROR SENDING UDP PACKAGE");
+        ERR_PRINT("Failed to send UDP package");
         close(sock);
         return -1;
     }
@@ -94,7 +94,7 @@ int udp_scan(scan_function_arguments arg) {
 
     int result;
     if (packet == NULL) {
-        ERR_PRINT("%s\n", "An error occured when scanning for package");
+        ERR_PRINT("Failed to capture UDP packet");
         result = -1;
 
         // This needs the && because the first check is for if its empty or not
