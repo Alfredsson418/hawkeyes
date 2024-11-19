@@ -64,6 +64,28 @@ int udp_scan(scan_function_arguments arg) {
 
     int sock = socket(AF_INET, SOCK_DGRAM, 0);
 
+    struct timeval timeout;
+    timeout.tv_sec = arg.timeout;
+    timeout.tv_usec = 0;
+
+    if (setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, (const char*)&timeout, sizeof(timeout)) < 0) {
+        ERR_PRINT("TCP Setup timeout send error \n");
+        close(sock);
+        return -1;
+    }
+
+    if ( setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout)) < 0) {
+        ERR_PRINT("TCP Setup timeout rcv error \n");
+        close(sock);
+        return -1;
+    }
+
+    if (setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, arg.network_interface, INTERFACE_LEN) < 0) {
+        ERR_PRINT("TCP Setup timeout send error \n");
+        close(sock);
+        return -1;
+    }
+
 
     if (sock < 0) {
         ERR_PRINT("Failed to create UDP socket \n");
@@ -94,7 +116,7 @@ int udp_scan(scan_function_arguments arg) {
 
     int result;
     if (packet == NULL) {
-        ERR_PRINT("Failed to capture UDP packet");
+        ERR_PRINT("Failed to capture UDP packet\n");
         result = -1;
 
         // This needs the && because the first check is for if its empty or not

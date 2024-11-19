@@ -35,6 +35,9 @@ int main(int argc, char *argv[]) {
     for (int i = 2; i < argc; i++) {
         processed_argv[i - 1] = argv[i];
     }
+
+    display_motd();
+
     VERBOSE_MESSAGE("Running %s\n", argv[1]);
     if (strcasecmp(argv[1], "capture") == 0) {
         capture(argc -1, processed_argv);
@@ -44,9 +47,9 @@ int main(int argc, char *argv[]) {
         int * a;
         int len = parse_ports("50,51,52,53,54,55,56,57,58,59,60,61", &a);
         for (int i = 0; i < len; i++) {
-            printf("%d\n", a[i]);
+            PRINT("%d\n", a[i]);
         }
-        printf("%d\n", len);
+        PRINT("%d\n", len);
 
     } else {
         ERR_PRINT("%s\n", "Did not recognice command! Exiting!");

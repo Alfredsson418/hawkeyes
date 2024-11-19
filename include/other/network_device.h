@@ -11,17 +11,16 @@
     Return:
         Returns first device from pcap_findalldevs, else NULL.
 */
-char * get_first_network_dev();
+int get_first_network_dev(char (*interface)[INTERFACE_LEN]);
+
+
+
 
 /*
-    Gives the network device based on IP (127.0.0.1 to "lo")
-
     Parameters:
-        ip: The IPv4 adress to seach for
-
+        ip: The IP to ping
+        interface: pointer to address to copy too
     Return:
-        Returns the given network device
+    Returns -1 if error, else 0
 */
-char * get_net_dev_by_ip(char ip[IPV4_ADDR_STR_LEN]);
-
-void free_dev(char * mem);
+int guess_interface(struct in_addr ip_addr, char (*interface)[INTERFACE_LEN]);

@@ -1,5 +1,4 @@
 #include "../../include/capture/capture_main.h"
-#include <pcap/pcap.h>
 
 /*
     The use for this is to capture packtes that is comming to the device
@@ -74,7 +73,7 @@ int capture(int argc, char *argv[]) {
     "   IPv4-DST: {ipv4-dst}\n"
     "   Protocol: {l3-prot}({l3-prot-num})";
     arguments->hexdump = 0;
-    arguments->device = NULL;
+    memset(arguments->interface, '\0', INTERFACE_LEN);
     arguments->pcap_load = NULL;
     arguments->filter = NULL;
     arguments->capture_amount = 0;
@@ -86,7 +85,7 @@ int capture(int argc, char *argv[]) {
     VERBOSE_MESSAGE("%s %d\n", "Output is set to:", g_no_terminal_output);
     VERBOSE_MESSAGE("%s\n", "-------ARGUMENT SETTINGS-------");
     VERBOSE_MESSAGE("%s \n%s\n", "Format is set to:", arguments->format);
-    VERBOSE_MESSAGE("%s %s\n", "Device is set to:", arguments->device);
+    VERBOSE_MESSAGE("%s %s\n", "Interface is set to:", arguments->interface);
     VERBOSE_MESSAGE("%s %d\n", "Output hexdump is set to:", arguments->hexdump);
     VERBOSE_MESSAGE("%s %s\n", "Load Pcap is set to:", arguments->pcap_load);
     VERBOSE_MESSAGE("%s %d\n", "Capture amount is set to:", arguments->capture_amount);
@@ -105,16 +104,13 @@ int capture(int argc, char *argv[]) {
             exit(0);
         }
     } else { /* Packages though network device */
-        if (arguments->device == NULL) {
-            arguments->device = get_first_network_dev();
-            if (arguments->device == NULL) {
+        if (arguments->interface[0] == '\0') {
+            if (get_first_network_dev(&arguments->interface) < 0) {
                 ERR_PRINT("Found no network interface\n");
                 exit(0);
-            } else {
-                VERBOSE_MESSAGE("Interface was not set, using: %s\n", arguments->device);
             }
         }
-        VERBOSE_MESSAGE("Trying to capture on interface: %s\n", arguments->device);
+        VERBOSE_MESSAGE("Trying to capture on interface: %s\n", arguments->interface);
 
         /*package_handle = pcap_create(arguments->device, errbuff);
         if (package_handle == NULL) {
@@ -122,14 +118,14 @@ int capture(int argc, char *argv[]) {
                return 1;
            }
         */
-        package_handle = pcap_open_live(arguments->device, snap_len, promisc, to_ms, errbuff);
+        package_handle = pcap_open_live(arguments->interface, snap_len, promisc, to_ms, errbuff);
 
         if (package_handle == NULL) {
             ERR_PRINT("Error opening pcap handle: %s\n", errbuff);
             exit(0);
         }
 
-        PRINT("Capture on interface: %s \n", arguments->device);
+        PRINT("Capture on interface: %s \n", arguments->interface);
 
     }
 
@@ -163,7 +159,6 @@ int capture(int argc, char *argv[]) {
 
     VERBOSE_MESSAGE("Freeing varibles...\n");
     pcap_close(package_handle);
-    free_dev(arguments->device);
     free(arguments);
     VERBOSE_MESSAGE("Varibles freed!\n");
 

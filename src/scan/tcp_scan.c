@@ -1,4 +1,5 @@
 #include "../../include/scan/tcp_scan.h"
+#include <asm-generic/socket.h>
 
 int tcp_scan(scan_function_arguments arg) {
 
@@ -11,16 +12,27 @@ int tcp_scan(scan_function_arguments arg) {
     }
 
     struct timeval timeout;
-    // Set the timeout value for receiving (SO_RCVTIMEO) and sending (SO_SNDTIMEO)
     timeout.tv_sec = arg.timeout;
-    timeout.tv_usec = 0; // 0 microseconds
-    int ret;
-    ret = setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
-    if (ret < 0) {
-        ERR_PRINT("TCP Setup timeout error \n");
+    timeout.tv_usec = 0;
+
+    if (setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, (const char*)&timeout, sizeof(timeout)) < 0) {
+        ERR_PRINT("TCP Setup timeout send error \n");
         close(sock);
         return -1;
     }
+
+    if ( setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout)) < 0) {
+        ERR_PRINT("TCP Setup timeout rcv error \n");
+        close(sock);
+        return -1;
+    }
+
+    if (setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, arg.network_interface, INTERFACE_LEN) < 0) {
+        ERR_PRINT("TCP Setup timeout send error \n");
+        close(sock);
+        return -1;
+    }
+
 
     struct sockaddr_in addr;
 

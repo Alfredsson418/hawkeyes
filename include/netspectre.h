@@ -41,13 +41,20 @@
 #define IPV4_ADDR_STR_LEN 16 // 15 characters for the address and 1 for the null terminator
 #define INTERFACE_LEN 32
 #define PORTS_FORMAT_LEN 32
+#define PORT_SERVICE_LEN 32
 
 #define MAX_PACKET_SIZE 65663
+
+#define MOTD_FILE "data/motd.txt"
+#define MOTD_WIDTH 80
+#define TCP_SERVICES_FILE "data/services/tcp.txt"
+#define UDP_SERVICES_FILE "data/services/udp.txt"
+
+
 
 #include "other/outputs.h"
 #include "other/parse_ports.h"
 #include "other/ping.h"
-#include "other/read_csv.h"
 #include "other/is_root.h"
 
 
@@ -61,7 +68,7 @@ typedef struct {
 // them as function pointers
 typedef struct {
     struct in_addr ipv4;
-    char * network_interface;
+    char network_interface[INTERFACE_LEN];
     int timeout;
     int port;
 }scan_function_arguments;

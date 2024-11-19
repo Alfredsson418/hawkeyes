@@ -33,7 +33,7 @@ const struct argp_option capture_options[] = {
     {"verbose", 'v', 0, 0, "Verbose output"},
     {"quiet", 501, 0, 0, "No output to terminal (STDERR will still display)"},
     {"format", 500, "FORMAT", 0, "Specifies output FORMAT for packet capturing"},
-    {"device", 'd', "DEVICE", 0, "Specifies the DEVICE to capture from"},
+    {"interface", 'i', "INTERFACE", 0, "Specifies the interface to capture from"},
     {"hexdump", 'x', 0, 0, "Output hexdump from package"},
     {"pcap-load", 502, "FILE", 0, "Load pcap file into program"},
     {"filter", 'f', "FILTER", 0, "Filter captured traffic"},
@@ -59,7 +59,12 @@ error_t capture_parse_opt(int key, char *arg, struct argp_state *state){
         arguments->format = arg;
         break;
     case 'd':
-        arguments->device = arg;
+        if (!arg) {break;}
+        if (strlen(arg) > INTERFACE_LEN) {
+            ERR_PRINT("Interface too long\n");
+            break;
+        }
+        strncpy(arguments->interface, arg, strlen(arg));
         break;
     case 'x':
         arguments->hexdump = 1;

@@ -7,7 +7,7 @@ extern const struct argp_option capture_options[];
 
 struct capture_arguments {
     char * format;
-    char * device;
+    char interface[INTERFACE_LEN];
     int hexdump;
     char * pcap_load;
     char * filter;

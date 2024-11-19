@@ -1,7 +1,7 @@
 from time import sleep
 
-f_output_udp = "udp_services.txt"
-f_output_tcp = "tcp_services.txt"
+f_output_udp = "udp.txt"
+f_output_tcp = "tcp.txt"
 
 with open("/etc/services", "r") as file, open(f_output_tcp, "w") as tcp_file, open(f_output_udp, "w") as udp_file:
     for line in file:

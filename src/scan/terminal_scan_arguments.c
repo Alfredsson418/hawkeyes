@@ -10,7 +10,7 @@ const struct argp_option terminal_scan_options[] = {
     {"protocol", 'm', "METHOD(tcp/udp/half-sync)", 0, ""},
     {"interface", 'i', "INTERFACE", 0, "Network interface to scan from, e.g lo"},
     {"port", 'p', "PORT(S)", 0, "Define what port(s) to scan, e.g -p 22; -p 1-100; -p 22,53,23"},
-    {"target", 't', "IP", 0, "Target device, needs to correlate with 'device', e.g 127.0.0.1 works only for lo"},
+    {"target", 't', "IP", 0, "Target IP"},
     {"timeout", 'w', "TIME(sec)", 0, "Timeout"},
     {"no-ping", 503, 0, 0, "Do not ping the target"},
     {"threading-workers", 'n', "WORKERS", 0, "Amount of threading workers"},

@@ -15,51 +15,9 @@ unsigned short checksum(void *b, int len) {
     return result;
 }
 
-int guess_ping(struct in_addr ip_addr, char (*interface)[INTERFACE_LEN]) {
-
-    // Get network interfaces
-    struct ifaddrs * network_interfaces;
-    if (getifaddrs(&network_interfaces) < 0) {
-        ERR_PRINT("Failed to featch network interfaces\n");
-        return -1;
-    }
-
-    // Start looping though interfaces to ping
-    for (struct ifaddrs * ifa = network_interfaces; ifa != NULL; ifa = ifa->ifa_next) {
-        // If the network interface has an IPv4 adress
-
-        if (ifa->ifa_addr != NULL && ifa->ifa_addr->sa_family == AF_INET) {
-
-            int respone;
-            VERBOSE_MESSAGE("PING REQUEST: Trying on '%s': ", ifa->ifa_name);
-            for (int i = 1; i <= 2; i++) {
-                respone = ping(ip_addr, ifa->ifa_name);
-                if (respone > 0) {
-                   VERBOSE_MESSAGE("SUCCESSFULL\n");
-                    break;
-                }
-            }
-            if (respone == true) {
-                if (strlen(ifa->ifa_name) > INTERFACE_LEN) {
-                    ERR_PRINT("Too long interface name\n");
-                    freeifaddrs(network_interfaces);
-                    return -1;
-                }
-                strncpy(*interface, ifa->ifa_name, INTERFACE_LEN);
-                freeifaddrs(network_interfaces);
-                return 1;
-            }
-            VERBOSE_MESSAGE("FAILED\n");
-        }
-    }
-    VERBOSE_MESSAGE("Target %s cant be reached\n", inet_ntoa(ip_addr));
-    freeifaddrs(network_interfaces);
-    return 0;
-}
-
 
 // Sometimes this gets no responce, even though target is up
-int ping(struct in_addr ip_addr, const char * interface) {
+int ping(struct in_addr ip_addr, const char interface[INTERFACE_LEN]) {
     int echo_ID = 8765;
     int sock = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
     int tries = 2;
@@ -83,7 +41,7 @@ int ping(struct in_addr ip_addr, const char * interface) {
     }
 
     // Bind the socket to the specified network interface
-    if (setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, interface, strlen(interface)) < 0) {
+    if (setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, interface, INTERFACE_LEN) < 0) {
         ERR_PRINT("Failed to bind to device %s: %s\n", interface, strerror(errno));
         close(sock);
         return -1;
@@ -126,7 +84,7 @@ int ping(struct in_addr ip_addr, const char * interface) {
         // Recovering echo packet
         ssize_t received = recvfrom(sock, buffer, sizeof(buffer), 0, (struct sockaddr *)&sender_addr, &sender_addr_len);
         if (received < 0) {
-            ERR_PRINT("Failed to recover any ICMP/ping packages\n");
+            // ERR_PRINT("Failed to recover any ICMP/ping packages\n");
             close(sock);
             return -1;
         }

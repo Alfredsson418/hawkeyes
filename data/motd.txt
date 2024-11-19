@@ -1,0 +1,12 @@
+
+            _   __     __  _____                 __
+           / | / /__  / /_/ ___/____  ___  _____/ /_________
+          /  |/ / _ \/ __/\__ \/ __ \/ _ \/ ___/ __/ ___/ _ \
+         / /|  /  __/ /_ ___/ / /_/ /  __/ /__/ /_/ /  /  __/
+        /_/ |_/\___/\__//____/ .___/\___/\___/\__/_/   \___/
+                            /_/
+
+      Source code at: https://github.com/Alfredsson418/NetSpectre
+
+    DISCLAMER: You, and ONLY YOU, are responsible for anything harmful
+    done with this application.

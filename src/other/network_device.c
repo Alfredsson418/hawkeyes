@@ -1,59 +1,65 @@
 #include "../../include/other/network_device.h"
+#include <ifaddrs.h>
 
-char * get_first_network_dev() {
+int get_first_network_dev(char (*interface)[INTERFACE_LEN]) {
     struct ifaddrs *ifaddr;
-    char * device = NULL;
 
     if (getifaddrs(&ifaddr) <  0) {
         ERR_PRINT("Failed to featch network interfaces\n");
-        return NULL;
+        return -1;
     }
 
     for (; ifaddr != NULL; ifaddr = ifaddr->ifa_next) {
         if (ifaddr->ifa_addr == NULL) { continue; }
-        if (strcmp(ifaddr->ifa_name, "lo") < 0) { continue; }
-        device = calloc(strlen(ifaddr->ifa_name), sizeof(char));
-        strcpy(device, ifaddr->ifa_name);
+        if (strcmp(ifaddr->ifa_name, "lo") <= 0) { continue; }
+        if (strlen(ifaddr->ifa_name) > INTERFACE_LEN) {
+            ERR_PRINT("Interface name too long\n");
+            continue;
+        }
+        strncpy(*interface, ifaddr->ifa_name, strlen(ifaddr->ifa_name));
+        return 1;
     }
-    return device;
+    return -1;
 }
 
-// Kolla på hur den funkar
-char* get_net_dev_by_ip(char target_ip[IPV4_ADDR_STR_LEN]) {
-    struct ifaddrs *ifaddr, *ifa;
-    char *device = NULL;
 
-    // Get list of network interfaces
-    if (getifaddrs(&ifaddr) == -1) {
+int guess_interface(struct in_addr ip_addr, char (*interface)[INTERFACE_LEN]) {
+
+    // Get network interfaces
+    struct ifaddrs * network_interfaces;
+    if (getifaddrs(&network_interfaces) < 0) {
         ERR_PRINT("Failed to featch network interfaces\n");
-        return NULL;
+        return -1;
     }
 
-    // Iterate through the list of interfaces
-    for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
-        if (ifa->ifa_addr && ifa->ifa_addr->sa_family == AF_INET) {
-            // Convert interface address to string
-            char ifa_ip[INET_ADDRSTRLEN];
-            inet_ntop(AF_INET, &((struct sockaddr_in*)ifa->ifa_addr)->sin_addr, ifa_ip, INET_ADDRSTRLEN);
+    // Start looping though interfaces to ping
+    for (struct ifaddrs * ifa = network_interfaces; ifa != NULL; ifa = ifa->ifa_next) {
+        // If the network interface has an IPv4 adress
 
-            // Check if the target IP is reachable through this interface
-            // This is a simplified check; you might need to compare subnet masks for a precise match
-            if (strcmp(ifa_ip, target_ip) == 0) {
-                device = calloc(strlen(ifa->ifa_name), sizeof(char));
-                if (device == NULL) {
-                    ERR_PRINT("Failed to allocate memory\n");
-                    exit(0);
+        if (ifa->ifa_addr != NULL && ifa->ifa_addr->sa_family == AF_INET) {
+
+            int respone;
+            VERBOSE_MESSAGE("PING REQUEST: Trying on '%s': ", ifa->ifa_name);
+            for (int i = 1; i <= 2; i++) {
+                respone = ping(ip_addr, ifa->ifa_name);
+                if (respone > 0) {
+                   VERBOSE_MESSAGE("SUCCESSFULL\n");
+                    break;
                 }
-                strcpy(device, ifa->ifa_name);
-                break;
             }
+            if (respone == true) {
+                if (strlen(ifa->ifa_name) > INTERFACE_LEN) {
+                    ERR_PRINT("Too long interface name\n");
+                    freeifaddrs(network_interfaces);
+                    return -1;
+                }
+                strncpy(*interface, ifa->ifa_name, strlen(ifa->ifa_name));
+                freeifaddrs(network_interfaces);
+                return 1;
+            }
+            VERBOSE_MESSAGE("FAILED\n");
         }
     }
-
-    freeifaddrs(ifaddr);
-    return device; // Caller must free this memory
-}
-
-void free_dev(char * mem) {
-    free(mem);
+    freeifaddrs(network_interfaces);
+    return 0;
 }
