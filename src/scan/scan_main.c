@@ -54,8 +54,6 @@ int scan(int argc, char *argv[]) {
     }
     PRINT("Scanning on ports: %s \n", arguments.ports_format);
 
-
-
     scan_function_arguments function_argument;
     function_argument.ipv4 = arguments.target;
     strcpy(function_argument.network_interface, arguments.interface);
@@ -68,6 +66,10 @@ int scan(int argc, char *argv[]) {
             function = tcp_scan;
             break;
         case (UDP_NUM):
+            if (!is_root()) {
+                ERR_PRINT("UDP scan require privliged permissions to run\n");
+                return -1;
+            }
             function = udp_scan;
             break;
         default:
@@ -75,15 +77,24 @@ int scan(int argc, char *argv[]) {
             return -1;
     }
 
-
+    PRINT("----Startig Scan---\n");
     ports_result = multithread_scanning(arguments.thread_workers, arguments.ports, arguments.ports_len, function, function_argument);
-
-
-    PRINT("----Open Ports----\n");
+    PRINT("   | Open Ports |\n");
 
     for (int i = 0; i < arguments.ports_len; i++) {
         if (ports_result[i] == 1) {
-            PRINT(" -> %d/ ", arguments.ports[i]);
+            PRINT(" -> %d/", arguments.ports[i]);
+
+            switch (arguments.scan_protocol) {
+                case (HALF_SYNC_NUM):
+                case (TCP_NUM):
+                    PRINT("tcp ");
+                    break;
+                case (UDP_NUM):
+                    PRINT("udp ");
+                    break;
+            }
+
             char service[PORT_SERVICE_LEN];
             if (find_port(arguments.scan_protocol, arguments.ports[i], &service)) {
                 PRINT("%s", service);
