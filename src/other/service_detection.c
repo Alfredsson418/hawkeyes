@@ -1,4 +1,4 @@
-#include "../../include/other/read_data.h"
+#include "../../include/scan/service_detection.h"
 
 
 int find_port(int protocol, int port, char (*service)[PORT_SERVICE_LEN]) {
@@ -44,21 +44,4 @@ int find_port(int protocol, int port, char (*service)[PORT_SERVICE_LEN]) {
 
     fclose(file_ptr);
     return 0;
-}
-
-
-void display_motd() {
-    FILE *file_ptr = fopen(MOTD_FILE, "r");
-    if (file_ptr == NULL) {
-        ERR_PRINT("Error opening MOTD file");
-        return;
-    }
-
-    char buffer[MOTD_WIDTH];
-    while (fgets(buffer, MOTD_WIDTH, file_ptr)) {
-        PRINT("%s", buffer);
-    }
-    PRINT("\n");
-
-    fclose(file_ptr);
 }

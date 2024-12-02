@@ -1,5 +1,5 @@
 #include "../../include/other/network_device.h"
-#include <ifaddrs.h>
+
 
 int get_first_network_dev(char (*interface)[INTERFACE_LEN]) {
     struct ifaddrs *ifaddr;

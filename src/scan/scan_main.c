@@ -16,13 +16,10 @@ int scan(int argc, char *argv[]) {
     arguments.thread_workers = 3;
 
     argp_parse(&terminal_scan_argp, argc, argv, 0, 0, &arguments);
-    VERBOSE_MESSAGE("-------OUTPUT SETTINGS-------\n");
-    VERBOSE_MESSAGE("Verbose is set to: %d\n", g_verbose_enabled);
-    VERBOSE_MESSAGE("Output is set to: %d\n", g_no_terminal_output);
-    VERBOSE_MESSAGE("-------ARGUMENT SETTINGS-------\n");
+    line("ARGUMENTS", '-', TERMINAL_WIDTH, g_verbose_enabled);
     VERBOSE_MESSAGE("Scanning Method: %d \n", arguments.scan_protocol);
     VERBOSE_MESSAGE("Target: %s \n", inet_ntoa(arguments.target));
-    VERBOSE_MESSAGE("No Ping before scanning: %s \n", arguments.no_ping ? "True" : "False");
+    VERBOSE_MESSAGE("Ping before scanning: %s \n", (!arguments.no_ping && is_root()) ? "True" : "False");
     VERBOSE_MESSAGE("Thread Workers: %d \n", arguments.thread_workers);
 
     if (arguments.target.s_addr == INADDR_NONE) {
@@ -77,9 +74,9 @@ int scan(int argc, char *argv[]) {
             return -1;
     }
 
-    PRINT("----Startig Scan---\n");
+    line("Starting Scan", '-', TERMINAL_WIDTH, true);
     ports_result = multithread_scanning(arguments.thread_workers, arguments.ports, arguments.ports_len, function, function_argument);
-    PRINT("   | Open Ports |\n");
+    line("| Open Ports |", ' ', TERMINAL_WIDTH, true);
 
     for (int i = 0; i < arguments.ports_len; i++) {
         if (ports_result[i] == 1) {
@@ -102,7 +99,7 @@ int scan(int argc, char *argv[]) {
             PRINT("\n");
         }
     }
-    PRINT("------------------\n");
+    line("Scan completed", '-', TERMINAL_WIDTH, true);
 
     free(ports_result);
     free(arguments.ports);

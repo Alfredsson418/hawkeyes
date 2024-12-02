@@ -5,7 +5,7 @@
 #include "multithread_scanning.h"
 #include "tcp_scan.h"
 #include "udp_scan.h"
-#include "../other/read_data.h"
+#include "service_detection.h"
 
 
 /*

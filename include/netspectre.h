@@ -3,34 +3,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <signal.h>
 #include <string.h>
 #include <pthread.h>
+#include <unistd.h>
+
 
 // https://www.gnu.org/software/libc/manual/html_node/Argp-Example-3.html
 #include <argp.h>
 
 
 #include <pcap.h>
-#include <ifaddrs.h>
+
+#include <sys/socket.h>
 
 
 #include <arpa/inet.h>
-
 #include <net/ethernet.h>
 #include <netinet/ip.h>
-
 #include <netinet/in.h>
-
-
-
-#include <sys/socket.h>
-#include <netdb.h>
-
 #include <sys/types.h>
-#include <unistd.h>
-
-#include <netinet/ip_icmp.h>
 #include <linux/if.h>
 
 #define TCP_NUM 0
@@ -51,11 +42,13 @@
 #define UDP_SERVICES_FILE "data/services/udp.txt"
 
 
-
-#include "other/outputs.h"
+#include "constans.h"
+#include "ui/print_macro.h"
 #include "other/parse_ports.h"
 #include "other/ping.h"
 #include "other/is_root.h"
+#include "ui/display_file.h"
+#include "ui/terminal_display.h"
 
 
 typedef struct {

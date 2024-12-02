@@ -1,5 +1,8 @@
 #pragma once
 
+#include <netinet/ip_icmp.h>
+
+
 #include "../netspectre.h"
 
 /*

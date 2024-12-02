@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ifaddrs.h>
+
 #include "../netspectre.h"
 
 /*

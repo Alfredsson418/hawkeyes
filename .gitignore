@@ -4,6 +4,7 @@ netspec
 log.txt
 *.pcap
 future.txt
+wifi
 
 # Folders
 build

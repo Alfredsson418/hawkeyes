@@ -1,4 +1,4 @@
-## Global eptions
+## Global options
 ## Verbose
 `--verbose` `-v`
 Produce verbose output.

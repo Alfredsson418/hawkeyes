@@ -5,7 +5,7 @@ NetSpectre is a swiss army knife of network tools
 `netspec [tool] [options]`
 ### Example
 `netspec capture -f tcp -x`
-`netspec scan -t 127.0.0.1 -d lo -p 53`
+`netspec scan -t 127.0.0.1 -i lo -p 53`
 
 ## Tools
 * [`Capture`](docs/CAPTURE.md) - Capture and show incomming/outgoing traffic

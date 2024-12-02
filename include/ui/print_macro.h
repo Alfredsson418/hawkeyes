@@ -2,9 +2,8 @@
 
 #include "../netspectre.h"
 
-extern int g_verbose_enabled;
-extern int g_debug_enabled;
-extern int g_no_terminal_output;
+extern bool g_verbose_enabled;
+extern bool g_no_terminal_output;
 
 #define VERBOSE_MESSAGE(fmt, ...)\
 do{\

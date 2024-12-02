@@ -1,5 +1,7 @@
 #pragma once
 
+#include <signal.h>
+
 #include "../netspectre.h"
 #include "capture_arguments.h"
 #include "../other/network_device.h"

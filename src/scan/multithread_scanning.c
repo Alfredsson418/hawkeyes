@@ -1,8 +1,8 @@
 #include "../../include/scan/multithread_scanning.h"
 
-void *consumer_function(void *in_arg) {
+void *worker_function(void *in_arg) {
 
-    consumer_arg * arg = in_arg;
+    worker_arg * arg = in_arg;
 
     while (1) {
         pthread_mutex_lock(arg->read_mutex);
@@ -24,13 +24,13 @@ void *consumer_function(void *in_arg) {
     return 0;
 }
 
-int * multithread_scanning(int max_consumers, int * ports, int port_len, void * function, scan_function_arguments function_arg) {
+int * multithread_scanning(int max_workers, int * ports, int port_len, void * function, scan_function_arguments function_arg) {
     pthread_mutex_t read_mutex;
     pthread_mutex_t write_mutex;
     pthread_mutex_init(&read_mutex, NULL);
     pthread_mutex_init(&write_mutex, NULL);
 
-    consumer_arg * in_arg = calloc(1, sizeof(consumer_arg));
+    worker_arg * in_arg = calloc(1, sizeof(worker_arg));
     in_arg->index = 0;
     in_arg->ports = ports;
     in_arg->ports_result = calloc(sizeof(unsigned int), port_len);
@@ -48,13 +48,13 @@ int * multithread_scanning(int max_consumers, int * ports, int port_len, void * 
     in_arg->in_arg = function_arg;
 
 
-    pthread_t consumers[max_consumers];
-    for(int i = 0; i < max_consumers; i++) {
-        pthread_create(&(consumers[i]), NULL, consumer_function, in_arg);
+    pthread_t workers[max_workers];
+    for(int i = 0; i < max_workers; i++) {
+        pthread_create(&(workers[i]), NULL, worker_function, in_arg);
     }
 
-    for(int i = 0; i < max_consumers; i++) {
-        pthread_join(consumers[i], NULL);
+    for(int i = 0; i < max_workers; i++) {
+        pthread_join(workers[i], NULL);
     }
 
     pthread_mutex_destroy(&read_mutex);
