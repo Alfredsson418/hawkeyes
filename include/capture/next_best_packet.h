@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../netspectre.h"
-#include "../other/network_device.h"
+#include "../other/network_interface.h"
 
 /*
     Gives the first package from a given filter.

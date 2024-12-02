@@ -26,3 +26,5 @@ int get_first_network_dev(char (*interface)[INTERFACE_LEN]);
     Returns -1 if error, else 0
 */
 int guess_interface(struct in_addr ip_addr, char (*interface)[INTERFACE_LEN]);
+
+int verify_interface(char interface[INTERFACE_LEN]);

@@ -1,4 +1,4 @@
-#include "../../include/other/network_device.h"
+#include "../../include/other/network_interface.h"
 
 
 int get_first_network_dev(char (*interface)[INTERFACE_LEN]) {
@@ -61,5 +61,26 @@ int guess_interface(struct in_addr ip_addr, char (*interface)[INTERFACE_LEN]) {
         }
     }
     freeifaddrs(network_interfaces);
+    return 0;
+}
+
+int verify_interface(char interface[INTERFACE_LEN]) {
+    struct ifaddrs *ifaddr;
+
+    if (getifaddrs(&ifaddr) <  0) {
+        ERR_PRINT("Failed to featch network interfaces\n");
+        return -1;
+    }
+
+    for (; ifaddr != NULL; ifaddr = ifaddr->ifa_next) {
+        if (ifaddr->ifa_addr == NULL) { continue; }
+        if (strlen(ifaddr->ifa_name) > INTERFACE_LEN) {
+            ERR_PRINT("Interface name too long\n");
+            continue;
+        }
+        if (strcmp(interface, ifaddr->ifa_name) == 0) {
+            return 1;
+        }
+    }
     return 0;
 }

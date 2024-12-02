@@ -53,6 +53,11 @@ int scan(int argc, char *argv[]) {
         else {
             get_first_network_dev(&(arguments.interface));
         }
+    } else {
+        if (!verify_interface(arguments.interface)) {
+            ERR_PRINT("The given network interface does not exist\n");
+            return -1;
+        }
     }
 
     VERBOSE_MESSAGE("Network interface: %s\n", arguments.interface);

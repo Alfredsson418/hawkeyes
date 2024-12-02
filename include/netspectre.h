@@ -24,6 +24,7 @@
 #include <sys/types.h>
 #include <linux/if.h>
 
+
 typedef enum {
     SCAN_TCP_t = 0,
     SCAN_UDP_t = 1,
@@ -46,7 +47,6 @@ typedef enum {
 #define MOTD_WIDTH 80
 #define TCP_SERVICES_FILE "data/services/tcp.txt"
 #define UDP_SERVICES_FILE "data/services/udp.txt"
-
 
 #include "ui/print_macro.h"
 #include "other/parse_ports.h"

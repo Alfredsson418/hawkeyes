@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../include/netspectre.h"
-#include "../other/network_device.h"
+#include "../other/network_interface.h"
 
 extern const struct argp_option capture_options[];
 

@@ -42,7 +42,6 @@ int udp_scan(scan_arg_t arg, scan_result_t * result) {
     packet_capture_arg.timeout = arg.timeout;
     packet_capture_arg.device = arg.network_interface;
     packet_capture_arg.setup_complete = false;
-    // strcpy(packet_capture_arg->device, arg.network_interface);
 
     /*
         (icmp[30:2] == %#06x): This condition checks if the src port of the ICMP packet SENT
