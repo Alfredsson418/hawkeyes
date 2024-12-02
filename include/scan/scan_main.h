@@ -5,7 +5,15 @@
 #include "multithread_scanning.h"
 #include "tcp_scan.h"
 #include "udp_scan.h"
-#include "service_detection.h"
+#include "../other/service_detection.h"
+#include "../other/transfer_layers.h"
+#include "port_scan_loopup.h"
+
+#define RESULT_PORT_LEN 10 //65535 + /tcp or /udp or other
+#define RESULT_SERVICE_LEN PORT_SERVICE_LEN
+#define RESULT_METHOD_LEN 20
+#define RESULT_TIME_LEN 6
+#define RESULT_STATE_LEN 8
 
 
 /*

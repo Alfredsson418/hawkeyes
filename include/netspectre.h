@@ -24,15 +24,21 @@
 #include <sys/types.h>
 #include <linux/if.h>
 
-#define TCP_NUM 0
-#define UDP_NUM 1
-#define HALF_SYNC_NUM 2
+typedef enum {
+    SCAN_TCP_t = 0,
+    SCAN_UDP_t = 1,
+    SCAN_HALF_SYNC_t = 2,
+}scan_methods_t;
+
+
+#define MAX_PORTS_TO_SHOW 10
 
 
 #define IPV4_ADDR_STR_LEN 16 // 15 characters for the address and 1 for the null terminator
-#define INTERFACE_LEN 32
+#define INTERFACE_LEN 16
 #define PORTS_FORMAT_LEN 32
-#define PORT_SERVICE_LEN 32
+#define PORT_SERVICE_LEN 16
+#define MAX_PORT 65535
 
 #define MAX_PACKET_SIZE 65663
 
@@ -42,7 +48,6 @@
 #define UDP_SERVICES_FILE "data/services/udp.txt"
 
 
-#include "constans.h"
 #include "ui/print_macro.h"
 #include "other/parse_ports.h"
 #include "other/ping.h"
@@ -56,12 +61,17 @@ typedef struct {
     u_char * packet_payload;
 } net_packet;
 
+typedef struct {
+    int state;
+    int method;
+    double scannig_time; // Scanning time for port
+}scan_result_t;
 
 // Used for scanning functions so that it is easier to call
 // them as function pointers
 typedef struct {
     struct in_addr ipv4;
     char network_interface[INTERFACE_LEN];
-    int timeout;
-    int port;
-}scan_function_arguments;
+    unsigned int timeout;
+    unsigned short port;
+}scan_arg_t;

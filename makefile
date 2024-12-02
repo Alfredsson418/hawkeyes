@@ -28,10 +28,6 @@ $(BUILD)/%.o: $(SRC)/%.c
 	@echo "Compiling $<"
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
-# Target to run memory check using Valgrind
-memCheck:
-	-sudo valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=log.txt ./$(NAME)
-
 # Target to clean up generated files
 clean:
 	@rm -f $(OBJFILES) $(NAME)

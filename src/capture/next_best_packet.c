@@ -30,7 +30,7 @@ void loop_back(net_packet * arg ,const struct pcap_pkthdr *packet_header, const 
 }
 
 // ONLY FOR ONE PACKET
-net_packet * next_best_packet(const char * network_interface,char * filter, int timeout) {
+net_packet * next_best_packet(const char * network_interface,char * filter, int timeout, bool * setup_complete) {
     char errbuff[PCAP_ERRBUF_SIZE]; // Error Buffer
     pcap_t *package_handle = NULL;
     int snap_len = MAX_PACKET_SIZE;
@@ -79,6 +79,7 @@ net_packet * next_best_packet(const char * network_interface,char * filter, int 
         return NULL;
     }
 
+    *(setup_complete) = true;
 
     // Start scanning for matching packages
     pcap_dispatch(package_handle, 1, (pcap_handler) loop_back, (unsigned char *) return_arg);

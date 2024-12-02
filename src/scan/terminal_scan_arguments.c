@@ -58,13 +58,13 @@ error_t terminal_scan_parse_opt(int key, char *arg, struct argp_state *state){
         break;
     case 'm':
         if (strcmp(arg, "tcp") == 0) {
-            arguments->scan_protocol = TCP_NUM;
+            arguments->scan_protocol = SCAN_TCP_t;
             break;
         } else if (strcmp(arg, "udp") == 0) {
-            arguments->scan_protocol = UDP_NUM;
+            arguments->scan_protocol = SCAN_UDP_t;
             break;
         } else if (strcmp(arg, "half-sync") == 0) {
-            arguments->scan_protocol = HALF_SYNC_NUM;
+            arguments->scan_protocol = SCAN_HALF_SYNC_t;
             break;
         }
         arguments->scan_protocol = 0;

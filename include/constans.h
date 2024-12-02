@@ -1,1 +1,0 @@
-#define TERMINAL_WIDTH 40

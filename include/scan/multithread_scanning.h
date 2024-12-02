@@ -1,19 +1,20 @@
 #pragma once
 
-#include "../../include/netspectre.h"
 #include <semaphore.h>
+
+#include "../../include/netspectre.h"
 
 typedef struct {
     struct in_addr target;
-    int index;
-    int * ports;
-    int * ports_result;
-    int port_len;
-    int time_intervals;
+    short unsigned int index;
+    unsigned short * ports;
+    unsigned short port_len;
+    unsigned int time_intervals;
     pthread_mutex_t * write_mutex;
     pthread_mutex_t * read_mutex;
-    int (*function)(scan_function_arguments);
-    scan_function_arguments in_arg;
+    int (*function)(scan_arg_t, scan_result_t *);
+    scan_arg_t in_arg;
+    scan_result_t * result;
 }worker_arg;
 
-int * multithread_scanning(int max_workers, int * ports, int port_len, void * function, scan_function_arguments function_arg);
+int multithread_scanning(unsigned int max_workers, unsigned short * ports, unsigned short port_len, void * function, scan_arg_t function_arg, scan_result_t * result);

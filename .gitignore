@@ -1,10 +1,12 @@
 # Project specific
 # Files
 netspec
-log.txt
 *.pcap
-future.txt
+/*.txt
 wifi
+
+
+# Defaults
 
 # Folders
 build

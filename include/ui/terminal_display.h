@@ -2,4 +2,7 @@
 
 #include "../netspectre.h"
 
-void line(char * text, char padding, int width, bool output);
+#define TERMINAL_WIDTH 70
+
+
+void ui_line(char * text, char padding, int width);

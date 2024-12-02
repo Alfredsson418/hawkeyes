@@ -1,14 +1,14 @@
-#include "../../include/scan/service_detection.h"
+#include "../../include/other/service_detection.h"
 
 
-int find_port(int protocol, int port, char (*service)[PORT_SERVICE_LEN]) {
+int find_port(scan_methods_t method, unsigned short port, char (*service)[PORT_SERVICE_LEN]) {
     FILE * file_ptr;
-    switch (protocol) {
-        case 2:
-        case 0:
+    switch (method) {
+        case SCAN_TCP_t:
+        case SCAN_HALF_SYNC_t:
             file_ptr = fopen(TCP_SERVICES_FILE, "r");
             break;
-        case 1:
+        case SCAN_UDP_t:
             file_ptr = fopen(UDP_SERVICES_FILE, "r");
             break;
         default:
@@ -26,7 +26,16 @@ int find_port(int protocol, int port, char (*service)[PORT_SERVICE_LEN]) {
         char * rest = a;
         char * csv_port = strtok_r(rest, ",", &rest);
         char * csv_service = strtok_r(rest, ",", &rest);
-        if (atoi(csv_port) == port) {
+        int temp = atoi(csv_port);
+        if (temp > MAX_PORT) {
+            ERR_PRINT("Ports bigger that %d not allowed\n", MAX_PORT);
+            return -1;
+        } else if (temp < 0) {
+            ERR_PRINT("Port to small\n");
+            return -1;
+        }
+        unsigned short temp_port = temp;
+        if (temp_port == port) {
             if (strlen(csv_service) > PORT_SERVICE_LEN) {
                 ERR_PRINT("Service name is to long\n");
                 fclose(file_ptr);
@@ -39,6 +48,8 @@ int find_port(int protocol, int port, char (*service)[PORT_SERVICE_LEN]) {
 
             fclose(file_ptr);
             return 1;
+        } else if (temp_port > port){
+            return 0;
         }
     }
 

@@ -1,6 +1,6 @@
 #include "../../include/other/parse_ports.h"
 
-int parse_ports(char* str, int** ports) {
+int parse_ports(char* str, unsigned short ** ports) {
     int len = 0;
 
     // Return array
@@ -27,12 +27,33 @@ int parse_ports(char* str, int** ports) {
                 return -1;
             }
 
-            int first = atoi(strtok_r(token, "-", &token));
-            int second = atoi(strtok_r(token, "-", &token));
+            char * temp = strtok_r(token, "-", &token);
+            if (temp == NULL) {
+                ERR_PRINT("Bad port input\n");
+                free(save_ptr);
+                free(*ports);
+                return -1;
+            }
+            int first = atoi(temp);
+            temp = strtok_r(token, "-", &token);
+            if (temp == NULL) {
+                ERR_PRINT("Bad port input\n");
+                free(save_ptr);
+                free(*ports);
+                return -1;
+            }
 
+            int second = atoi(temp);
 
             if (second < first) {
                 ERR_PRINT("Bad port input\n");
+                free(save_ptr);
+                free(*ports);
+                return -1;
+            }
+
+            if (first > MAX_PORT || second > MAX_PORT) {
+                ERR_PRINT("Ports larger than %d does not exist\n", MAX_PORT);
                 free(save_ptr);
                 free(*ports);
                 return -1;

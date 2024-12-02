@@ -1,14 +1,15 @@
 #include "../../include/scan/tcp_scan.h"
-#include <asm-generic/socket.h>
 
-int tcp_scan(scan_function_arguments arg) {
+int tcp_scan(scan_arg_t arg, scan_result_t * result) {
+    struct timespec start, stop;
+    result->method = 0;
 
     int sock = socket(AF_INET, SOCK_STREAM, 0);
 
-
     if (sock < 0) {
         ERR_PRINT("Failed to create TCP socket \n");
-        return -1;
+        result->state = -1;
+        return result->state;
     }
 
     struct timeval timeout;
@@ -18,19 +19,22 @@ int tcp_scan(scan_function_arguments arg) {
     if (setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, (const char*)&timeout, sizeof(timeout)) < 0) {
         ERR_PRINT("TCP Setup timeout send error \n");
         close(sock);
-        return -1;
+        result->state = -1;
+        return result->state;
     }
 
     if ( setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout)) < 0) {
         ERR_PRINT("TCP Setup timeout rcv error \n");
         close(sock);
-        return -1;
+        result->state = -1;
+        return result->state;
     }
 
     if (setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, arg.network_interface, INTERFACE_LEN) < 0) {
         ERR_PRINT("TCP Setup timeout send error \n");
         close(sock);
-        return -1;
+        result->state = -1;
+        return result->state;
     }
 
 
@@ -41,11 +45,20 @@ int tcp_scan(scan_function_arguments arg) {
     addr.sin_family = AF_INET;
     addr.sin_port = htons(arg.port);
     addr.sin_addr = arg.ipv4;
+
+    clock_gettime(CLOCK_MONOTONIC, &start);
     if (connect(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
         // No connection
-        close(sock);
-        return 0;
+        result->state = 0;
+    } else {
+        // Connected
+        result->state = 1;
     }
+    clock_gettime(CLOCK_MONOTONIC, &stop);
+
+    result->scannig_time = time_in_x(start, stop, NANO_S);
+
     close(sock);
-    return 1;
+    return result->state;
+
 }

@@ -1,8 +1,8 @@
 #include "../../include/ui/terminal_display.h"
 
 
-void line(char * text, char padding, int width, bool output) {
-    if (!output) { return; }
+void ui_line(char * text, char padding, int width) {
+    if (g_no_terminal_output) { return; }
     if (strlen(text) > width) { return; }
 
     int new_width = width - strlen(text);

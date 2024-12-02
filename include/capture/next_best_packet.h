@@ -14,4 +14,4 @@
     Return:
         The packet with the packet_header.
 */
-net_packet * next_best_packet(const char * network_interface,char * filter, int timeout);
+net_packet * next_best_packet(const char * network_interface,char * filter, int timeout, bool * setup_complete);

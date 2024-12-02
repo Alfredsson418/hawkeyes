@@ -1,6 +1,9 @@
 #pragma once
 
+#include <time.h>
+
 #include "../netspectre.h"
+#include "../other/convert_time.h"
 
 /*
     Parameters:
@@ -10,4 +13,4 @@
     Return:
         If run successfully
 */
-int tcp_scan(scan_function_arguments arg);
+int tcp_scan(scan_arg_t arg, scan_result_t  * result);
