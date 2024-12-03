@@ -3,7 +3,7 @@
 // Could possibly add more in the future
 // https://en.wikipedia.org/wiki/Transport_layer
 
-#include "../netspectre.h"
+#include "../scan_structs.h"
 
 typedef enum {
     TL_TCP_t = 0,

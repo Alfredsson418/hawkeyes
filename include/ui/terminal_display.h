@@ -1,6 +1,10 @@
 #pragma once
 
-#include "../netspectre.h"
+#include <string.h>
+
+#include "print_macro.h"
+#include "display_file.h"
+
 
 #define TERMINAL_WIDTH 70
 

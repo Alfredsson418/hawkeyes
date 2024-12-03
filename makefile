@@ -1,6 +1,6 @@
 CC = gcc
 
-NAME = netspec
+NAME = hawk
 
 BUILD = build
 SRC = src

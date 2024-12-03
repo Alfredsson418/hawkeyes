@@ -1,9 +1,6 @@
 # Project specific
 # Files
-netspec
-*.pcap
-/*.txt
-wifi
+hawk
 
 
 # Defaults

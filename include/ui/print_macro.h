@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../netspectre.h"
+#include <stdio.h>
+#include <stdbool.h>
 
 extern bool g_verbose_enabled;
 extern bool g_no_terminal_output;

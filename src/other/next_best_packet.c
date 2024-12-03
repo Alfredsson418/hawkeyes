@@ -1,4 +1,4 @@
-#include "../../include/capture/next_best_packet.h"
+#include "../../include/other/next_best_packet.h"
 
 typedef struct{
     pcap_t *package_handle;

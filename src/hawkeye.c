@@ -1,17 +1,23 @@
-#include "../../include/scan/scan_main.h"
+#include "../include/hawkeye.h"
 
 
-int scan(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        ERR_PRINT("%s\n", "No arguments detected! Exiting!");
+        exit(0);
+    }
+
+    print_file(MOTD_FILE, MOTD_WIDTH);
     /*
         ===========================================================
         VARIBLES INITIATION
         ===========================================================
     */
-    struct terminal_scan_arguments arguments;
+    struct terminal_args arguments;
     arguments.target.s_addr = INADDR_NONE;
     memset(arguments.interface, '\0', INTERFACE_LEN);
     memset(arguments.ports_format, '\0', PORTS_FORMAT_LEN);
-    arguments.scan_protocol = 0;
+    arguments.scan_method = 0;
     arguments.ports = NULL;
     arguments.timeout = 3;
     arguments.no_ping = false;
@@ -23,7 +29,7 @@ int scan(int argc, char *argv[]) {
         ===========================================================
     */
 
-    argp_parse(&terminal_scan_argp, argc, argv, 0, 0, &arguments);
+    argp_parse(&terminal_argp, argc, argv, 0, 0, &arguments);
 
     /*
         ===========================================================
@@ -33,7 +39,7 @@ int scan(int argc, char *argv[]) {
     if (g_verbose_enabled) {
         ui_line("ARGUMENTS", '-', TERMINAL_WIDTH);
     }
-    VERBOSE_MESSAGE("Scanning Method: %d \n", arguments.scan_protocol);
+    VERBOSE_MESSAGE("Scanning Method: %d \n", arguments.scan_method);
     VERBOSE_MESSAGE("Target: %s \n", inet_ntoa(arguments.target));
     VERBOSE_MESSAGE("Can ping before scan(?): %s \n", (!arguments.no_ping && is_root()) ? "Yes" : "No");
     VERBOSE_MESSAGE("Thread Workers: %d \n", arguments.thread_workers);
@@ -88,7 +94,7 @@ int scan(int argc, char *argv[]) {
     function_argument.timeout = arguments.timeout;
     // This will be where the scanning starts
     int (*function)(scan_arg_t, scan_result_t *);
-    switch (arguments.scan_protocol) {
+    switch (arguments.scan_method) {
         case (SCAN_TCP_t):
             function = tcp_scan;
             break;
@@ -128,12 +134,12 @@ int scan(int argc, char *argv[]) {
         char service_buff[PORT_SERVICE_LEN];
         memset(service_buff, 0, sizeof(service_buff));
 
-        find_port(arguments.scan_protocol, arguments.ports[i], &service_buff);
-        sprintf(port_buff, "%u/%s", arguments.ports[i], get_transfer_layer_by_scan(arguments.scan_protocol));
+        find_port(arguments.scan_method, arguments.ports[i], &service_buff);
+        sprintf(port_buff, "%u/%s", arguments.ports[i], get_transfer_layer_by_scan(arguments.scan_method));
         PRINT("|%-*s", RESULT_PORT_LEN, port_buff);
         PRINT("|%-*s", RESULT_STATE_LEN, state_string(scan_result[i].state));
         PRINT("|%-*s", RESULT_SERVICE_LEN, service_buff);
-        PRINT("|%-*s", RESULT_METHOD_LEN, scanning_method(arguments.scan_protocol, scan_result[i].method));
+        PRINT("|%-*s", RESULT_METHOD_LEN, scanning_method(arguments.scan_method, scan_result[i].method));
         PRINT("|%-*f", RESULT_TIME_LEN, scan_result[i].scannig_time / SECONDS_S);
         PRINT("\n");
     }

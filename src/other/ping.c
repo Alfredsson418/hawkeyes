@@ -42,7 +42,7 @@ int ping(struct in_addr ip_addr, const char interface[INTERFACE_LEN]) {
 
     // Bind the socket to the specified network interface
     if (setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, interface, INTERFACE_LEN) < 0) {
-        ERR_PRINT("Failed to bind to device %s: %s\n", interface, strerror(errno));
+        ERR_PRINT("Failed to bind to device %s\n", interface);
         close(sock);
         return -1;
     }

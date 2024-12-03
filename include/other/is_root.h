@@ -1,5 +1,5 @@
 #pragma once
 
-#include "../netspectre.h"
+#include <unistd.h>
 
 int is_root();

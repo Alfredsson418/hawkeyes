@@ -1,8 +1,12 @@
 #pragma once
 
 #include <ifaddrs.h>
+#include <string.h>
+#include <arpa/inet.h>
 
-#include "../netspectre.h"
+#include "../constans.h"
+#include "../ui/print_macro.h"
+#include "ping.h"
 
 /*
     Gives the first given network device.

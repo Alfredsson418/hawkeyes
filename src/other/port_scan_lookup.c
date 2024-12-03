@@ -1,4 +1,4 @@
-#include "../../include/scan/port_scan_loopup.h"
+#include "../../include/other/port_scan_loopup.h"
 
 
 char * state_string(int state) {

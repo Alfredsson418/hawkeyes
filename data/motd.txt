@@ -1,12 +1,12 @@
 
-            _   __     __  _____                 __
-           / | / /__  / /_/ ___/____  ___  _____/ /_________
-          /  |/ / _ \/ __/\__ \/ __ \/ _ \/ ___/ __/ ___/ _ \
-         / /|  /  __/ /_ ___/ / /_/ /  __/ /__/ /_/ /  /  __/
-        /_/ |_/\___/\__//____/ .___/\___/\___/\__/_/   \___/
-                            /_/
+               __                   __
+              / /_  ____ __      __/ /_____  __  _____
+             / __ \/ __ `/ | /| / / //_/ _ \/ / / / _ \
+            / / / / /_/ /| |/ |/ / ,< /  __/ /_/ /  __/
+           /_/ /_/\__,_/ |__/|__/_/|_|\___/\__, /\___/
+                                          /____/
 
-      Source code at: https://github.com/Alfredsson418/NetSpectre
+      Source code at: https://github.com/Alfredsson418/hawkeye
 
     DISCLAMER: You, and ONLY YOU, are responsible for anything harmful
     done with this application.

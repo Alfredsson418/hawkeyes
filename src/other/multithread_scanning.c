@@ -1,4 +1,4 @@
-#include "../../include/scan/multithread_scanning.h"
+#include "../../include/other/multithread_scanning.h"
 
 void *worker_function(void *in_arg) {
     worker_arg * arg = in_arg;

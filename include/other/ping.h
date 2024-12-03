@@ -1,9 +1,11 @@
 #pragma once
 
+#include <unistd.h>
 #include <netinet/ip_icmp.h>
+#include <string.h> // memset
 
-
-#include "../netspectre.h"
+#include "../ui/print_macro.h"
+#include "../constans.h"
 
 /*
     Parameters:

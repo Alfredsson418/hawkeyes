@@ -1,4 +1,4 @@
-#include "../../include/scan/tcp_scan.h"
+#include "../../include/methods/tcp_scan.h"
 
 int tcp_scan(scan_arg_t arg, scan_result_t * result) {
     struct timespec start, stop;

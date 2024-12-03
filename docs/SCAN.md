@@ -1,11 +1,11 @@
 # Usage
-`netspec scan [options]`
+`hawk [options]`
 ### For help
-`netspec scan --usage`
+`hawk --usage`
 
-`netspec scan --help`
+`hawk --help`
 
-`netspec scan -?`
+`hawk -?`
 
 # Options
 ## Target
@@ -24,7 +24,7 @@ Give the program a set number or a range of ports. Default ports are `1-1000`
 
 
 ## Protocol
-`--protocol METHOD`
+`--method METHOD`
 
 
 `-m METHOD` Choose what scanning method to use.

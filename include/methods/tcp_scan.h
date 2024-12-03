@@ -1,8 +1,11 @@
 #pragma once
 
-#include <time.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <string.h> // memset
 
-#include "../netspectre.h"
+#include "../ui/print_macro.h"
+#include "../scan_structs.h"
 #include "../other/convert_time.h"
 
 /*

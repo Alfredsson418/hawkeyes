@@ -1,6 +1,11 @@
 #pragma once
 
-#include "../netspectre.h"
+#include <stdlib.h>
+#include <string.h>
+
+#include "../constans.h"
+#include "../ui/print_macro.h"
+
 
 /*
     Parameters:

@@ -1,8 +1,10 @@
 #pragma once
 
 #include <semaphore.h>
+#include <pthread.h>
+#include <arpa/inet.h>
 
-#include "../../include/netspectre.h"
+#include "../scan_structs.h"
 
 typedef struct {
     struct in_addr target;

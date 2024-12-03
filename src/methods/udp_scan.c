@@ -1,4 +1,4 @@
-#include "../../include/scan/udp_scan.h"
+#include "../../include/methods/udp_scan.h"
 
 
 // Define a struct that holds the arguments for run_next_best_packet

@@ -1,10 +1,19 @@
 #pragma once
 
-#include <time.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <stdio.h>
+#include <stdbool.h>
+#include <pthread.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
 
-#include "../netspectre.h"
-#include "../capture/next_best_packet.h"
+#include "../ui/print_macro.h"
+#include "../other/next_best_packet.h"
+#include "../scan_structs.h"
 #include "../other/convert_time.h"
+
 
 /*
     Parameters:

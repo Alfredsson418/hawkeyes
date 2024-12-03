@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../netspectre.h"
+#include "../scan_structs.h"
 
 char * state_string(int state);
 

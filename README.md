@@ -1,16 +1,10 @@
-# NetSpectre
-NetSpectre is a swiss army knife of network tools
+# HawkEye
+HawkEye is a easy to use port scanner
 
 ## Usage
-`netspec [tool] [options]`
+`hawk [tool] [options]`
 ### Example
-`netspec capture -f tcp -x`
-
-`netspec scan -t 127.0.0.1 -i lo -p 53`
-
-## Docs
-* [`Capture`](docs/CAPTURE.md) - Capture and show incomming/outgoing traffic
-* [`Scan`](docs/SCAN.md) - Scan for open ports on a specific target
+`hawk -t 127.0.0.1 -i lo -p 53`
 
 ## How to compile
 1. Download necessary libraries
