@@ -30,7 +30,7 @@ void loop_back(net_packet * arg ,const struct pcap_pkthdr *packet_header, const 
 }
 
 // ONLY FOR ONE PACKET
-net_packet * next_best_packet(const char * network_interface,char * filter, int timeout, bool * setup_complete) {
+net_packet * next_best_packet(next_best_args * in_args) {
     char errbuff[PCAP_ERRBUF_SIZE]; // Error Buffer
     pcap_t *package_handle = NULL;
     int snap_len = MAX_PACKET_SIZE;
@@ -44,10 +44,10 @@ net_packet * next_best_packet(const char * network_interface,char * filter, int 
 
     struct bpf_program pcap_filter;
 
-    package_handle = pcap_open_live(network_interface, snap_len, promisc, 5, errbuff);
+    package_handle = pcap_open_live(in_args->interface, snap_len, promisc, 5, errbuff);
 
-    if (filter != NULL) {
-        if (pcap_compile(package_handle, &pcap_filter, filter, 0, PCAP_NETMASK_UNKNOWN) < 0)  {
+    if (in_args->filter[0] != '\0') {
+        if (pcap_compile(package_handle, &pcap_filter, in_args->filter, 0, PCAP_NETMASK_UNKNOWN) < 0)  {
             ERR_PRINT("Error compiling filter - %s\n", pcap_geterr(package_handle));
             pcap_close(package_handle);
 
@@ -68,7 +68,7 @@ net_packet * next_best_packet(const char * network_interface,char * filter, int 
     pthread_t thread_id;
 
     exit_pcap_loop_arg timeout_args;
-    timeout_args.timeout_s = timeout;
+    timeout_args.timeout_s = in_args->timeout;
     timeout_args.package_handle = package_handle;
 
     // Timeout counter if packages takes longer that expected
@@ -79,7 +79,7 @@ net_packet * next_best_packet(const char * network_interface,char * filter, int 
         return NULL;
     }
 
-    *(setup_complete) = true;
+    in_args->setup_complete = true;
 
     // Start scanning for matching packages
     pcap_dispatch(package_handle, 1, (pcap_handler) loop_back, (unsigned char *) return_arg);

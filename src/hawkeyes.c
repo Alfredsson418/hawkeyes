@@ -1,4 +1,4 @@
-#include "../include/hawkeye.h"
+#include "../include/hawkeyes.h"
 
 
 int main(int argc, char *argv[]) {
@@ -87,7 +87,7 @@ int main(int argc, char *argv[]) {
 
     scan_arg_t function_argument;
     scan_result_t scan_result[arguments.ports_len];
-    memset(scan_result, 0, sizeof(scan_result));
+    memset(scan_result, -1, sizeof(scan_result));
 
     function_argument.ipv4 = arguments.target;
     strcpy(function_argument.network_interface, arguments.interface);
@@ -110,15 +110,19 @@ int main(int argc, char *argv[]) {
             return -1;
     }
     ui_line("Starting Scan", '=', TERMINAL_WIDTH);
+
+
     multithread_scanning(arguments.thread_workers, arguments.ports, arguments.ports_len, function, function_argument, scan_result);
-    ui_line("| Ports |", ' ', TERMINAL_WIDTH);
+
+
+    ui_line("| Ports |", '=', TERMINAL_WIDTH);
     PRINT("|%-*s", RESULT_PORT_LEN, "Port");
     PRINT("|%-*s", RESULT_STATE_LEN, "State");
     PRINT("|%-*s", RESULT_SERVICE_LEN, "Service");
     PRINT("|%-*s", RESULT_METHOD_LEN, "Scanning Method");
     PRINT("|%-*s", RESULT_TIME_LEN, "Responce Time (s)");
     PRINT("\n");
-    ui_line("", '~', TERMINAL_WIDTH);
+    // ui_line("", '~', TERMINAL_WIDTH);
     for (int i = 0; i < arguments.ports_len; i++) {
         if (scan_result[i].state > 0) {
             open_ports++;
@@ -140,14 +144,14 @@ int main(int argc, char *argv[]) {
         PRINT("|%-*s", RESULT_STATE_LEN, state_string(scan_result[i].state));
         PRINT("|%-*s", RESULT_SERVICE_LEN, service_buff);
         PRINT("|%-*s", RESULT_METHOD_LEN, scanning_method(arguments.scan_method, scan_result[i].method));
-        PRINT("|%-*f", RESULT_TIME_LEN, scan_result[i].scannig_time / SECONDS_S);
+        PRINT("|%-*f", RESULT_TIME_LEN, scan_result[i].scannig_time / SECONDS);
         PRINT("\n");
     }
 
     ui_line(" | General Stats | ", '=', TERMINAL_WIDTH);
     PRINT("\tOpen Ports -> %-*d\n", RESULT_PORT_LEN, open_ports);
     PRINT("\tClosed Ports -> %-*d\n", RESULT_PORT_LEN, arguments.ports_len - open_ports);
-    PRINT("\tTotal time scanned -> %-*f\n", RESULT_PORT_LEN, total_time_scanned / SECONDS_S);
+    PRINT("\tTotal time scanned -> %-*f\n", RESULT_PORT_LEN, total_time_scanned / SECONDS);
 
     free(arguments.ports);
     return 0;

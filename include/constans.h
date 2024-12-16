@@ -6,9 +6,7 @@
 #define RESULT_TIME_LEN 6
 #define RESULT_STATE_LEN 8
 
-
 #define MAX_PORTS_TO_SHOW 10
-
 
 #define IPV4_ADDR_STR_LEN 16 // 15 characters for the address and 1 for the null terminator
 #define INTERFACE_LEN 16

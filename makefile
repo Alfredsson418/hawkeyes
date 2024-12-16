@@ -6,21 +6,23 @@ BUILD = build
 SRC = src
 
 CFLAGS = -Wall -g
-LDFLAGS = -lpcap -pthread
+LDFLAGS = -lpcap -pthread -lcap
 
 # Get all the source files in the SRC directory and its subdirectories
-SRCFILES = $(wildcard $(SRC)/*.c) $(wildcard $(SRC)/**/*.c)
+SRCFILES = $(shell find $(SRC) -name '*.c')
 
 # Generate object file names from source file names
 OBJFILES = $(patsubst $(SRC)/%.c, $(BUILD)/%.o, $(SRCFILES))
 
-.PHONY: build clean memCheck
+
+.PHONY: release clean
 
 # Target to build the executable
-build: $(OBJFILES)
+release: $(OBJFILES)
 	@echo "Building $(NAME)"
 	@$(CC) $(CFLAGS) $^ -o $(NAME) $(LDFLAGS)
 	@echo "Done!"
+
 
 # Rule to compile each source file into an object file
 $(BUILD)/%.o: $(SRC)/%.c
@@ -28,7 +30,6 @@ $(BUILD)/%.o: $(SRC)/%.c
 	@echo "Compiling $<"
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
-# Target to clean up generated files
+# Target to clean up generated file
 clean:
-	@rm -f $(OBJFILES) $(NAME)
-	@rm -r $(BUILD)
+	@rm -rf $(OBJFILES) $(NAME)

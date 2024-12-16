@@ -17,6 +17,13 @@ typedef struct {
     u_char * packet_payload;
 } net_packet;
 
+typedef struct {
+    int timeout;
+    char filter[80];
+    char * interface;
+    bool setup_complete;
+} next_best_args;
+
 
 /*
     Gives the first package from a given filter.
@@ -29,4 +36,4 @@ typedef struct {
     Return:
         The packet with the packet_header.
 */
-net_packet * next_best_packet(const char * network_interface,char * filter, int timeout, bool * setup_complete);
+net_packet * next_best_packet(next_best_args * in_args);

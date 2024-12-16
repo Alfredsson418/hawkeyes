@@ -3,8 +3,13 @@
 #include <semaphore.h>
 #include <pthread.h>
 #include <arpa/inet.h>
+#include <stdbool.h>
+#include <unistd.h>
 
+#include "../ui/print_macro.h"
 #include "../scan_structs.h"
+#include "../other/port_scan_lookup.h"
+#include "../other/convert_time.h"
 
 typedef struct {
     struct in_addr target;

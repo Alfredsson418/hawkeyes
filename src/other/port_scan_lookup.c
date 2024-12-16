@@ -1,4 +1,14 @@
-#include "../../include/other/port_scan_loopup.h"
+#include "../../include/other/port_scan_lookup.h"
+
+int calculate_scanned(scan_result_t * a, int n) {
+    double scanned = 0;
+    for (int i = 0; i < n; i++) {
+        if (a[i].state >= 0) {
+            scanned++;
+        }
+    }
+    return scanned;
+}
 
 
 char * state_string(int state) {
@@ -23,7 +33,7 @@ char * scanning_method(scan_methods_t scan_method, int method) {
     if (scan_method == SCAN_UDP_t) {
         switch (method) {
             case (0):
-                return "ECHO Reply";
+                return "No ECHO Reply";
         }
     }
 

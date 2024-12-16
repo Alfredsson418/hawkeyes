@@ -1,46 +1,35 @@
-#include "../../include/methods/udp_scan.h"
+#include "../../../include/scan_methods/udp/udp_echo_responce.h"
 
 
 // Define a struct that holds the arguments for run_next_best_packet
-typedef struct {
-    int timeout;
-    char filter[80];
-    char * device;
-    bool setup_complete;
-} next_best_args;
+
 
 void * run_next_best_packet(void * arg) {
-    next_best_args* args = (next_best_args*)arg;
+    next_best_args * args = (next_best_args *)arg;
 
-    return (void *)next_best_packet(args->device, args->filter, args->timeout, &args->setup_complete);
+    return (void *)next_best_packet(args);
 }
 
-int udp_scan(scan_arg_t arg, scan_result_t * result) {
-    /*
-        The method in this funtion to find open ports it to
-        scan for "Port Unreachable" or "Destination Unreachable"
-        ICMP replys when sending a random package to the( target
-        If there is no respone, either the port is open or the
-        firewall was configured not to responde. This function
-        wont wait to fetch the responce because the ICMP package
-        wont always be given to the program.
-    */
+
+/*
+    The method in this funtion to find open ports it to
+    scan for "Port Unreachable" or "Destination Unreachable"
+    ICMP replys when sending a random package to the( target
+    If there is no respone, either the port is open or the
+    firewall was configured not to responde. This function
+    wont wait to fetch the responce because the ICMP package
+    wont always be given to the program.
+*/
+int udp_echo_responce(scan_arg_t arg, scan_result_t * result) {
 
     pthread_t thread_id;
-    struct timespec start, stop;
     net_packet * packet = NULL;
     result->method = 0;
 
-    /*
-    Create a struct that holds the arguments for run_next_best_packet
-    next_best_args* args = calloc(1, sizeof(next_best_args));
-    args->packet = calloc(MAX_PACKET_SIZE + 1, sizeof(char));
-    args->packet_header = calloc(1, sizeof(struct pcap_pkthdr));
-    */
     next_best_args packet_capture_arg;
 
     packet_capture_arg.timeout = arg.timeout;
-    packet_capture_arg.device = arg.network_interface;
+    packet_capture_arg.interface = arg.network_interface;
     packet_capture_arg.setup_complete = false;
 
     /*
@@ -116,7 +105,6 @@ int udp_scan(scan_arg_t arg, scan_result_t * result) {
         ;
     }
 
-    clock_gettime(CLOCK_MONOTONIC, &start);
     if (sendto(sock, 0, 0, 0, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
         ERR_PRINT("Failed to send UDP package");
         close(sock);
@@ -125,9 +113,7 @@ int udp_scan(scan_arg_t arg, scan_result_t * result) {
     }
 
     pthread_join(thread_id, (void **)&packet);
-    clock_gettime(CLOCK_MONOTONIC, &stop);
 
-    result->scannig_time = time_in_x(start, stop, NANO_S);
 
     if (packet == NULL) {
         ERR_PRINT("Failed to capture UDP packet\n");

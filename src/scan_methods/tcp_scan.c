@@ -1,4 +1,4 @@
-#include "../../include/methods/tcp_scan.h"
+#include "../../include/scan_methods/tcp_scan.h"
 
 int tcp_scan(scan_arg_t arg, scan_result_t * result) {
     struct timespec start, stop;
@@ -56,7 +56,7 @@ int tcp_scan(scan_arg_t arg, scan_result_t * result) {
     }
     clock_gettime(CLOCK_MONOTONIC, &stop);
 
-    result->scannig_time = time_in_x(start, stop, NANO_S);
+    result->scannig_time = time_in_x(start, stop, NANO);
 
     close(sock);
     return result->state;
