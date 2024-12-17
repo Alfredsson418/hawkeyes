@@ -1,4 +1,7 @@
 #include "../include/hawkeyes.h"
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
 
 
 int main(int argc, char *argv[]) {
@@ -14,7 +17,7 @@ int main(int argc, char *argv[]) {
         ===========================================================
     */
     struct terminal_args arguments;
-    arguments.target.s_addr = INADDR_NONE;
+    memset(&arguments.address, 0, sizeof(struct sockaddr_storage));
     memset(arguments.interface, '\0', INTERFACE_LEN);
     memset(arguments.ports_format, '\0', PORTS_FORMAT_LEN);
     arguments.scan_method = 0;
@@ -40,20 +43,28 @@ int main(int argc, char *argv[]) {
         ui_line("ARGUMENTS", '-', TERMINAL_WIDTH);
     }
     VERBOSE_MESSAGE("Scanning Method: %d \n", arguments.scan_method);
-    VERBOSE_MESSAGE("Target: %s \n", inet_ntoa(arguments.target));
+
+    if (arguments.address.ss_family == AF_INET) {
+        char str[INET_ADDRSTRLEN];
+        ipv4_to_str(&arguments.address, str);
+        VERBOSE_MESSAGE("Target (IPv4): %s \n", str);
+    }else if (arguments.address.ss_family == AF_INET6) {
+        char str[INET6_ADDRSTRLEN];
+        ipv6_to_str(&arguments.address, str);
+        VERBOSE_MESSAGE("Target (IPv6): %s \n", str);
+    } else {
+        ERR_PRINT("Wrong input format\n");
+        return -1;
+    }
+
     VERBOSE_MESSAGE("Can ping before scan(?): %s \n", (!arguments.no_ping && is_root()) ? "Yes" : "No");
     VERBOSE_MESSAGE("Thread Workers: %d \n", arguments.thread_workers);
     VERBOSE_MESSAGE("Timeout (s): %d \n", arguments.timeout);
 
 
-    if (arguments.target.s_addr == INADDR_NONE) {
-        ERR_PRINT("No target specified\n");
-        return 0;
-    }
-
     if (arguments.interface[0] == '\0') {
-        VERBOSE_MESSAGE("No network device set \n");
-        if ((!arguments.no_ping && is_root()) && guess_interface(arguments.target, &(arguments.interface)) < 0) {
+        VERBOSE_MESSAGE("No network interface set \n");
+        if ((!arguments.no_ping && is_root()) && guess_interface(arguments.address, &(arguments.interface)) < 0) {
             ERR_PRINT("Failed to ping target, try using --no-ping\n");
         }
         else {
@@ -65,17 +76,18 @@ int main(int argc, char *argv[]) {
             return -1;
         }
     }
-
+    /*
     VERBOSE_MESSAGE("Network interface: %s\n", arguments.interface);
     if (arguments.ports_format[0] == '\0') {
         strncpy(arguments.ports_format, "1-1000", INTERFACE_LEN);
         VERBOSE_MESSAGE("Port range was not set, using default %s \n", arguments.ports_format);
     }
+    */
     /*
         ===========================================================
     */
 
-
+    /*
     int temp = parse_ports(arguments.ports_format, &(arguments.ports));
     if (temp < 1) {
         ERR_PRINT("Failed to parse ports\n");
@@ -89,7 +101,7 @@ int main(int argc, char *argv[]) {
     scan_result_t scan_result[arguments.ports_len];
     memset(scan_result, -1, sizeof(scan_result));
 
-    function_argument.ipv4 = arguments.target;
+    function_argument.address = arguments.target;
     strcpy(function_argument.network_interface, arguments.interface);
     function_argument.timeout = arguments.timeout;
     // This will be where the scanning starts
@@ -154,5 +166,6 @@ int main(int argc, char *argv[]) {
     PRINT("\tTotal time scanned -> %-*f\n", RESULT_PORT_LEN, total_time_scanned / SECONDS);
 
     free(arguments.ports);
+    */
     return 0;
 }

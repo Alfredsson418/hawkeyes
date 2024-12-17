@@ -23,7 +23,7 @@ int get_first_network_dev(char (*interface)[INTERFACE_LEN]) {
 }
 
 
-int guess_interface(struct in_addr ip_addr, char (*interface)[INTERFACE_LEN]) {
+int guess_interface(struct sockaddr_storage ip_addr, char (*interface)[INTERFACE_LEN]) {
 
     // Get network interfaces
     struct ifaddrs * network_interfaces;
@@ -36,7 +36,7 @@ int guess_interface(struct in_addr ip_addr, char (*interface)[INTERFACE_LEN]) {
     for (struct ifaddrs * ifa = network_interfaces; ifa != NULL; ifa = ifa->ifa_next) {
         // If the network interface has an IPv4 adress
 
-        if (ifa->ifa_addr != NULL && ifa->ifa_addr->sa_family == AF_INET) {
+        if (ifa->ifa_addr != NULL && ifa->ifa_addr->sa_family == ip_addr.ss_family) {
 
             int respone;
             VERBOSE_MESSAGE("PING REQUEST: Trying on '%s': ", ifa->ifa_name);

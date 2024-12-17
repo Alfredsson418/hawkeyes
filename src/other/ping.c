@@ -1,9 +1,12 @@
 #include "../../include/other/ping.h"
+#include <netinet/icmp6.h>
+#include <netinet/ip6.h>
 
 unsigned short checksum(void *b, int len) {
     unsigned short *buf = b;
     unsigned int sum = 0;
     unsigned short result;
+
 
     for (sum = 0; len > 1; len -= 2)
         sum += *buf++;
@@ -17,26 +20,78 @@ unsigned short checksum(void *b, int len) {
 
 
 // Sometimes this gets no responce, even though target is up
-int ping(struct in_addr ip_addr, const char interface[INTERFACE_LEN]) {
-    int echo_ID = 8765;
-    int sock = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
-    int tries = 2;
-
-
-    struct sockaddr_in addr;
-    struct icmphdr icmp_hdr;
-
-    char buffer[1024];
-    struct sockaddr_in sender_addr;
-    socklen_t sender_addr_len = sizeof(sender_addr);
-
+int ping(struct sockaddr_storage ip_addr, const char interface[INTERFACE_LEN]) {
     // Set a timeout for recvfrom
     struct timeval timeout;
     timeout.tv_sec = 5; // 5 seconds timeout
     timeout.tv_usec = 0;
+    int echo_ID = 8765;
+    int sock;
+    int tries = 2;
+    char buffer[1024];
+    struct sockaddr_in sender_addr;
+    socklen_t sender_addr_len = sizeof(sender_addr);
+    struct sockaddr addr;
+    struct sockaddr_in6 addr6;
+    ssize_t sent;
+
+    struct icmphdr icmp;
+    struct icmp6_hdr icmp6;
+
+    memset(&addr, 0, sizeof(addr));
+    if (ip_addr.ss_family == AF_INET) {
+
+        // Setting up ICMP echo package
+        memset(&icmp, 0, sizeof(icmp));
+        icmp.type = ICMP_ECHO;
+        icmp.un.echo.id = echo_ID;
+        icmp.un.echo.sequence = htons(1);
+        icmp.code = 0;
+        icmp.checksum = checksum(&icmp, sizeof(icmp));
+
+
+        sock = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
+
+        struct sockaddr_in * addr_in = (struct sockaddr_in *) &addr;
+        addr_in->sin_port = htons(0);
+        addr_in->sin_family = AF_INET;
+        addr_in->sin_addr = ((struct sockaddr_in *)&ip_addr)->sin_addr;
+
+    } else if (ip_addr.ss_family == AF_INET6) {
+
+        // Setting up ICMP6 echo package
+        memset(&icmp6, 0, sizeof(icmp6));
+        icmp6.icmp6_type = ICMP6_ECHO_REQUEST;
+        //icmp6_hdr.icmp6_id = echo_ID; // Unique ID
+        // icmp6_hdr.icmp6_seq = htons(1);               // Sequence number
+        icmp6.icmp6_dataun.icmp6_un_data16[0] = echo_ID;
+        icmp6.icmp6_dataun.icmp6_un_data16[1] = htons(1);
+        icmp6.icmp6_code = 0;
+        icmp6.icmp6_cksum = checksum(&icmp6, sizeof(icmp6));
+
+
+        sock = socket(AF_INET6, SOCK_RAW, IPPROTO_ICMPV6);
+
+        struct sockaddr_in6 * addr_in = (struct sockaddr_in6 *) &addr;
+        addr_in->sin6_port = htons(0);
+        addr_in->sin6_family = ip_addr.ss_family;
+        addr_in->sin6_addr = ((struct sockaddr_in6 *)&ip_addr)->sin6_addr;
+
+    } else {
+        ERR_PRINT("Wrong format\n");
+        return -1;
+    }
 
     if (sock < 0) {
-        ERR_PRINT("Falied opening UDP socket for ping\n");
+        ERR_PRINT("Failed opening UDP socket for ping\n");
+        return -1;
+    }
+
+
+
+    if (setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0) {
+        ERR_PRINT("Failed to set a timeout to socket\n");
+        close(sock);
         return -1;
     }
 
@@ -47,34 +102,23 @@ int ping(struct in_addr ip_addr, const char interface[INTERFACE_LEN]) {
         return -1;
     }
 
-    if (setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0) {
-        ERR_PRINT("Failed to set a timeout to socket\n");
+
+    // Pinging adress on interface
+    if (ip_addr.ss_family == AF_INET) {
+        sent = sendto(sock, &icmp, sizeof(icmp), 0, &addr, sizeof(addr));
+
+    } else if (ip_addr.ss_family == AF_INET6) {
+        sent = sendto(sock, &icmp6, sizeof(icmp6), 0, &addr, sizeof(struct sockaddr_in6));
+
+    } else {
+        ERR_PRINT("Wrong format\n");
         close(sock);
         return -1;
     }
 
-    // Setting up ICMP echo package
-
-    addr.sin_family = AF_INET;
-    addr.sin_port = htons(0);
-    addr.sin_addr = ip_addr;
-    // memcpy(&addr.sin_addr.s_addr, &ip_addr.s_addr, sizeof(ip_addr.s_addr));
-
-    memset(&icmp_hdr, 0, sizeof(icmp_hdr));
-    icmp_hdr.type = ICMP_ECHO;
-    icmp_hdr.un.echo.id = echo_ID;
-    icmp_hdr.un.echo.sequence = htons(1);
-    icmp_hdr.code = 0;
-    icmp_hdr.checksum = checksum(&icmp_hdr, sizeof(icmp_hdr));
-
-
-    // Creating buffer for recvfrom
-
-
-    // Pinging adress on interface
-    ssize_t sent = sendto(sock, &icmp_hdr, sizeof(icmp_hdr), 0, (struct sockaddr *)&addr, sizeof(addr));
     if (sent < 0) {
-        ERR_PRINT("Failed to send ICMP/ping packet\n");
+        perror("sock");
+        ERR_PRINT("Failed to send ICMP/ping packet \n");
         close(sock);
         return -1;
     }
@@ -84,18 +128,26 @@ int ping(struct in_addr ip_addr, const char interface[INTERFACE_LEN]) {
         // Recovering echo packet
         ssize_t received = recvfrom(sock, buffer, sizeof(buffer), 0, (struct sockaddr *)&sender_addr, &sender_addr_len);
         if (received < 0) {
-            // ERR_PRINT("Failed to recover any ICMP/ping packages\n");
             close(sock);
             return -1;
         }
 
-        // Process the received packet (e.g., check ICMP header, etc.)
-        struct iphdr *ip_hdr = (struct iphdr *)buffer;
-        struct icmphdr *recv_icmp_hdr = (struct icmphdr *)(buffer + (ip_hdr->ihl * 4));
-        // printf("\n%d, %d, %d \n", recv_icmp_hdr->type, recv_icmp_hdr->un.echo.id, echo_ID);
-        if (recv_icmp_hdr->type == ICMP_ECHOREPLY && recv_icmp_hdr->un.echo.id == echo_ID) {
-            close(sock);
-            return 1;
+        if (ip_addr.ss_family == AF_INET) {
+            struct iphdr *ip_hdr = (struct iphdr *)buffer;
+            struct icmphdr *recv_icmp_hdr = (struct icmphdr *)(buffer + (ip_hdr->ihl * 4));
+
+            if (recv_icmp_hdr->type == ICMP_ECHOREPLY && recv_icmp_hdr->un.echo.id == echo_ID) {
+                close(sock);
+                return 1;
+            }
+        } else if (ip_addr.ss_family == AF_INET6) {
+            // Apperently, the ipv6 header is cut of frn recv, so there is no need to move the buffer
+            struct icmp6_hdr *icmp6_header = (struct icmp6_hdr *)(buffer);
+
+            if (icmp6_header->icmp6_type == ICMP6_ECHO_REPLY && icmp6_header->icmp6_dataun.icmp6_un_data16[0] == echo_ID) {
+                close(sock);
+                return 1;
+            }
         }
     }
 

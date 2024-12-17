@@ -10,7 +10,7 @@ const struct argp_option terminal_options[] = {
     {"method", 'm', "METHOD(tcp/udp/half-sync)", 0, ""},
     {"interface", 'i', "INTERFACE", 0, "Network interface to scan from, e.g lo"},
     {"port", 'p', "PORT(S)", 0, "Define what port(s) to scan, e.g -p 22; -p 1-100; -p 22,53,23"},
-    {"target", 't', "IP", 0, "Target IP"},
+    {"target", 't', "IPv4", 0, "Target IPv4"},
     {"timeout", 'w', "TIME(sec)", 0, "Timeout"},
     {"no-ping", 503, 0, 0, "Do not ping the target"},
     {"threading-workers", 'n', "WORKERS", 0, "Amount of threading workers"},
@@ -51,7 +51,15 @@ error_t terminal_parse_opt(int key, char *arg, struct argp_state *state){
         strncpy(arguments->ports_format, arg, strlen(arg));
         break;
     case 't':
-        inet_pton(AF_INET, arg, &(arguments->target)); // Add error handling
+        memset(&arguments->address, 0, sizeof(struct sockaddr_storage));
+
+        if (str_to_ipv4(&arguments->address, arg) != -1) {
+            break;
+        } else if (str_to_ipv6(&arguments->address, arg) != -1) {
+            break;
+        } else {
+            str_to_ipv4(&arguments->address, "255.255.255.255");
+        }
         break;
     case 'w':
         arguments->timeout = atoi(arg);

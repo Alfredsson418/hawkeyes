@@ -4,9 +4,11 @@
 #include <arpa/inet.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/socket.h>
 
 #include "../scan_structs.h"
 #include "../ui/print_macro.h"
+#include "convert_address.h"
 
 extern const struct argp_option terminal_options[];
 
@@ -20,7 +22,7 @@ struct terminal_args {
     unsigned short * ports;
     unsigned short ports_len;
     char ports_format[PORTS_FORMAT_LEN];
-    struct in_addr target;
+    struct sockaddr_storage address;
     scan_methods_t scan_method;
     unsigned int timeout;
     bool no_ping;

@@ -13,7 +13,7 @@ typedef struct {
 }scan_result_t;
 
 typedef struct {
-    struct in_addr ipv4;
+    struct sockaddr_storage address;
     char network_interface[INTERFACE_LEN];
     unsigned int timeout;
     unsigned short port;

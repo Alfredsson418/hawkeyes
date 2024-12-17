@@ -96,7 +96,7 @@ int udp_echo_responce(scan_arg_t arg, scan_result_t * result) {
 
     addr.sin_family = AF_INET;
     addr.sin_port = htons(arg.port);
-    addr.sin_addr = arg.ipv4;
+    // addr.sin_addr = arg.address;
 
     // This needs to be here so that the scanning can start before the package is sent
     // Could also use a varible that checks if the function has started scanning
