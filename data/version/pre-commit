@@ -1,0 +1,4 @@
+#!/bin/bash
+
+./data/version/auto_incr_patch.sh
+git add data/version/VERSION

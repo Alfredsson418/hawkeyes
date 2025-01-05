@@ -7,6 +7,8 @@ int main(int argc, char *argv[]) {
     }
 
     print_file(MOTD_FILE, MOTD_WIDTH);
+    PRINT("Version: ");
+    print_file(VERSION_FILE, TERMINAL_WIDTH);
     /*
         ===========================================================
         VARIBLES INITIATION

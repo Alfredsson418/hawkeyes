@@ -18,6 +18,7 @@
 #define MAX_PACKET_SIZE 65663
 
 #define MOTD_FILE         "data/motd.txt"
+#define VERSION_FILE      "data/version/VERSION"
 #define MOTD_WIDTH        80
 #define TCP_SERVICES_FILE "data/services/tcp.txt"
 #define UDP_SERVICES_FILE "data/services/udp.txt"

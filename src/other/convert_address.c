@@ -7,7 +7,7 @@ int str_to_ipv4(struct sockaddr_storage *addr, char *str) {
     if (inet_pton(AF_INET, str, &(addr_in->sin_addr)) != 1) {
         return -1;
     }
-    PRINT("%s\n", str);
+
     return 0;
 }
 
