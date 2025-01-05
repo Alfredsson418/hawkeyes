@@ -16,6 +16,7 @@ int main(int argc, char *argv[]) {
     memset(&arguments.address, 0, sizeof(struct sockaddr_storage));
     memset(arguments.interface, '\0', INTERFACE_LEN);
     memset(arguments.ports_format, '\0', PORTS_FORMAT_LEN);
+    memset(&arguments.scan_info, 0, sizeof(scan_func_t));
     arguments.ports          = NULL;
     arguments.timeout        = 3;
     arguments.no_ping        = false;
@@ -37,7 +38,13 @@ int main(int argc, char *argv[]) {
     if (g_verbose_enabled) {
         ui_line("ARGUMENTS", '-', TERMINAL_WIDTH);
     }
-    // VERBOSE_MESSAGE("Scanning Method: %d \n", arguments.scan_method);
+
+    if (arguments.scan_info.name != 0) {
+        VERBOSE_MESSAGE("Scanning method: %s \n", arguments.scan_info.name);
+    } else {
+        ERR_PRINT("Missing scanning method\n");
+        return -1;
+    }
 
     if (arguments.address.ss_family == AF_INET) {
         char str[INET_ADDRSTRLEN];

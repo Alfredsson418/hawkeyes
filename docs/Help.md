@@ -28,10 +28,10 @@ Give the program a set number or a range of ports. Default ports are `1-1000`
 
 
 `-m METHOD` Choose what scanning method to use.
-Default: `tcp`
+Default: `conn`
 
 
-Other options: `udp`.
+Other options: `icmp`.
 
 
 NOTE: `udp` will require additional privileges to run.

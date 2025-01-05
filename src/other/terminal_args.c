@@ -76,11 +76,13 @@ error_t terminal_parse_opt(int key, char *arg, struct argp_state *state) {
             arguments->scan_info.scan_func         = connect_scan;
             arguments->scan_info.transfer_protocol = TCP_t;
             arguments->scan_info.needs_root        = false;
+            arguments->scan_info.name = "Three way handshake/connect()";
         } else if (strcmp(arg, "icmp") == 0) {
             arguments->scan_info.sock_type         = SOCK_DGRAM;
             arguments->scan_info.scan_func         = icmp_responce_scan;
             arguments->scan_info.transfer_protocol = UDP_t;
             arguments->scan_info.needs_root        = true;
+            arguments->scan_info.name              = "ICMP echo reply";
 
             // } else if (strcmp(arg, "half-sync") == 0) {
             // arguments->scan_method = SCAN_HALF_SYNC_t;
