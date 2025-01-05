@@ -34,7 +34,7 @@ Default: `conn`
 Other options: `icmp`.
 
 
-NOTE: `udp` will require additional privileges to run.
+NOTE: `icmp` will require additional privileges to run.
 
 
 ## Interface
