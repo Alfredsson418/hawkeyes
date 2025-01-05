@@ -1,5 +1,13 @@
 # Hawkeyes
-Hawkeyes is a lightweight and efficient port scanner designed for network diagnostics. Hawkeyes supports both IPv4 and IPv6 and utilizes multithreading for scanning multiple ports at the same time.
+Hawkeyes is a lightweight and efficient port scanner designed for network diagnostics written in C.
+
+## Features
+* Different scanning methods
+* IPv4 and IPv6 support
+* Specify a range of ports and/or specific ports (e.g., 50-60, 67, 78)
+* Multithreaded scanning
+* Scan on specific interfaces
+* Service detection
 
 ## [`Usage`](docs/Help.md)
 `hawk [options]`
@@ -13,8 +21,8 @@ Hawkeyes is a lightweight and efficient port scanner designed for network diagno
 2. Run `make` in the project root folder
 3. Done !
 
-# Contribution
-TBA
+# [`Contribution`](docs/Contribution.md)
+
 
 # Questions
-- This project is not named after Hawkeye(Marvel)
+- This project is not named after Hawkeye from Marvel
