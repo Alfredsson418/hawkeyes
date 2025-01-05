@@ -1,4 +1,4 @@
-<h3 align="center" ><img alt="Hawkeyes picure" src="https://github.com/user-attachments/assets/dee3aa60-c5a0-4e29-99cc-283a386355b1"></h3>
+<h3 align="center" ><img alt="Hawkeyes picure" src="data/images/hawkeyes2.png"></h3>
 <h3 align="center">Lightweight and efficient port scanner designed for network diagnostics written in C.</h3>
 <br>
 <p align="center">
