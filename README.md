@@ -1,7 +1,7 @@
 # Hawkeyes
 Hawkeyes is an eary to use port scanner,
 
-## [`Usage`](docs / Help.md)
+## [`Usage`](docs/Help.md)
 `hawk[tool][options]`
 ## Example
 `hawk - t 127.0.0.53 - p 53 -i lo`
