@@ -1,21 +1,21 @@
 #include "../../include/other/parse_ports.h"
 
-int parse_ports(char* str, unsigned short ** ports) {
+int parse_ports(char *str, unsigned short **ports) {
     int len = 0;
 
     // Return array
     *ports = calloc(len, sizeof(int));
-    char * token;
-    int port_index = 0;
+    char *token;
+    int   port_index = 0;
 
-    char* str_copy = calloc(strlen(str), sizeof(char));
+    char *str_copy = calloc(strlen(str), sizeof(char));
     if (str_copy == NULL) {
         ERR_PRINT("Failed to allocate memory\n");
         return -1;
     }
     strcpy(str_copy, str);
 
-    char * save_ptr = str_copy;
+    char *save_ptr = str_copy;
 
     // parse port_str to ports array
     while ((token = strtok_r(str_copy, ",", &str_copy))) {
@@ -27,7 +27,7 @@ int parse_ports(char* str, unsigned short ** ports) {
                 return -1;
             }
 
-            char * temp = strtok_r(token, "-", &token);
+            char *temp = strtok_r(token, "-", &token);
             if (temp == NULL) {
                 ERR_PRINT("Bad port input\n");
                 free(save_ptr);
@@ -35,7 +35,7 @@ int parse_ports(char* str, unsigned short ** ports) {
                 return -1;
             }
             int first = atoi(temp);
-            temp = strtok_r(token, "-", &token);
+            temp      = strtok_r(token, "-", &token);
             if (temp == NULL) {
                 ERR_PRINT("Bad port input\n");
                 free(save_ptr);
@@ -71,7 +71,7 @@ int parse_ports(char* str, unsigned short ** ports) {
             }
         } else {
             len++;
-            *ports = realloc(*ports, len * sizeof(int));
+            *ports               = realloc(*ports, len * sizeof(int));
             (*ports)[port_index] = atoi(token);
             port_index++;
         }

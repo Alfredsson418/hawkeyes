@@ -6,7 +6,6 @@
 #include "../constans.h"
 #include "../ui/print_macro.h"
 
-
 /*
     Parameters:
         str:  The string from where to parse the ports from, can take - and ,
@@ -15,4 +14,4 @@
         Length of array.
 
 */
-int parse_ports(char * str, unsigned short ** ports);
+int parse_ports(char *str, unsigned short **ports);

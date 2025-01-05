@@ -1,11 +1,12 @@
 #pragma once
 
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h> // atoi
+#include <string.h>
 
-#include "../scan_structs.h"
-#include "../ui/print_macro.h"
 #include "../constans.h"
+#include "../ui/print_macro.h"
+#include "transfer_layers.h"
 
-int find_port(scan_methods_t method, unsigned short port, char (*service)[PORT_SERVICE_LEN]);
+int find_port(transfer_protocol_t method, unsigned short port,
+              char (*service)[PORT_SERVICE_LEN]);

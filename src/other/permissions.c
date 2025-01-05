@@ -1,5 +1,4 @@
 #include "../../include/other/permissions.h"
-#include <sys/capability.h>
 
 int is_root() {
     // https://stackoverflow.com/questions/3214297/how-can-my-c-c-application-determine-if-the-root-user-is-executing-the-command
@@ -9,6 +8,8 @@ int is_root() {
     return 1; // Root
 }
 
+// Need to look into this in the future
+/*
 int has_cap_net_raw() {
     cap_t caps = cap_get_proc();
 
@@ -29,3 +30,4 @@ int has_cap_net_raw() {
         return 0;
     }
 }
+*/

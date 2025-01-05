@@ -1,29 +1,26 @@
 #pragma once
 
-#include <stdlib.h>
 #include <pcap.h>
-#include <unistd.h> // sleep
 #include <pthread.h>
+#include <stdlib.h>
 #include <string.h> // memcpy
+#include <unistd.h> // sleep
 
 #include "../constans.h"
-#include "../ui/print_macro.h"
 #include "../other/network_interface.h"
-
-
+#include "../ui/print_macro.h"
 
 typedef struct {
-    struct pcap_pkthdr * packet_header;
-    u_char * packet_payload;
+    struct pcap_pkthdr *packet_header;
+    u_char             *packet_payload;
 } net_packet;
 
 typedef struct {
-    int timeout;
-    char filter[80];
-    char * interface;
-    bool setup_complete;
+    int   timeout;
+    char  filter[80];
+    char *interface;
+    bool  setup_complete;
 } next_best_args;
-
 
 /*
     Gives the first package from a given filter.
@@ -36,4 +33,4 @@ typedef struct {
     Return:
         The packet with the packet_header.
 */
-net_packet * next_best_packet(next_best_args * in_args);
+net_packet *next_best_packet(next_best_args *in_args);

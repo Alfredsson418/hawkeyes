@@ -1,0 +1,8 @@
+---
+BasedOnStyle: LLVM
+IndentWidth: 4
+AlignConsecutiveMacros: Consecutive
+AlignConsecutiveDeclarations: true
+AlignConsecutiveAssignments: true
+AlignArrayOfStructures: Right
+---

@@ -1,27 +1,21 @@
 #pragma once
 
-#include <semaphore.h>
-#include <pthread.h>
 #include <arpa/inet.h>
+#include <pthread.h>
+#include <semaphore.h>
 #include <stdbool.h>
 #include <unistd.h>
 
-#include "../ui/print_macro.h"
-#include "../scan_structs.h"
-#include "../other/port_scan_lookup.h"
+#include <fcntl.h>
+#include <termios.h>
+
 #include "../other/convert_time.h"
+#include "../other/permissions.h"
+#include "../other/port_scan_lookup.h"
+#include "../ui/print_macro.h"
+#include "scan_structs.h"
+#include "socket_setup.h"
 
-typedef struct {
-    struct in_addr target;
-    short unsigned int index;
-    unsigned short * ports;
-    unsigned short port_len;
-    unsigned int time_intervals;
-    pthread_mutex_t * write_mutex;
-    pthread_mutex_t * read_mutex;
-    int (*function)(scan_arg_t, scan_result_t *);
-    scan_arg_t in_arg;
-    scan_result_t * result;
-}worker_arg;
-
-int multithread_scanning(unsigned int max_workers, unsigned short * ports, unsigned short port_len, void * function, scan_arg_t function_arg, scan_result_t * result);
+int multithread_scanning(scan_func_t *func_info, scan_arg_t *func_arg,
+                         scan_result_t *func_result, unsigned short *ports,
+                         unsigned short port_len, unsigned int workers);

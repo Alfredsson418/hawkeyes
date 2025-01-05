@@ -1,12 +1,20 @@
 #include "../../include/scan_methods/multithread_scanning.h"
-#include <termios.h>
-#include <fcntl.h>
 
-typedef struct{
-    scan_result_t * result;
-    int result_len;
-    bool stop;
-}waiting_t;
+typedef struct {
+    scan_result_t *result;
+    int            result_len;
+    bool           stop;
+} waiting_t;
+
+typedef struct {
+    short unsigned  *index;
+    unsigned short  *ports;
+    unsigned short   port_len;
+    pthread_mutex_t *read_mutex;
+    scan_func_t      func_info;
+    scan_arg_t       func_arg;
+    scan_result_t   *func_result;
+} worker_arg;
 
 void set_nonblocking_mode() {
     struct termios tty;
@@ -32,10 +40,10 @@ void reset_terminal_mode() {
     fcntl(STDIN_FILENO, F_SETFL, 0);
 }
 
-
-void * waiting_on_scan(void * wait) {
-    waiting_t *waiting_data = (waiting_t *)wait;
+void *waiting_on_scan(void *wait) {
+    waiting_t      *waiting_data = (waiting_t *)wait;
     struct timespec start, stop;
+
     clock_gettime(CLOCK_MONOTONIC, &start);
     set_nonblocking_mode();
     while (!(waiting_data->stop)) {
@@ -43,9 +51,11 @@ void * waiting_on_scan(void * wait) {
         int ch = getchar(); // needs to be non_blocking
         if (ch == '\n') {
             clock_gettime(CLOCK_MONOTONIC, &stop);
-            double open = calculate_scanned(waiting_data->result, waiting_data->result_len);
-            PRINT("Time elapes: %.2f sec   Total port scanned: %.1f%%\n", time_in_x(start, stop, SECONDS), (open/waiting_data->result_len) * 100);
-
+            double open = calculate_scanned(waiting_data->result,
+                                            waiting_data->result_len);
+            PRINT("Time elapes: %.2f sec   Total port scanned: %.1f%%\n",
+                  time_in_x(start, stop, SECONDS),
+                  (open / waiting_data->result_len) * 100);
         }
         usleep(100000);
     }
@@ -54,65 +64,82 @@ void * waiting_on_scan(void * wait) {
 }
 
 void *worker_function(void *in_arg) {
-    worker_arg * arg = in_arg;
+    worker_arg *temp_arg = in_arg;
+    worker_arg  arg      = *temp_arg; // Look at issue 21 on github for why
+    int         sock     = socket_init(arg.func_info, arg.func_arg);
+
+    arg.func_arg.sock = sock;
+    if (arg.func_arg.sock < 0) {
+        ERR_PRINT("Failed to create socket, exits thread\n");
+        return 0;
+    }
 
     while (1) {
-        pthread_mutex_lock(arg->read_mutex);
-        if (arg->index >= arg->port_len) { break; }
-        int current_index = arg->index;
-        arg->index++;
-        int port = *(arg->ports + current_index);
-        pthread_mutex_unlock(arg->read_mutex);
+        pthread_mutex_lock(arg.read_mutex);
+        if (*arg.index >= arg.port_len) {
+            break;
+        }
+        int current_index = *arg.index;
+        (*arg.index)++;
+        int port = *(arg.ports + current_index);
+        pthread_mutex_unlock(arg.read_mutex);
 
-        arg->in_arg.port = port;
-        arg->function(arg->in_arg, (arg->result + current_index));
-
-        pthread_mutex_lock(arg->write_mutex);
-        pthread_mutex_unlock(arg->write_mutex);
+        arg.func_arg.port = port;
+        arg.func_info.scan_func(arg.func_arg,
+                                (arg.func_result + current_index));
     }
-    pthread_mutex_unlock(arg->read_mutex);
+    pthread_mutex_unlock(arg.read_mutex);
+
+    socket_close(arg.func_arg.sock);
+
     return 0;
 }
 
-int multithread_scanning(unsigned int max_workers, unsigned short * ports, unsigned short port_len, void * function, scan_arg_t function_arg, scan_result_t * result) {
+int multithread_scanning(scan_func_t *func_info, scan_arg_t *func_arg,
+                         scan_result_t *func_result, unsigned short *ports,
+                         unsigned short port_len, unsigned int workers) {
     pthread_mutex_t read_mutex;
-    pthread_mutex_t write_mutex;
-    worker_arg in_arg;
-    pthread_t workers[max_workers];
-    pthread_t waiting_thread;
+    worker_arg      in_arg;
+    pthread_t       pthread_workers[workers];
+    pthread_t       waiting_thread;
+    waiting_t       wait;
 
+    if (func_info->needs_root && !is_root()) {
+        ERR_PRINT("Permission Denied\n");
+        return -1;
+    }
 
     pthread_mutex_init(&read_mutex, NULL);
-    pthread_mutex_init(&write_mutex, NULL);
 
-    in_arg.index = 0;
-    in_arg.ports = ports;
-    in_arg.port_len = port_len;
-    in_arg.read_mutex = &read_mutex;
-    in_arg.write_mutex = &read_mutex;
-    in_arg.function = function;
-    in_arg.in_arg = function_arg;
-    in_arg.result = result;
+    in_arg.index       = malloc(sizeof(unsigned short));
+    *in_arg.index      = 0;
+    in_arg.ports       = ports;
+    in_arg.port_len    = port_len;
+    in_arg.read_mutex  = &read_mutex;
+    in_arg.func_info   = *func_info;
+    in_arg.func_arg    = *func_arg;
+    in_arg.func_result = func_result;
 
-    waiting_t wait;
-    wait.result = result;
+    wait.result     = func_result;
     wait.result_len = port_len;
-    wait.stop = false;
+    wait.stop       = false;
 
-    for(int i = 0; i < max_workers; i++) {
-        pthread_create(&(workers[i]), NULL, worker_function, &in_arg);
+    for (int i = 0; i < workers; i++) {
+        pthread_create(&(pthread_workers[i]), NULL, worker_function, &in_arg);
     }
 
     pthread_create(&waiting_thread, NULL, waiting_on_scan, (void *)&wait);
 
-    for(int i = 0; i < max_workers; i++) {
-        pthread_join(workers[i], NULL);
+    for (int i = 0; i < workers; i++) {
+        pthread_join(pthread_workers[i], NULL);
     }
 
     wait.stop = true;
     pthread_join(waiting_thread, NULL);
 
     pthread_mutex_destroy(&read_mutex);
-    pthread_mutex_destroy(&write_mutex);
+
+    free(in_arg.index);
+
     return 0;
 }

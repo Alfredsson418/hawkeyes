@@ -1,14 +1,14 @@
 #pragma once
 
-#include <unistd.h>
-#include <netinet/ip_icmp.h>
-#include <netinet/icmp6.h>
 #include <net/if.h>
-#include <string.h> // memset
+#include <netinet/icmp6.h>
 #include <netinet/ip6.h>
+#include <netinet/ip_icmp.h>
+#include <string.h> // memset
+#include <unistd.h>
 
-#include "../ui/print_macro.h"
 #include "../constans.h"
+#include "../ui/print_macro.h"
 
 /*
     Parameters:
