@@ -28,13 +28,16 @@ Give the program a set number or a range of ports. Default ports are `1-1000`
 
 
 `-m METHOD` Choose what scanning method to use.
-Default: `conn`
 
+### Methods
+- conn
 
-Other options: `icmp`.
+`conn` or connect() is the regular way to connect to a TCP service though a 3 way handshake.
 
+- icmp (OBS! Requires sudo permissions to run)
 
-NOTE: `icmp` will require additional privileges to run.
+`icmp` or ICMP Echo reply is used for UDP port scanning. This method utilized the fact that some firewalls reply with "Port Unreachable" or "Destination Unreachable" for UDP ports that are not open.
+This works mostly on older firewalls because modern firewalls will not responde at all for this very reason.
 
 
 ## Interface
