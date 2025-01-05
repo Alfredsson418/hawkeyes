@@ -1,6 +1,6 @@
 #!/bin/bash
 
-old=$(cat VERSION)
+old=$(cat data/version/VERSION)
 
 old_version=$(echo $old | cut -d '.' -f 1)
 
