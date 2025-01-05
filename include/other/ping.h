@@ -1,11 +1,14 @@
 #pragma once
 
-#include <unistd.h>
+#include <net/if.h>
+#include <netinet/icmp6.h>
+#include <netinet/ip6.h>
 #include <netinet/ip_icmp.h>
 #include <string.h> // memset
+#include <unistd.h>
 
-#include "../ui/print_macro.h"
 #include "../constans.h"
+#include "../ui/print_macro.h"
 
 /*
     Parameters:
@@ -14,4 +17,4 @@
     Return:
         true if reach, false if not, -1 for errors
 */
-int ping(struct in_addr ip_addr, const char interface[INTERFACE_LEN]);
+int ping(struct sockaddr_storage ip_addr, const char interface[INTERFACE_LEN]);

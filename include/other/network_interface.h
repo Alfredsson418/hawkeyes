@@ -1,8 +1,8 @@
 #pragma once
 
+#include <arpa/inet.h>
 #include <ifaddrs.h>
 #include <string.h>
-#include <arpa/inet.h>
 
 #include "../constans.h"
 #include "../ui/print_macro.h"
@@ -19,9 +19,6 @@
 */
 int get_first_network_dev(char (*interface)[INTERFACE_LEN]);
 
-
-
-
 /*
     Parameters:
         ip: The IP to ping
@@ -29,6 +26,7 @@ int get_first_network_dev(char (*interface)[INTERFACE_LEN]);
     Return:
     Returns -1 if error, else 0
 */
-int guess_interface(struct in_addr ip_addr, char (*interface)[INTERFACE_LEN]);
+int guess_interface(struct sockaddr_storage ip_addr,
+                    char (*interface)[INTERFACE_LEN]);
 
 int verify_interface(char interface[INTERFACE_LEN]);
