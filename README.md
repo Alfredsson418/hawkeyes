@@ -6,7 +6,7 @@
   <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/Alfredsson418/hawkeyes?style=for-the-badge&color=darkorange">
   <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/Alfredsson418/hawkeyes?style=for-the-badge&color=mediumaquamarine">
   <img alt="Website" src="https://img.shields.io/website?url=https%3A%2F%2Fhawkeyes.dev&style=for-the-badge">
-
+   <!-- https://shields.io/badges/git-hub-top-language -->
 </p>
 
 ## Current Features
@@ -23,7 +23,7 @@
 # How to run
 ## Compile
 1. Download necessary libraries(read [`requirements`](docs/Requirements.md))
-2. Run `make` in the project root folder
+2. Run `make release` in the project root folder
 3. Done !
 
 ## [`Usage`](docs/Help.md)
@@ -34,7 +34,7 @@
 `sudo ./hawk -t ::1 -p 5353 -i lo -m icmp`
 
 
-# [`Contribution`](docs/Contribution.md)
+# [`Contribution`](CONTRIBUTING.md)
 TBA
 
 # Questions
