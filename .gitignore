@@ -9,6 +9,8 @@ hawk
 build
 .vscode
 
+# ----------------------------------------------
+
 # Prerequisites
 *.d
 

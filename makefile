@@ -24,17 +24,22 @@ OBJFILES = $(patsubst $(SRC)/%.c, $(BUILD)/%.o, $(SRCFILES))
 # Target to build the executable with debug flags
 debug: CFLAGS = $(DEBUG_CFLAGS)
 debug: $(OBJFILES)
-		@echo "Building $(NAME) in debug mode"
-		@$(CC) $(CFLAGS) $^ -o $(NAME) $(LDFLAGS)
-		@echo "Done!"
+	@echo "Building $(NAME) in debug mode"
+	@$(CC) $(CFLAGS) $^ -o $(NAME) $(LDFLAGS)
+	@echo "Done!"
 
 
 # Target to build the executable with release flags
-release: CFLAGS = $(RELEASE_CFLAGS)
-release: $(OBJFILES)
+build_release: CFLAGS = $(RELEASE_CFLAGS)
+build_release: $(OBJFILES)
 	@echo "Building $(NAME) in release mode"
 	@$(CC) $(CFLAGS) $^ -o $(NAME) $(LDFLAGS)
 	@echo "Done!"
+
+# To clean out debug code
+release:
+	@$(MAKE) clean --no-print-directory
+	@$(MAKE) build_release --no-print-directory
 
 
 # Rule to compile each source file into an object file

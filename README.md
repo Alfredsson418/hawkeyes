@@ -1,12 +1,20 @@
 <h3 align="center" ><img alt="Hawkeyes picure" src="data/images/hawkeyes2.png"></h3>
 <h3 align="center">Lightweight and efficient port scanner designed for network diagnostics written in C.</h3>
+
+<div align="center">
+  <a href="https://discord.gg/76USAhaF8a">Discord</a>
+  -
+  <a href="hawkeyes.dev">Website</a>
+</div>
+
 <br>
+
 <p align="center">
   <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/Alfredsson418/hawkeyes?style=for-the-badge">
   <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/Alfredsson418/hawkeyes?style=for-the-badge&color=darkorange">
   <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/Alfredsson418/hawkeyes?style=for-the-badge&color=mediumaquamarine">
   <img alt="Website" src="https://img.shields.io/website?url=https%3A%2F%2Fhawkeyes.dev&style=for-the-badge">
-   <!-- https://shields.io/badges/git-hub-top-language -->
+  <!-- https://shields.io/badges/git-hub-top-language -->
 </p>
 
 ## Current Features
@@ -34,8 +42,8 @@
 `sudo ./hawk -t ::1 -p 5353 -i lo -m icmp`
 
 
-# [`Contribution`](CONTRIBUTING.md)
-TBA
+# Want to contirbute to the project?
+Before starting to contribute, read the [`Code of Conduct`](CODE_OF_CONDUCT.md). Read the [`Contribution.md`](CONTRIBUTING.md) to learn more and get some tips! Also join the [`offical discord server`](https://discord.gg/76USAhaF8a).
 
 # Questions
 - This project is not named after Hawkeye from Marvel
