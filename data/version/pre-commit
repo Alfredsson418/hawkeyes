@@ -1,4 +1,8 @@
 #!/bin/bash
 
+# Add this file to ./git/hooks/ to auto increase the version number pre commit
+
 ./data/version/auto_incr_patch.sh
+
+# Because he files change, we need to add it again before the commit
 git add data/version/VERSION
