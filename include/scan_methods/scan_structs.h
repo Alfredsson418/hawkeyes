@@ -17,7 +17,6 @@ typedef struct {
 
 // Used as a universal argument for every scanning method
 typedef struct {
-    int                      sock;
     struct sockaddr_storage *addr;
     char                     network_interface[INTERFACE_LEN];
     unsigned int             timeout;
@@ -31,6 +30,5 @@ typedef struct {
     bool  needs_root;
     // This is used in case of a raw socket
     transfer_protocol_t transfer_protocol;
-    int                 sock_type;
     int (*scan_func)(scan_arg_t arg, scan_result_t *result);
 } scan_func_t;

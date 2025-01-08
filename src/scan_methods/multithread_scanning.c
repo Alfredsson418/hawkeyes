@@ -2,14 +2,14 @@
 
 typedef struct {
     scan_result_t *result;
-    int            result_len;
+    unsigned int   result_len;
     bool           stop;
 } waiting_t;
 
 typedef struct {
-    short unsigned  *index;
-    unsigned short  *ports;
-    unsigned short   port_len;
+    unsigned int   *index;
+    unsigned short *ports;
+    unsigned int    port_len; // Not unsigned short to not get a buffer overflow
     pthread_mutex_t *read_mutex;
     scan_func_t      func_info;
     scan_arg_t       func_arg;
@@ -66,17 +66,13 @@ void *waiting_on_scan(void *wait) {
 void *worker_function(void *in_arg) {
     worker_arg *temp_arg = in_arg;
     worker_arg  arg      = *temp_arg; // Look at issue 21 on github for why
-    int         sock     = socket_init(arg.func_info, arg.func_arg);
 
-    arg.func_arg.sock = sock;
-    if (arg.func_arg.sock < 0) {
-        ERR_PRINT("Failed to create socket, exits thread\n");
-        return 0;
-    }
-
+    // PRINT("Thread start\n");
     while (1) {
+
         pthread_mutex_lock(arg.read_mutex);
         if (*arg.index >= arg.port_len) {
+            // PRINT("EXITS %d %d\n", *arg.index, arg.port_len);
             break;
         }
         int current_index = *arg.index;
@@ -85,19 +81,21 @@ void *worker_function(void *in_arg) {
         pthread_mutex_unlock(arg.read_mutex);
 
         arg.func_arg.port = port;
+        // PRINT("Trying to scan on %d\n", port);
         arg.func_info.scan_func(arg.func_arg,
                                 (arg.func_result + current_index));
+        // if (arg.func_result[current_index].state > 0) {
+        //     PRINT("Open port on %d\n", port);
+        // }
     }
     pthread_mutex_unlock(arg.read_mutex);
-
-    socket_close(arg.func_arg.sock);
 
     return 0;
 }
 
 int multithread_scanning(scan_func_t *func_info, scan_arg_t *func_arg,
                          scan_result_t *func_result, unsigned short *ports,
-                         unsigned short port_len, unsigned int workers) {
+                         unsigned int port_len, unsigned int workers) {
     pthread_mutex_t read_mutex;
     worker_arg      in_arg;
     pthread_t       pthread_workers[workers];
@@ -111,7 +109,11 @@ int multithread_scanning(scan_func_t *func_info, scan_arg_t *func_arg,
 
     pthread_mutex_init(&read_mutex, NULL);
 
-    in_arg.index       = malloc(sizeof(unsigned short));
+    in_arg.index = malloc(sizeof(unsigned int));
+    if (in_arg.index == NULL) {
+        ERR_PRINT("Allocating memory for scanning\n");
+        return -1;
+    }
     *in_arg.index      = 0;
     in_arg.ports       = ports;
     in_arg.port_len    = port_len;

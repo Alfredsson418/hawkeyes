@@ -18,4 +18,4 @@
 
 int multithread_scanning(scan_func_t *func_info, scan_arg_t *func_arg,
                          scan_result_t *func_result, unsigned short *ports,
-                         unsigned short port_len, unsigned int workers);
+                         unsigned int port_len, unsigned int workers);

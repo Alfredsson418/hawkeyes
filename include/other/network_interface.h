@@ -9,7 +9,7 @@
 #include "ping.h"
 
 /*
-    Gives the first given network device.
+    Gives the first given network interface.
 
     Parameters:
         None
@@ -17,7 +17,7 @@
     Return:
         Returns first device from pcap_findalldevs, else NULL.
 */
-int get_first_network_dev(char (*interface)[INTERFACE_LEN]);
+int get_first_network_interface(char (*interface)[INTERFACE_LEN]);
 
 /*
     Parameters:

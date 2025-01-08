@@ -1,11 +1,12 @@
 #include "../include/hawkeyes.h"
+#include <stdlib.h>
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
-        ERR_PRINT("%s\n", "No arguments detected! Exiting!");
+
+        ERR_PRINT("%s\n", "No arguments detected! Exiting!\n");
         exit(0);
     }
-
     print_file(MOTD_FILE, MOTD_WIDTH);
     PRINT("Version: ");
     print_file(VERSION_FILE, TERMINAL_WIDTH);
@@ -19,12 +20,12 @@ int main(int argc, char *argv[]) {
     memset(arguments.interface, '\0', INTERFACE_LEN);
     memset(arguments.ports_format, '\0', PORTS_FORMAT_LEN);
     memset(&arguments.scan_info, 0, sizeof(scan_func_t));
-    arguments.ports          = NULL;
     arguments.timeout        = 3;
     arguments.no_ping        = false;
     arguments.thread_workers = 3;
 
-    unsigned short open_ports         = 0;
+    unsigned short closed_ports       = 0;
+    unsigned short error_ports        = 0;
     double         total_time_scanned = 0;
     /*
         ===========================================================
@@ -41,12 +42,12 @@ int main(int argc, char *argv[]) {
         ui_line("ARGUMENTS", '-', TERMINAL_WIDTH);
     }
 
-    if (arguments.scan_info.name != 0) {
-        VERBOSE_MESSAGE("Scanning method: %s \n", arguments.scan_info.name);
-    } else {
-        ERR_PRINT("Missing scanning method\n");
-        return -1;
+    if (arguments.scan_info.scan_func == NULL) {
+        ERR_PRINT("No scanning method selected!");
+        exit(0);
     }
+
+    VERBOSE_MESSAGE("Scanning method: %s \n", arguments.scan_info.name);
 
     if (arguments.address.ss_family == AF_INET) {
         char str[INET_ADDRSTRLEN];
@@ -72,7 +73,7 @@ int main(int argc, char *argv[]) {
             guess_interface(arguments.address, &(arguments.interface)) < 0) {
             ERR_PRINT("Failed to ping target, try using --no-ping\n");
         } else {
-            get_first_network_dev(&(arguments.interface));
+            get_first_network_interface(&(arguments.interface));
         }
     } else {
         if (!verify_interface(arguments.interface)) {
@@ -91,18 +92,17 @@ int main(int argc, char *argv[]) {
     /*
         ===========================================================
     */
-
-    int temp = parse_ports(arguments.ports_format, &(arguments.ports));
-    if (temp < 1) {
+    unsigned short *ports;
+    unsigned int    port_len = parse_ports(arguments.ports_format, &(ports));
+    if (port_len == 0) {
         ERR_PRINT("Failed to parse ports\n");
         return -1;
     }
-    arguments.ports_len = temp;
 
-    PRINT("Scanning on ports: %s \n", arguments.ports_format);
+    PRINT("Scanning on ports: %s (%d)\n", arguments.ports_format, port_len);
 
     scan_arg_t    function_argument;
-    scan_result_t scan_result[arguments.ports_len];
+    scan_result_t scan_result[port_len];
 
     memset(scan_result, -1, sizeof(scan_result));
     function_argument.addr = &arguments.address;
@@ -112,8 +112,7 @@ int main(int argc, char *argv[]) {
     ui_line("Starting Scan", '=', TERMINAL_WIDTH);
 
     multithread_scanning(&arguments.scan_info, &function_argument, scan_result,
-                         arguments.ports, arguments.ports_len,
-                         arguments.thread_workers);
+                         ports, port_len, arguments.thread_workers);
 
     ui_line("| Ports |", '=', TERMINAL_WIDTH);
     PRINT("|%-*s", RESULT_PORT_LEN, "Port");
@@ -122,15 +121,17 @@ int main(int argc, char *argv[]) {
     PRINT("|%-*s", RESULT_TIME_LEN, "Responce Time (s)");
     PRINT("\n");
     // ui_line("", '~', TERMINAL_WIDTH);
-    for (int i = 0; i < arguments.ports_len; i++) {
-        if (scan_result[i].state > 0) {
-            open_ports++;
+    for (int i = 0; i < port_len; i++) {
+        if (scan_result[i].state == 0) {
+            closed_ports++;
+        }
+        if (scan_result[i].state < 0) {
+            error_ports++;
         }
 
         total_time_scanned += scan_result[i].scannig_time;
 
-        if (arguments.ports_len > MAX_PORTS_TO_SHOW &&
-            scan_result[i].state <= 0) {
+        if (port_len > MAX_PORTS_TO_SHOW && scan_result[i].state <= 0) {
             continue;
         }
 
@@ -138,10 +139,10 @@ int main(int argc, char *argv[]) {
         char service_buff[PORT_SERVICE_LEN];
         memset(service_buff, 0, sizeof(service_buff));
 
-        find_port(arguments.scan_info.transfer_protocol, arguments.ports[i],
+        find_port(arguments.scan_info.transfer_protocol, ports[i],
                   &service_buff);
         sprintf(
-            port_buff, "%u/%s", arguments.ports[i],
+            port_buff, "%u/%s", ports[i],
             get_transfer_layer_string(arguments.scan_info.transfer_protocol));
         PRINT("|%-*s", RESULT_PORT_LEN, port_buff);
         PRINT("|%-*s", RESULT_STATE_LEN, state_string(scan_result[i].state));
@@ -151,12 +152,13 @@ int main(int argc, char *argv[]) {
     }
 
     ui_line(" | General Stats | ", '=', TERMINAL_WIDTH);
-    PRINT("\tOpen Ports -> %-*d\n", RESULT_PORT_LEN, open_ports);
-    PRINT("\tClosed Ports -> %-*d\n", RESULT_PORT_LEN,
-          arguments.ports_len - open_ports);
+    PRINT("\tOpen Ports -> %-*d\n", RESULT_PORT_LEN,
+          port_len - closed_ports - error_ports);
+    PRINT("\tClosed Ports -> %-*d\n", RESULT_PORT_LEN, closed_ports);
+    PRINT("\tError Ports -> %-*d\n", RESULT_PORT_LEN, error_ports);
     PRINT("\tTotal time scanned -> %-*f\n", RESULT_PORT_LEN,
           total_time_scanned / SECONDS);
 
-    free(arguments.ports);
+    free(ports);
     return 0;
 }

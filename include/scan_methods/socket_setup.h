@@ -7,7 +7,7 @@
 #include "../ui/print_macro.h"
 #include "scan_structs.h"
 
-int socket_init(scan_func_t func_info, scan_arg_t func_arg);
+int socket_init(int protocol, scan_arg_t func_arg);
 
 void socket_close(int socket);
 

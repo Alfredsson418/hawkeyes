@@ -4,17 +4,18 @@
 <div align="center">
   <a href="https://discord.gg/76USAhaF8a">Discord</a>
   -
-  <a href="hawkeyes.dev">Website</a>
+  <a href="https://hawkeyes.dev">Website</a>
 </div>
 
 <br>
 
 <p align="center">
   <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/Alfredsson418/hawkeyes?style=for-the-badge">
-  <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/Alfredsson418/hawkeyes?style=for-the-badge&color=darkorange">
   <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/Alfredsson418/hawkeyes?style=for-the-badge&color=mediumaquamarine">
   <img alt="Website" src="https://img.shields.io/website?url=https%3A%2F%2Fhawkeyes.dev&style=for-the-badge">
-  <!-- https://shields.io/badges/git-hub-top-language -->
+  <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/Alfredsson418/hawkeyes?style=for-the-badge&color=darkorange">
+  <img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/Alfredsson418/hawkeyes?style=for-the-badge&color=slateblue">
+  <!-- https://shields.io/badges/ -->
 </p>
 
 ## Current Features

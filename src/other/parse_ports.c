@@ -1,6 +1,6 @@
 #include "../../include/other/parse_ports.h"
 
-int parse_ports(char *str, unsigned short **ports) {
+unsigned int parse_ports(char *str, unsigned short **ports) {
     int len = 0;
 
     // Return array
@@ -24,7 +24,7 @@ int parse_ports(char *str, unsigned short **ports) {
                 ERR_PRINT("Bad port input\n");
                 free(save_ptr);
                 free(*ports);
-                return -1;
+                return 0;
             }
 
             char *temp = strtok_r(token, "-", &token);
@@ -32,7 +32,7 @@ int parse_ports(char *str, unsigned short **ports) {
                 ERR_PRINT("Bad port input\n");
                 free(save_ptr);
                 free(*ports);
-                return -1;
+                return 0;
             }
             int first = atoi(temp);
             temp      = strtok_r(token, "-", &token);
@@ -40,7 +40,7 @@ int parse_ports(char *str, unsigned short **ports) {
                 ERR_PRINT("Bad port input\n");
                 free(save_ptr);
                 free(*ports);
-                return -1;
+                return 0;
             }
 
             int second = atoi(temp);
@@ -49,14 +49,14 @@ int parse_ports(char *str, unsigned short **ports) {
                 ERR_PRINT("Bad port input\n");
                 free(save_ptr);
                 free(*ports);
-                return -1;
+                return 0;
             }
 
             if (first > MAX_PORT || second > MAX_PORT) {
                 ERR_PRINT("Ports larger than %d does not exist\n", MAX_PORT);
                 free(save_ptr);
                 free(*ports);
-                return -1;
+                return 0;
             }
 
             // Count the amount of ports
@@ -70,6 +70,12 @@ int parse_ports(char *str, unsigned short **ports) {
                 port_index++;
             }
         } else {
+            int temp = atoi(token);
+
+            if (temp < 0 || temp > MAX_PORT) {
+                return 0;
+            }
+
             len++;
             *ports               = realloc(*ports, len * sizeof(int));
             (*ports)[port_index] = atoi(token);
