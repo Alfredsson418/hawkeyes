@@ -1,7 +1,4 @@
 #include "../../../include/scan_methods/udp/echo_responce.h"
-#include <netinet/in.h>
-#include <stdio.h>
-#include <sys/socket.h>
 
 void *run_next_best_packet(void *arg) {
     next_best_args *args = (next_best_args *)arg;
@@ -20,9 +17,15 @@ void *run_next_best_packet(void *arg) {
 */
 int icmp_responce_scan(scan_arg_t arg, scan_result_t *result) {
 
-    pthread_t       thread_id;
-    net_packet     *packet = NULL;
     struct timespec start, stop;
+    clock_gettime(CLOCK_MONOTONIC, &start);
+
+    pthread_t   thread_id;
+    net_packet *packet = NULL;
+    int         sock   = socket_init(SOCK_DGRAM, arg);
+    if (sock < 0) {
+        return -1;
+    }
 
     next_best_args packet_capture_arg;
 
@@ -55,36 +58,18 @@ int icmp_responce_scan(scan_arg_t arg, scan_result_t *result) {
     while ((!packet_capture_arg.setup_complete)) {
         ;
     }
-    clock_gettime(CLOCK_MONOTONIC, &start);
 
-    /*
-        (icmp[30:2] == %#06x): This condition checks if the src port of the ICMP
-       packet SENT matches the port variable. The %#06x format specifier ensures
-       that the port value is formatted as a zero-padded, 6-character wide
-        hexadecimal number with a 0x prefix.
-
-        (icmp[0] == 3): This condition checks if the first byte of the ICMP
-        packet is equal to 3, which typically indicates a "Destination
-       Unreachable" message in ICMP.
-
-        (icmp[1] == 3): This condition checks if the second byte of the
-        ICMP packet is equal to 3, which usually specifies the "Port
-       Unreachable" code within the "Destination Unreachable" message.
-    */
-
-    if (sendto(arg.sock, 0, 0, 0, (struct sockaddr *)arg.addr,
+    if (sendto(sock, 0, 0, 0, (struct sockaddr *)arg.addr,
                get_addr_len(arg.addr)) < 0) {
         ERR_PRINT("Failed to send UDP package\n");
-        perror("sock");
         result->state = -1;
         return result->state;
     }
 
     pthread_join(thread_id, (void **)&packet);
-    clock_gettime(CLOCK_MONOTONIC, &stop);
 
     if (packet == NULL) {
-        ERR_PRINT("Failed to capture UDP packet\n");
+        // ERR_PRINT("Failed to capture UDP packet\n");
         result->state = -1;
 
         // This needs the && because the first check is for if its empty or not
@@ -99,6 +84,9 @@ int icmp_responce_scan(scan_arg_t arg, scan_result_t *result) {
         result->state = 1;
     }
 
+    socket_close(sock);
+
+    clock_gettime(CLOCK_MONOTONIC, &stop);
     result->scannig_time = time_in_x(start, stop, NANO);
 
     return result->state;

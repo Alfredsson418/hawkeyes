@@ -21,8 +21,6 @@ extern const struct argp_option terminal_options[];
 
 struct terminal_args {
     char                    interface[INTERFACE_LEN];
-    unsigned short         *ports;
-    unsigned short          ports_len;
     char                    ports_format[PORTS_FORMAT_LEN];
     struct sockaddr_storage address;
     unsigned int            timeout;

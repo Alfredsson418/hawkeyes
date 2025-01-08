@@ -5,18 +5,18 @@ const char terminal_docs[] = "Scan for open ports on target device";
 
 // This should be formated, but the {0} at the failes this,
 const struct argp_option terminal_options[] = {
-    {          "verbose", 'v',                            0, 0,"Verbose output"                                                               },
-    {            "quiet", 501,                            0, 0,          "No terminal output"},
-    {           "method", 'm', "METHOD(connect()/icmp/FIN)", 0,                            ""},
-    {        "interface", 'i',                  "INTERFACE", 0,
-     "Network interface to scan from, e.g lo"                                                },
-    {             "port", 'p',                    "PORT(S)", 0,
-     "Define what port(s) to scan, e.g -p 22; -p 1-100; -p 22,53,23"                         },
-    {           "target", 't',                       "IPv4", 0,                 "Target IPv4"},
-    {          "timeout", 'w',                  "TIME(sec)", 0,                     "Timeout"},
-    {          "no-ping", 503,                            0, 0,      "Do not ping the target"},
-    {"threading-workers", 'n',                    "WORKERS", 0, "Amount of threading workers"},
-    {                  0,   0,                            0, 0,                             0}
+    {"verbose", 'v', 0, 0, "Verbose output"},
+    {"quiet", 501, 0, 0, "No terminal output"},
+    {"method", 'm', "METHOD(connect()/icmp/FIN)", 0, ""},
+    {"interface", 'i', "INTERFACE", 0,
+     "Network interface to scan from, e.g lo"},
+    {"port", 'p', "PORT(S)", 0,
+     "Define what port(s) to scan, e.g -p 22; -p 1-100; -p 22,53,23"},
+    {"target", 't', "IPv4", 0, "Target IPv4"},
+    {"timeout", 'w', "TIME(sec)", 0, "Timeout"},
+    {"no-ping", 503, 0, 0, "Do not ping the target"},
+    {"threading-workers", 'n', "WORKERS", 0, "Amount of threading workers"},
+    {0}
 };
 
 struct argp terminal_argp = {terminal_options, terminal_parse_opt, 0,
@@ -72,13 +72,11 @@ error_t terminal_parse_opt(int key, char *arg, struct argp_state *state) {
         break;
     case 'm':
         if (strcmp(arg, "conn") == 0) {
-            arguments->scan_info.sock_type         = SOCK_STREAM;
             arguments->scan_info.scan_func         = connect_scan;
             arguments->scan_info.transfer_protocol = TCP_t;
             arguments->scan_info.needs_root        = false;
             arguments->scan_info.name = "Three way handshake/connect()";
         } else if (strcmp(arg, "icmp") == 0) {
-            arguments->scan_info.sock_type         = SOCK_DGRAM;
             arguments->scan_info.scan_func         = icmp_responce_scan;
             arguments->scan_info.transfer_protocol = UDP_t;
             arguments->scan_info.needs_root        = true;

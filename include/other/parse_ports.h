@@ -14,4 +14,4 @@
         Length of array.
 
 */
-int parse_ports(char *str, unsigned short **ports);
+unsigned int parse_ports(char *str, unsigned short **ports);

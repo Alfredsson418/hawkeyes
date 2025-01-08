@@ -1,6 +1,6 @@
 #include "../../include/other/network_interface.h"
 
-int get_first_network_dev(char (*interface)[INTERFACE_LEN]) {
+int get_first_network_interface(char (*interface)[INTERFACE_LEN]) {
     struct ifaddrs *ifaddr;
 
     if (getifaddrs(&ifaddr) < 0) {

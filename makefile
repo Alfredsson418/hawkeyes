@@ -10,7 +10,7 @@ SRC = src
 
 # Flags for compiling
 DEBUG_CFLAGS = -Wall -g
-RELEASE_CFLAGS = -O2
+RELEASE_CFLAGS =
 LDFLAGS = -lpcap -pthread -lcap
 
 # Get all the source files in the SRC directory and its subdirectories
