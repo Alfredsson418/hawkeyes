@@ -9,6 +9,7 @@
 
 #include "../constans.h"
 #include "../ui/print_macro.h"
+#include "checksum.h"
 
 /*
     Parameters:
