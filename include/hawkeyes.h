@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "constans.h"
+#include "other/ip/convert.h"
 #include "other/network_interface.h"
 #include "other/parse_ports.h"
 #include "other/permissions.h"

@@ -82,8 +82,11 @@ error_t terminal_parse_opt(int key, char *arg, struct argp_state *state) {
             arguments->scan_info.needs_root        = true;
             arguments->scan_info.name              = "ICMP echo reply";
 
-            // } else if (strcmp(arg, "half-sync") == 0) {
-            // arguments->scan_method = SCAN_HALF_SYNC_t;
+        } else if (strcmp(arg, "syn") == 0) {
+            arguments->scan_info.scan_func         = SYN_scan;
+            arguments->scan_info.transfer_protocol = TCP_t;
+            arguments->scan_info.needs_root        = true;
+            arguments->scan_info.name              = "FIN scan";
 
         } else { // connect to use as backup
             ERR_PRINT("Invalid scanning method\n");

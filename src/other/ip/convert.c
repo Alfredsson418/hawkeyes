@@ -1,6 +1,7 @@
-#include "../../include/other/convert_address.h"
+#include "../../../include/other/ip/convert.h"
+#include <netinet/in.h>
 
-int str_to_ipv4(struct sockaddr_storage *addr, char *str) {
+int str_to_ipv4(struct sockaddr_storage *addr, char str[INET_ADDRSTRLEN]) {
     struct sockaddr_in *addr_in = (struct sockaddr_in *)addr;
     addr_in->sin_family         = AF_INET;
 
@@ -11,7 +12,7 @@ int str_to_ipv4(struct sockaddr_storage *addr, char *str) {
     return 0;
 }
 
-int ipv4_to_str(struct sockaddr_storage *addr, char *str) {
+int ipv4_to_str(struct sockaddr_storage *addr, char str[INET_ADDRSTRLEN]) {
     if (addr->ss_family != AF_INET) {
         ERR_PRINT("The provided sockaddr_storage does not contain an IPv4 "
                   "address.\n");
@@ -27,7 +28,7 @@ int ipv4_to_str(struct sockaddr_storage *addr, char *str) {
 
     return 0;
 }
-int str_to_ipv6(struct sockaddr_storage *addr, char *str) {
+int str_to_ipv6(struct sockaddr_storage *addr, char str[INET6_ADDRSTRLEN]) {
     struct sockaddr_in6 *addr_in = (struct sockaddr_in6 *)addr;
     addr_in->sin6_family         = AF_INET6;
 
@@ -38,7 +39,7 @@ int str_to_ipv6(struct sockaddr_storage *addr, char *str) {
     return 0;
 }
 
-int ipv6_to_str(struct sockaddr_storage *addr, char *str) {
+int ipv6_to_str(struct sockaddr_storage *addr, char str[INET6_ADDRSTRLEN]) {
     if (addr->ss_family != AF_INET6) {
         ERR_PRINT("The provided sockaddr_storage does not contain an IPv4 "
                   "address.\n");

@@ -2,11 +2,20 @@
 
 #include <arpa/inet.h>
 #include <ifaddrs.h>
+#include <netinet/in.h>
 #include <string.h>
+#include <sys/socket.h>
 
 #include "../constans.h"
 #include "../ui/print_macro.h"
+#include "permissions.h"
 #include "ping.h"
+
+typedef struct {
+    char                    name[INTERFACE_LEN];
+    struct sockaddr_storage s_addr;
+    struct sockaddr_storage subnet_mask;
+} interface_info;
 
 /*
     Gives the first given network interface.
@@ -17,7 +26,7 @@
     Return:
         Returns first device from pcap_findalldevs, else NULL.
 */
-int get_first_network_interface(char (*interface)[INTERFACE_LEN]);
+int get_first_network_interface(interface_info *interface);
 
 /*
     Parameters:
@@ -26,7 +35,6 @@ int get_first_network_interface(char (*interface)[INTERFACE_LEN]);
     Return:
     Returns -1 if error, else 0
 */
-int guess_interface(struct sockaddr_storage ip_addr,
-                    char (*interface)[INTERFACE_LEN]);
+int guess_interface(struct sockaddr_storage ip_addr, interface_info *interface);
 
-int verify_interface(char interface[INTERFACE_LEN]);
+int verify_interface(interface_info *interface);

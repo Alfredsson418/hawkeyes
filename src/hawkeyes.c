@@ -1,5 +1,5 @@
 #include "../include/hawkeyes.h"
-#include <stdlib.h>
+#include <string.h>
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
@@ -16,6 +16,7 @@ int main(int argc, char *argv[]) {
         ===========================================================
     */
     struct terminal_args arguments;
+    interface_info       interface;
     memset(&arguments.address, 0, sizeof(struct sockaddr_storage));
     memset(arguments.interface, '\0', INTERFACE_LEN);
     memset(arguments.ports_format, '\0', PORTS_FORMAT_LEN);
@@ -43,7 +44,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (arguments.scan_info.scan_func == NULL) {
-        ERR_PRINT("No scanning method selected!");
+        ERR_PRINT("No scanning method selected!\n");
         exit(0);
     }
 
@@ -70,19 +71,19 @@ int main(int argc, char *argv[]) {
     if (arguments.interface[0] == '\0') {
         VERBOSE_MESSAGE("No network interface set \n");
         if ((!arguments.no_ping && is_root()) &&
-            guess_interface(arguments.address, &(arguments.interface)) < 0) {
+            (guess_interface(arguments.address, &interface) < 0)) {
+            get_first_network_interface(&interface);
             ERR_PRINT("Failed to ping target, try using --no-ping\n");
-        } else {
-            get_first_network_interface(&(arguments.interface));
         }
     } else {
-        if (!verify_interface(arguments.interface)) {
+        strcpy(interface.name, arguments.interface);
+        if (!verify_interface(&interface)) {
             ERR_PRINT("The given network interface does not exist\n");
             return -1;
         }
     }
+    VERBOSE_MESSAGE("Network interface: %s\n", interface.name);
 
-    VERBOSE_MESSAGE("Network interface: %s\n", arguments.interface);
     if (arguments.ports_format[0] == '\0') {
         strncpy(arguments.ports_format, "1-1000", INTERFACE_LEN);
         VERBOSE_MESSAGE("Port range was not set, using default %s \n",
@@ -106,7 +107,7 @@ int main(int argc, char *argv[]) {
 
     memset(scan_result, -1, sizeof(scan_result));
     function_argument.addr = &arguments.address;
-    strcpy(function_argument.network_interface, arguments.interface);
+    strcpy(function_argument.interface.name, arguments.interface);
     function_argument.timeout = arguments.timeout;
     // This will be where the scanning starts
     ui_line("Starting Scan", '=', TERMINAL_WIDTH);

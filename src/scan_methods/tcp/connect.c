@@ -3,7 +3,7 @@
 int connect_scan(scan_arg_t arg, scan_result_t *result) {
     struct timespec start, stop;
 
-    int sock = socket_init(SOCK_STREAM, arg);
+    int sock = socket_init(SOCK_STREAM, 0, arg);
 
     clock_gettime(CLOCK_MONOTONIC, &start);
 

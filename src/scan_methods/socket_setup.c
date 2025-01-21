@@ -1,12 +1,12 @@
 #include "../../include/scan_methods/socket_setup.h"
 
-int socket_init(int protocol, scan_arg_t func_arg) {
+int socket_init(int socket_type, int protocol, scan_arg_t func_arg) {
 
     struct timeval timeout;
     timeout.tv_sec  = func_arg.timeout;
     timeout.tv_usec = 0; // Should be easy to and more specific timeout
 
-    int sock = socket(func_arg.addr->ss_family, protocol, 0);
+    int sock = socket(func_arg.addr->ss_family, socket_type, protocol);
 
     if (sock < 0) {
         ERR_PRINT("Failed to create TCP socket \n");
@@ -27,8 +27,8 @@ int socket_init(int protocol, scan_arg_t func_arg) {
         return -1;
     }
 
-    if (setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE,
-                   func_arg.network_interface, INTERFACE_LEN) < 0) {
+    if (setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, func_arg.interface.name,
+                   INTERFACE_LEN) < 0) {
         ERR_PRINT("TCP Setup interface \n");
         close(sock);
         return -1;

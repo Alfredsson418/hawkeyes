@@ -8,9 +8,10 @@
 
 #include "../scan_methods/scan_structs.h"
 #include "../scan_methods/tcp/connect.h"
+#include "../scan_methods/tcp/half_sync.h"
 #include "../scan_methods/udp/echo_responce.h"
 #include "../ui/print_macro.h"
-#include "convert_address.h"
+#include "ip/convert.h"
 
 extern const struct argp_option terminal_options[];
 

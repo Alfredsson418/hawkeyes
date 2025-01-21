@@ -22,7 +22,7 @@ int icmp_responce_scan(scan_arg_t arg, scan_result_t *result) {
 
     pthread_t   thread_id;
     net_packet *packet = NULL;
-    int         sock   = socket_init(SOCK_DGRAM, arg);
+    int         sock   = socket_init(SOCK_DGRAM, 0, arg);
     if (sock < 0) {
         return -1;
     }
@@ -30,7 +30,7 @@ int icmp_responce_scan(scan_arg_t arg, scan_result_t *result) {
     next_best_args packet_capture_arg;
 
     packet_capture_arg.timeout        = arg.timeout;
-    packet_capture_arg.interface      = arg.network_interface;
+    packet_capture_arg.interface      = arg.interface.name;
     packet_capture_arg.setup_complete = false;
 
     if (arg.addr->ss_family == AF_INET) {
