@@ -1,9 +1,8 @@
 #include "../../../include/other/ip/construct.h"
-#include <netinet/in.h>
 
-int construct_ipv4(struct iphdr *hdr, struct sockaddr_storage *addr) {
-    struct sockaddr_in *v4 = (struct sockaddr_in *)addr;
-
+int construct_ipv4(struct iphdr *hdr, struct sockaddr_in *s_addr,
+                   struct sockaddr_in *d_addr, unsigned int id,
+                   unsigned int payload_len) {
     // IPv4
     hdr->version = 4;
 
@@ -13,11 +12,11 @@ int construct_ipv4(struct iphdr *hdr, struct sockaddr_storage *addr) {
     // Type of service
     hdr->tos = 0;
 
-    // sizeof the packet and payload, should be done outside of this function
-    // hdr->tot_len =
+    // sizeof the packet and payload in network byte order
+    hdr->tot_len = htons(payload_len + hdr->ihl * 4);
 
     // id of the packet, should also be done outside of this function
-    // hdr->id =
+    hdr->id = htons(id);
 
     // Flags and Fragmentation offset, used when
     hdr->frag_off = 0;
@@ -28,9 +27,16 @@ int construct_ipv4(struct iphdr *hdr, struct sockaddr_storage *addr) {
     // TCP (6), UDP (17)
     hdr->protocol = IPPROTO_TCP;
 
+    // Source Address (should be the ip of the interface but could also be
+    // spoofed)
+    hdr->saddr = s_addr->sin_addr.s_addr;
+
+    // Destination Address
+    hdr->daddr = d_addr->sin_addr.s_addr;
+
     // Checksum of the IP header
-    // Should be calculated
     hdr->check = 0;
+    hdr->check = checksum(hdr, hdr->tot_len * 4);
 
     return 0;
 }

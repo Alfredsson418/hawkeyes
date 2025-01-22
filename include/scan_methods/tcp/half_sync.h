@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "../../other/checksum.h"
+#include "../../other/ip/construct.h"
 #include "../scan_structs.h"
 #include "../socket_setup.h"
 
