@@ -20,33 +20,33 @@
   <!-- https://shields.io/badges/ -->
 </p>
 
-## Current Features
-* Different scanning methods
-* IPv4 and IPv6 support
-* Specify a range of ports and/or specific ports (e.g., 50-60, 67, 78)
-* Multithreaded scanning
-* Scan on specific interfaces
-* Service detection
-## Future Features
-* Guess service on port with probes
-* More scanning methods
 
-# How to run
-## Compile
-1. Download necessary libraries(read [`requirements`](docs/Requirements.md))
-2. Run `make release` in the project root folder
-3. Done !
+<h1>Getting started</h1>
+<h2>Compiling from source</h2>
+<b>Please install the <a href="docs/REQUREMENTS.md">required</a> packets before compiling.</b>
 
-## [`Usage`](docs/Help.md)
-`./hawk [options]`
-### Example
-`./hawk -t 127.0.0.53 -p 53-55,60 -i lo -m conn`
+```
+make release
+```
+<p><b>OBS!</b> A install script will be worked on to streamline the install process.</p>
 
-`sudo ./hawk -t ::1 -p 5353 -i lo -m icmp`
+<h2>Usage</h2>
+
+```
+Usage:
+./hawk [options]
+
+Example:
+./hawk -t 127.0.0.53 -p 53-55,60 -i lo -m conn
+```
+
+<p>To see all options, head over to the <a href="docs/USAGE.md">documentation</a>.</p>
 
 
-# Want to contirbute to the project?
-Before starting to contribute, read the [`Code of Conduct`](CODE_OF_CONDUCT.md). Read the [`Contribution.md`](CONTRIBUTING.md) to learn more and get some tips! Also join the [`offical discord server`](https://discord.gg/76USAhaF8a).
+<h1>Want to contirbute to the project?</h1>
+<p>Read about contribution to this project over at <a href="CONTRIBUTING.md">CONTRIBUTING.md</a></p>
 
-# Questions
-- This project is not named after Hawkeye from Marvel
+<h1>Questions<h1>
+<ul>
+  <li>This project is not named after Hawkeye from Marvel</li>
+</ul>

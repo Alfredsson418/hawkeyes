@@ -1,8 +1,8 @@
-#include "../../../include/other/ip/construct.h"
+#include "../../../include/other/headers/ip.h"
 
-int construct_ipv4(struct iphdr *hdr, struct sockaddr_in *s_addr,
-                   struct sockaddr_in *d_addr, unsigned int id,
-                   unsigned int payload_len) {
+int construct_ip_hdr(struct iphdr *hdr, struct sockaddr_in *s_addr,
+                     struct sockaddr_in *d_addr, unsigned int id,
+                     unsigned int payload_len) {
     // IPv4
     hdr->version = 4;
 
@@ -36,9 +36,9 @@ int construct_ipv4(struct iphdr *hdr, struct sockaddr_in *s_addr,
 
     // Checksum of the IP header
     hdr->check = 0;
-    hdr->check = checksum(hdr, hdr->tot_len * 4);
+    hdr->check = checksum(hdr, payload_len + hdr->ihl * 4);
 
     return 0;
 }
 
-int construct_ipv6(struct iphdr *hdr) { return 0; }
+int construct_ip6_hdr(struct iphdr *hdr) { return 0; }

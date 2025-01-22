@@ -6,8 +6,12 @@ No Windows build is planned.
 OBS: Some libraries used in this project only work for UNIX based systems (argp) or work differently from different OS (libpcap),
 so keep that in mind when compiling and running this program.
 
-
-# Non standard libraries used
+# Software requirements
+* C compiler (like gcc)
+* Makefile
 * libpcap-dev (Used to capture traffic for UDP)
 * argp (Used for parsing arguments from terminal)
-* libcap-dev (Used to check permissions)
+<!-- * libcap-dev (Used to check permissions) Currently not in use -->
+
+# Optional
+* Python (for parsing ports from /etc/services)

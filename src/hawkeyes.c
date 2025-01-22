@@ -106,9 +106,9 @@ int main(int argc, char *argv[]) {
     scan_result_t scan_result[port_len];
 
     memset(scan_result, -1, sizeof(scan_result));
-    function_argument.addr = &arguments.address;
-    strcpy(function_argument.interface.name, arguments.interface);
-    function_argument.timeout = arguments.timeout;
+    function_argument.addr      = &arguments.address;
+    function_argument.interface = &interface;
+    function_argument.timeout   = arguments.timeout;
     // This will be where the scanning starts
     ui_line("Starting Scan", '=', TERMINAL_WIDTH);
 
