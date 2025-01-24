@@ -35,8 +35,9 @@ int construct_ip_hdr(struct iphdr *hdr, struct sockaddr_in *s_addr,
     hdr->daddr = d_addr->sin_addr.s_addr;
 
     // Checksum of the IP header
+    // Could only set to 0 because the OS will calculate on its own
     hdr->check = 0;
-    hdr->check = checksum(hdr, payload_len + hdr->ihl * 4);
+    // hdr->check = htons(0x0000); May be overwritten by the os
 
     return 0;
 }

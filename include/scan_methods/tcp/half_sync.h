@@ -1,7 +1,9 @@
 #pragma once
 
+#include <netinet/ip.h>
 #include <netinet/tcp.h>
 #include <string.h>
+#include <sys/socket.h>
 
 #include "../../other/checksum.h"
 #include "../../other/headers/ip.h"

@@ -46,7 +46,7 @@ Example:
 <h1>Want to contirbute to the project?</h1>
 <p>Read about contribution to this project over at <a href="CONTRIBUTING.md">CONTRIBUTING.md</a></p>
 
-<h1>Questions<h1>
+<h1>Questions</h1>
 <ul>
   <li>This project is not named after Hawkeye from Marvel</li>
 </ul>

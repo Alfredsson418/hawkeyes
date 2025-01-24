@@ -1,6 +1,8 @@
 #pragma once
 
+#include <netinet/tcp.h>
 #include <stdlib.h>
+#include <sys/types.h>
 
 // Pseudo header needed for TCP checksum calculation
 typedef struct {

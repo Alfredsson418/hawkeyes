@@ -2,12 +2,12 @@
 <p>Before contributing to this project, please read thought the <a href="CODE_OF_CONDUCT.md">Code of conduct</a> where the community rules is.</p>
 
 <h1>Where do get help and/or join the community</h1>
-<h2><a href="https://discord.gg/76USAhaF8a">Join the discord!</a></h2>
-<h2><a href="">Join the Matrix server!</a> (Comming soon)</h2>
+<h3><a href="https://discord.gg/76USAhaF8a">Join the discord!</a></h2>
+<h3><a href="">Join the Matrix server!</a> (Comming soon)</h2>
 
 <h1>How to contribute</h1>
 <ol>
-  <li>Find something to do (<a href="how-to-contribute">How to find someting to contribute</a>)
+  <li>Find something to do (<a href="#how-to-contribute">How to find someting to contribute</a>)
   <li>Fork this github repository.</li>
   <li>Create a new branch for yourself.</li>
   <li>Commit and push your changes to the forked repository.</li>
