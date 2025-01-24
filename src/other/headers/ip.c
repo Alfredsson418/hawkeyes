@@ -1,4 +1,5 @@
 #include "../../../include/other/headers/ip.h"
+#include <netinet/in.h>
 
 int construct_ip_hdr(struct iphdr *hdr, struct sockaddr_in *s_addr,
                      struct sockaddr_in *d_addr, unsigned int id,
@@ -42,4 +43,15 @@ int construct_ip_hdr(struct iphdr *hdr, struct sockaddr_in *s_addr,
     return 0;
 }
 
-int construct_ip6_hdr(struct iphdr *hdr) { return 0; }
+// https://www.geeksforgeeks.org/internet-protocol-version-6-ipv6-header/
+int construct_ip6_hdr(struct ip6_hdr *hdr, struct sockaddr_in6 *s_addr,
+                      struct sockaddr_in6 *d_addr, unsigned int id,
+                      unsigned int payload_len) {
+
+    hdr->ip6_ctlun.ip6_un1.ip6_ = IPPROTO_TCP;
+
+    hdr->ip6_ctlun.ip6_un1.ip6_un1_nxt  = IPPROTO_TCP;
+    hdr->ip6_ctlun.ip6_un1.ip6_un1_plen = htons(payload_len);
+
+    return 0;
+}

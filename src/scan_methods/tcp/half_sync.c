@@ -6,14 +6,14 @@
 // https://linux-kernel-labs.github.io/refs/heads/master/labs/networking.html
 
 int SYN_scan(scan_arg_t arg, scan_result_t *result) {
-    unsigned int   packet_len = sizeof(struct iphdr) + sizeof(struct tcphdr);
-    char           packet[packet_len];
+    unsigned int packet_len = sizeof(struct iphdr) + sizeof(struct tcphdr);
+    char         packet[packet_len];
+
     struct iphdr  *ip_hdr  = (struct iphdr *)packet;
     struct tcphdr *tcp_hdr = (struct tcphdr *)(packet + sizeof(struct iphdr));
-    tcp_pseudo_header pseudo_hdr;
-    memset(&pseudo_hdr, 0, sizeof(pseudo_hdr));
-    struct sockaddr_in *dst = (struct sockaddr_in *)arg.addr;
-    struct sockaddr_in *src = (struct sockaddr_in *)&arg.interface->s_addr;
+
+    // Used for calculating checksum
+    struct pseudo_header pseudo_hdr;
 
     int sock = socket_init(SOCK_RAW, IPPROTO_RAW, arg);
 
@@ -46,19 +46,19 @@ int SYN_scan(scan_arg_t arg, scan_result_t *result) {
     tcp_hdr->urg   = 0;
     tcp_hdr->check = 0;
 
-    pseudo_hdr.source_address = src->sin_addr.s_addr;
-    pseudo_hdr.dest_address   = dst->sin_addr.s_addr;
-    pseudo_hdr.placeholder    = 0;
-    pseudo_hdr.protocol       = IPPROTO_TCP;
-    pseudo_hdr.tcp_length     = htons(sizeof(struct tcphdr));
+    pseudo_hdr.source_address =
+        ((struct sockaddr_in *)&arg.interface->s_addr)->sin_addr.s_addr;
+    pseudo_hdr.dest_address = ((struct sockaddr_in *)arg.addr)->sin_addr.s_addr;
+    pseudo_hdr.placeholder  = 0;
+    pseudo_hdr.protocol     = IPPROTO_TCP;
+    pseudo_hdr.tcp_length   = htons(sizeof(struct tcphdr));
 
     unsigned int pseudo_size =
-        sizeof(tcp_pseudo_header) + sizeof(struct tcphdr);
-
+        sizeof(struct pseudo_header) + sizeof(struct tcphdr);
     char pseudogram[pseudo_size];
 
-    memcpy(pseudogram, &pseudo_hdr, sizeof(tcp_pseudo_header));
-    memcpy(pseudogram + sizeof(tcp_pseudo_header), tcp_hdr,
+    memcpy(pseudogram, &pseudo_hdr, sizeof(struct pseudo_header));
+    memcpy(pseudogram + sizeof(struct pseudo_header), tcp_hdr,
            sizeof(struct tcphdr));
 
     tcp_hdr->check = checksum(pseudogram, pseudo_size);
