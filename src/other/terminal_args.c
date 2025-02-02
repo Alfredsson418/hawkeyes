@@ -86,7 +86,7 @@ error_t terminal_parse_opt(int key, char *arg, struct argp_state *state) {
             arguments->scan_info.scan_func         = SYN_scan;
             arguments->scan_info.transfer_protocol = TCP_t;
             arguments->scan_info.needs_root        = true;
-            arguments->scan_info.name              = "FIN scan";
+            arguments->scan_info.name              = "SYN scan";
 
         } else { // connect to use as backup
             ERR_PRINT("Invalid scanning method\n");

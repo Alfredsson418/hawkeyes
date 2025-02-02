@@ -38,4 +38,9 @@ int get_first_network_interface(interface_info *interface);
 */
 int guess_interface(struct sockaddr_storage ip_addr, interface_info *interface);
 
+/*
+    Parameters:
+        interface: The iterface to send packages from
+        OBS! Specifiy what network family to use
+*/
 int verify_interface(interface_info *interface);

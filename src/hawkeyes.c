@@ -1,5 +1,4 @@
 #include "../include/hawkeyes.h"
-#include <string.h>
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
@@ -33,6 +32,8 @@ int main(int argc, char *argv[]) {
     */
 
     argp_parse(&terminal_argp, argc, argv, 0, 0, &arguments);
+
+    interface.s_addr.ss_family = arguments.address.ss_family;
 
     /*
         ===========================================================

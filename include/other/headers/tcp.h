@@ -24,3 +24,8 @@ struct ip6_pseudo_header {
     uint8_t  zero[3];
     uint8_t  next_header;
 };
+
+int tcp_hdr_setup(struct tcphdr *tcp_hdr, unsigned short src_port,
+                  unsigned short dst_port, unsigned int seq_id,
+                  struct sockaddr_storage *src_addr,
+                  struct sockaddr_storage *dst_addr);

@@ -1,9 +1,8 @@
 #include "../../../include/other/headers/ip.h"
-#include <netinet/in.h>
 
-int construct_ip_hdr(struct iphdr *hdr, struct sockaddr_in *s_addr,
-                     struct sockaddr_in *d_addr, unsigned int id,
-                     unsigned int payload_len) {
+int ip_hdr_setup(struct iphdr *hdr, struct sockaddr_in *s_addr,
+                 struct sockaddr_in *d_addr, unsigned int id,
+                 unsigned int payload_len) {
     // IPv4
     hdr->version = 4;
 
@@ -44,27 +43,20 @@ int construct_ip_hdr(struct iphdr *hdr, struct sockaddr_in *s_addr,
 }
 
 // https://www.geeksforgeeks.org/internet-protocol-version-6-ipv6-header/
-int construct_ip6_hdr(struct ip6_hdr *hdr, struct sockaddr_in6 *s_addr,
-                      struct sockaddr_in6 *d_addr, unsigned int flow_id,
-                      unsigned int payload_len) {
+int ip6_hdr_setup(struct ip6_hdr *hdr, struct sockaddr_in6 *s_addr,
+                  struct sockaddr_in6 *d_addr, unsigned int flow_id,
+                  unsigned int payload_len) {
+    memset(hdr, 0, sizeof(struct ip6_hdr));
 
-    // Version & Traffic Class
-    hdr->ip6_ctlun.ip6_un2_vfc = 0;
-    // Move the 6 (IPv6) 4 steps to the left
-    hdr->ip6_ctlun.ip6_un2_vfc = (6 << 4);
-
-    // Next layer protocol
-    hdr->ip6_ctlun.ip6_un1.ip6_un1_nxt = IPPROTO_TCP;
-
-    // Payload lenth
+    // hdr->ip6_ctlun.ip6_un2_vfc          = 0x60;
+    hdr->ip6_src                        = s_addr->sin6_addr;
+    hdr->ip6_dst                        = d_addr->sin6_addr;
+    hdr->ip6_ctlun.ip6_un1.ip6_un1_hlim = 64;
+    hdr->ip6_ctlun.ip6_un1.ip6_un1_nxt  = IPPROTO_TCP;
     hdr->ip6_ctlun.ip6_un1.ip6_un1_plen = htons(payload_len);
 
-    // Flow
-    hdr->ip6_ctlun.ip6_un1.ip6_un1_flow = htonl(flow_id);
-
-    // Source and Destination
-    hdr->ip6_src = s_addr->sin6_addr;
-    hdr->ip6_dst = d_addr->sin6_addr;
+    // This can be used for both version, traffic class and flow label
+    hdr->ip6_ctlun.ip6_un1.ip6_un1_flow = 0x60;
 
     return 0;
 }

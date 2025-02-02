@@ -1,7 +1,9 @@
 #pragma once
 
+#include <arpa/inet.h>
 #include <netinet/ip.h>
 #include <netinet/ip6.h>
+#include <string.h>
 
 #include "../checksum.h"
 

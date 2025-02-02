@@ -1,5 +1,4 @@
 #include "../../include/other/network_interface.h"
-#include <netinet/in.h>
 
 int _ping(struct ifaddrs *ifa, struct sockaddr_storage ip_addr) {
     int respone;
@@ -19,21 +18,19 @@ int _ping(struct ifaddrs *ifa, struct sockaddr_storage ip_addr) {
 }
 
 void _copy_addr(struct ifaddrs *ifa, interface_info *ip_addr) {
-
     if (ifa == NULL || ifa->ifa_addr == NULL) {
         // Handle error: invalid input
         return;
     }
-
     // Copy src addr
     memcpy(&ip_addr->s_addr, ifa->ifa_addr,
-           ifa->ifa_addr->sa_family == AF_INET ? sizeof(struct sockaddr_in)
-                                               : sizeof(struct sockaddr_in6));
+           ip_addr->s_addr.ss_family == AF_INET ? sizeof(struct sockaddr_in)
+                                                : sizeof(struct sockaddr_in6));
 
-    // Copy address family
+    // Copy subnet mask
     memcpy(&ip_addr->subnet_mask, ifa->ifa_netmask,
-           ifa->ifa_addr->sa_family == AF_INET ? sizeof(struct sockaddr_in)
-                                               : sizeof(struct sockaddr_in6));
+           ip_addr->s_addr.ss_family == AF_INET ? sizeof(struct sockaddr_in)
+                                                : sizeof(struct sockaddr_in6));
 
     // Copy name
     strncpy(ip_addr->name, ifa->ifa_name, strlen(ifa->ifa_name));
@@ -51,8 +48,9 @@ int get_first_network_interface(interface_info *interface) {
         if (ifaddr->ifa_addr == NULL) {
             continue;
         }
-        if (ifaddr->ifa_addr->sa_family != AF_INET &&
-            ifaddr->ifa_addr->sa_family != AF_INET6) {
+
+        // This it to make sure to only get the prefered network family
+        if (interface->s_addr.ss_family != ifaddr->ifa_addr->sa_family) {
             continue;
         }
 
@@ -85,15 +83,15 @@ int guess_interface(struct sockaddr_storage ip_addr,
     }
 
     // Start looping though interfaces to ping
-    for (struct ifaddrs *ifa = network_interfaces; ifa != NULL;
-         ifa                 = ifa->ifa_next) {
+    for (struct ifaddrs *ifaddr = network_interfaces; ifaddr != NULL;
+         ifaddr                 = ifaddr->ifa_next) {
 
-        if (ifa->ifa_addr->sa_family != AF_INET &&
-            ifa->ifa_addr->sa_family != AF_INET6) {
+        if (interface->s_addr.ss_family != ifaddr->ifa_addr->sa_family) {
             continue;
         }
-        if (is_root() && _ping(ifa, ip_addr)) {
-            _copy_addr(ifa, interface);
+
+        if (is_root() && _ping(ifaddr, ip_addr)) {
+            _copy_addr(ifaddr, interface);
             break;
         }
     }
@@ -114,8 +112,7 @@ int verify_interface(interface_info *interface) {
             continue;
         }
 
-        if (ifaddr->ifa_addr->sa_family != AF_INET &&
-            ifaddr->ifa_addr->sa_family != AF_INET6) {
+        if (interface->s_addr.ss_family != ifaddr->ifa_addr->sa_family) {
             continue;
         }
 
