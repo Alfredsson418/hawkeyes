@@ -11,7 +11,7 @@ SRC = src
 # Flags for compiling
 DEBUG_CFLAGS = -Wall -g
 RELEASE_CFLAGS =
-LDFLAGS = -lpcap -pthread -lcap
+LDFLAGS = -lpcap -pthread
 
 # Get all the source files in the SRC directory and its subdirectories
 SRCFILES = $(shell find $(SRC) -name '*.c')

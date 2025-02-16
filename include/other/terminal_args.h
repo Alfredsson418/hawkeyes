@@ -21,7 +21,7 @@ extern const struct argp_option terminal_options[];
 */
 
 struct terminal_args {
-    char                    interface[INTERFACE_LEN];
+    char                    interface[INTERFACE_LEN]; // Risk for overflow or overwriting \0?
     char                    ports_format[PORTS_FORMAT_LEN];
     struct sockaddr_storage address;
     unsigned int            timeout;

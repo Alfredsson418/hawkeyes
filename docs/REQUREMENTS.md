@@ -9,7 +9,7 @@ so keep that in mind when compiling and running this program.
 # Software requirements
 * C compiler (like gcc)
 * Makefile
-* libpcap-dev (Used to capture traffic for UDP)
+* libpcap-dev on Debian, libpcap-devel on Fedora
 * argp (Used for parsing arguments from terminal)
 <!-- * libcap-dev (Used to check permissions) Currently not in use -->
 

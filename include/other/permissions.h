@@ -1,6 +1,6 @@
 #pragma once
 
-#include <sys/capability.h>
+// #include <sys/capability.h>
 #include <unistd.h>
 
 int is_root();
