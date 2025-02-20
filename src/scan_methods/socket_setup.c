@@ -49,3 +49,35 @@ unsigned int get_addr_len(struct sockaddr_storage *addr) {
     ERR_PRINT("Unknown address family\n");
     return -1;
 }
+
+unsigned short random_port() {
+    return (rand() % (RAND_PORT_LOWER_LIMIT - RAND_PORT_UPPER_LIMIT + 1) + (RAND_PORT_LOWER_LIMIT));
+}
+
+unsigned short unique_port(int domain) {
+    while (1) {
+        int sockfd;
+        struct sockaddr_in addr;
+        unsigned short port = random_port();
+
+        // Create a socket
+        sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+        if (sockfd < 0) {
+            perror("socket");
+            continue;
+        }
+
+        // Prepare the sockaddr_in structure
+        memset(&addr, 0, sizeof(addr));
+        addr.sin_family = domain;
+        addr.sin_addr.s_addr = INADDR_ANY;
+        addr.sin_port = htons(port);
+
+        // Try binding to the port
+        int bind_result = bind(sockfd, (struct sockaddr *)&addr, sizeof(addr));
+        if (bind_result >= 0) {
+            close(sockfd);
+            return port;
+        }
+    }
+}

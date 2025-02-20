@@ -5,8 +5,6 @@
   <a href="https://discord.gg/76USAhaF8a">Discord</a>
   -
   <a href="https://www.hawkeyes.dev">Website</a>
-  -
-  <a>Matrix (comming soon)</a>
 </div>
 
 <br>

@@ -3,7 +3,7 @@
 
 <h1>Where do get help and/or join the community</h1>
 <h3><a href="https://discord.gg/76USAhaF8a">Join the discord!</a></h2>
-<h3><a href="">Join the Matrix server!</a> (Comming soon)</h2>
+<!-- <h3><a href="">Join the Matrix server!</a> (Comming soon)</h2> -->
 
 <h1>How to contribute</h1>
 <ol>

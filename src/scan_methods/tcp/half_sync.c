@@ -1,4 +1,9 @@
 #include "../../../include/scan_methods/tcp/half_sync.h"
+#include <netinet/in.h>
+#include <netinet/ip.h>
+#include <netinet/tcp.h>
+#include <sys/socket.h>
+
 
 // https://nmap.org/book/synscan.html
 //
@@ -6,6 +11,7 @@
 
 int SYN_scan(scan_arg_t arg, scan_result_t *result) {
     struct timespec start, stop;
+    clock_gettime(CLOCK_MONOTONIC, &start);
     unsigned int    ip_hdr_len  = arg.addr->ss_family == AF_INET
                                       ? sizeof(struct iphdr)
                                       : sizeof(struct ip6_hdr);
@@ -16,6 +22,7 @@ int SYN_scan(scan_arg_t arg, scan_result_t *result) {
     next_best_args  recv_packet_args;
     pthread_t       thread_id;
     net_packet     *recv_packet = NULL;
+    unsigned short src_port = unique_port(arg.addr->ss_family);
 
     recv_packet_args.timeout        = arg.timeout;
     recv_packet_args.interface      = arg.interface->name;
@@ -31,10 +38,14 @@ int SYN_scan(scan_arg_t arg, scan_result_t *result) {
                      (struct sockaddr_in *)arg.addr, 100000,
                      sizeof(struct tcphdr));
 
+        char src_ip[INET_ADDRSTRLEN], dst_ip[INET_ADDRSTRLEN];
+
+        ipv4_to_str(arg.addr, src_ip);
+        ipv4_to_str(&arg.interface->s_addr, dst_ip);
+
         sprintf(recv_packet_args.filter,
-                "(tcp src port %#06x) && (tcp[tcpflags] & (tcp-syn|tcp-ack) == "
-                "(tcp-syn|tcp-ack))",
-                arg.port);
+                "(tcp src port %#06x) && (tcp dst port %#06x) && (ip src %s) && (ip dst %s)",
+                arg.port, src_port, dst_ip, src_ip); // Src and Dst switches places
     } else if (arg.addr->ss_family == AF_INET6) {
 
         ((struct sockaddr_in6 *)arg.addr)->sin6_port = htons(arg.port);
@@ -44,31 +55,32 @@ int SYN_scan(scan_arg_t arg, scan_result_t *result) {
                       (struct sockaddr_in6 *)arg.addr, 100000,
                       sizeof(struct tcphdr));
 
+        char src_ip[INET6_ADDRSTRLEN], dst_ip[INET6_ADDRSTRLEN];
+
+        ipv6_to_str(arg.addr, src_ip);
+        ipv6_to_str(&arg.interface->s_addr, dst_ip);
+
         sprintf(recv_packet_args.filter,
-                "(tcp src port %#06x) && (tcp[tcpflags] & (tcp-syn|tcp-ack) == "
-                "(tcp-syn|tcp-ack))",
-                arg.port);
+                "(tcp src port %#06x) && (tcp dst port %#06x) && (ip6 src %s) && (ip6 dst %s)",
+                arg.port, src_port, dst_ip, src_ip);
     }
 
     if (pthread_create(&thread_id, NULL, (void *)next_best_packet,
                        &recv_packet_args) != 0) {
         ERR_PRINT("Failed to create capture thread \n");
+        socket_close(sock);
         return -1;
     }
 
-    tcp_hdr_setup(tcp_hdr, 54302, arg.port, 1105024978, &arg.interface->s_addr,
+    tcp_hdr_setup(tcp_hdr, src_port, arg.port, 1105024978, &arg.interface->s_addr,
                   arg.addr);
-
     while ((!recv_packet_args.setup_complete)) {
         ;
     }
-    clock_gettime(CLOCK_MONOTONIC, &start);
     sendto(sock, packet, packet_size, 0, (struct sockaddr *)arg.addr,
            get_addr_len(arg.addr));
 
     pthread_join(thread_id, (void **)&recv_packet);
-    clock_gettime(CLOCK_MONOTONIC, &stop);
-    result->scannig_time = time_in_x(start, stop, NANO);
 
     if (recv_packet == NULL) {
         result->state = -1;
@@ -77,13 +89,35 @@ int SYN_scan(scan_arg_t arg, scan_result_t *result) {
         // The second is only run when its not empty
     } else if (recv_packet->packet_header != NULL &&
                recv_packet->packet_header->len > 0) {
+        result->state = -1;
+
+        const u_char* payload = (u_char*)recv_packet->packet_payload;
+
+        // Skip Ethernet header (14 bytes)
+        const u_char* ip_header = payload + 14;
+
+        // Skip IP header
+        const u_char* tcp_header = ip_header + ip_hdr_len;
+
+        // cast to tcphdr
+        struct tcphdr *recv_tcp = (struct tcphdr *)tcp_header;
+
+        // Check SYN-ACK flags too see if the port is open or not
+        if (recv_tcp->ack && recv_tcp->syn) {
+            result->state = 1;  // Port is open
+        } else {
+            result->state = 0;  // Port is closed/filtered
+        }
+
         free(recv_packet->packet_payload);
         free(recv_packet->packet_header);
         free(recv_packet);
-        result->state = 1;
     } else {
+        // Did not reponde with either ACK or RST
         result->state = 0;
     }
-
+    clock_gettime(CLOCK_MONOTONIC, &stop);
+    result->scannig_time = time_in_x(start, stop, NANO);
+    socket_close(sock);
     return 0;
 }

@@ -22,3 +22,6 @@
 #define MOTD_WIDTH        80
 #define TCP_SERVICES_FILE "data/services/tcp.txt"
 #define UDP_SERVICES_FILE "data/services/udp.txt"
+
+#define RAND_PORT_UPPER_LIMIT 65535
+#define RAND_PORT_LOWER_LIMIT 49152

@@ -12,5 +12,6 @@
 #include "../../other/next_best_packet.h"
 #include "../scan_structs.h"
 #include "../socket_setup.h"
+#include "../../other/ip/convert.h"
 
 int SYN_scan(scan_arg_t arg, scan_result_t *result);
