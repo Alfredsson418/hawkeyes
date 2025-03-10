@@ -17,5 +17,5 @@
 #include "socket_setup.h"
 
 int multithread_scanning(scan_func_t *func_info, scan_arg_t *func_arg,
-                         scan_result_t *func_result, unsigned short *ports,
-                         unsigned int port_len, unsigned int workers);
+						 scan_result_t *func_result, unsigned short *ports,
+						 unsigned int port_len, unsigned int workers);

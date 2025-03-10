@@ -12,10 +12,10 @@
 #include "checksum.h"
 
 /*
-    Parameters:
-        ip: The IP to ping
-        interface: what network interface to ping from
-    Return:
-        true if reach, false if not, -1 for errors
+	Parameters:
+		ip: The IP to ping
+		interface: what network interface to ping from
+	Return:
+		true if reach, false if not, -1 for errors
 */
 int ping(struct sockaddr_storage ip_addr, const char interface[INTERFACE_LEN]);

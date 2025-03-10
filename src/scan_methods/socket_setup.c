@@ -2,50 +2,55 @@
 
 int socket_init(int socket_type, int protocol, scan_arg_t func_arg) {
 
-    struct timeval timeout;
-    timeout.tv_sec  = func_arg.timeout;
-    timeout.tv_usec = 0; // Should be easy to and more specific timeout
+	struct timeval timeout;
+	timeout.tv_sec	= func_arg.timeout;
+	timeout.tv_usec = 0; // Should be easy to and more specific timeout
 
-    int sock = socket(func_arg.addr->ss_family, socket_type, protocol);
+	int sock = socket(func_arg.addr->ss_family, socket_type, protocol);
 
-    if (sock < 0) {
-        ERR_PRINT("Failed to create TCP socket \n");
-        return -1;
-    }
+	if (sock < 0) {
+		ERR_PRINT("Failed to create TCP socket \n");
+		return -1;
+	}
 
-    if (setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, (const char *)&timeout,
-                   sizeof(timeout)) < 0) {
-        ERR_PRINT("TCP Setup timeout send \n");
-        close(sock);
-        return -1;
-    }
+	if (setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, (const char *)&timeout,
+				   sizeof(timeout)) < 0) {
+		ERR_PRINT("TCP Setup timeout send \n");
+		close(sock);
+		return -1;
+	}
 
-    if (setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char *)&timeout,
-                   sizeof(timeout)) < 0) {
-        ERR_PRINT("TCP Setup timeout rcv \n");
-        close(sock);
-        return -1;
-    }
+	if (setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char *)&timeout,
+				   sizeof(timeout)) < 0) {
+		ERR_PRINT("TCP Setup timeout rcv \n");
+		close(sock);
+		return -1;
+	}
 
-    if (setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, func_arg.interface->name,
-                   INTERFACE_LEN) < 0) {
-        ERR_PRINT("TCP Setup interface \n");
-        close(sock);
-        return -1;
-    }
+	if (setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, func_arg.interface->name,
+				   INTERFACE_LEN) < 0) {
+		ERR_PRINT("TCP Setup interface \n");
+		close(sock);
+		return -1;
+	}
 
-    return sock;
+	return sock;
 }
 
 void socket_close(int socket) { close(socket); }
 
 unsigned int get_addr_len(struct sockaddr_storage *addr) {
 
-    if (addr->ss_family == AF_INET) {
-        return sizeof(struct sockaddr_in);
-    } else if (addr->ss_family == AF_INET6) {
-        return sizeof(struct sockaddr_in6);
-    }
-    ERR_PRINT("Unknown address family\n");
-    return -1;
+	if (addr->ss_family == AF_INET) {
+		return sizeof(struct sockaddr_in);
+	} else if (addr->ss_family == AF_INET6) {
+		return sizeof(struct sockaddr_in6);
+	}
+	ERR_PRINT("Unknown address family\n");
+	return -1;
+}
+
+unsigned short unique_port() {
+	return (rand() % (UPPER_BOUND_SRC_PORT - LOWER_BOUND_SRC_PORT + 1) +
+			LOWER_BOUND_SRC_PORT);
 }

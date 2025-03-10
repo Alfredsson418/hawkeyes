@@ -1,87 +1,87 @@
 #include "../../include/other/parse_ports.h"
 
 unsigned int parse_ports(char *str, unsigned short **ports) {
-    int len = 0;
+	int len = 0;
 
-    // Return array
-    *ports = calloc(len, sizeof(int));
-    char *token;
-    int   port_index = 0;
+	// Return array
+	*ports = calloc(len, sizeof(int));
+	char *token;
+	int	  port_index = 0;
 
-    char *str_copy = calloc(strlen(str), sizeof(char));
-    if (str_copy == NULL) {
-        ERR_PRINT("Failed to allocate memory\n");
-        return -1;
-    }
-    strcpy(str_copy, str);
+	char *str_copy = calloc(strlen(str), sizeof(char));
+	if (str_copy == NULL) {
+		ERR_PRINT("Failed to allocate memory\n");
+		return -1;
+	}
+	strcpy(str_copy, str);
 
-    char *save_ptr = str_copy;
+	char *save_ptr = str_copy;
 
-    // parse port_str to ports array
-    while ((token = strtok_r(str_copy, ",", &str_copy))) {
-        if (strstr(token, "-") != NULL) {
-            if (strlen(token) <= 1) {
-                ERR_PRINT("Bad port input\n");
-                free(save_ptr);
-                free(*ports);
-                return 0;
-            }
+	// parse port_str to ports array
+	while ((token = strtok_r(str_copy, ",", &str_copy))) {
+		if (strstr(token, "-") != NULL) {
+			if (strlen(token) <= 1) {
+				ERR_PRINT("Bad port input\n");
+				free(save_ptr);
+				free(*ports);
+				return 0;
+			}
 
-            char *temp = strtok_r(token, "-", &token);
-            if (temp == NULL) {
-                ERR_PRINT("Bad port input\n");
-                free(save_ptr);
-                free(*ports);
-                return 0;
-            }
-            int first = atoi(temp);
-            temp      = strtok_r(token, "-", &token);
-            if (temp == NULL) {
-                ERR_PRINT("Bad port input\n");
-                free(save_ptr);
-                free(*ports);
-                return 0;
-            }
+			char *temp = strtok_r(token, "-", &token);
+			if (temp == NULL) {
+				ERR_PRINT("Bad port input\n");
+				free(save_ptr);
+				free(*ports);
+				return 0;
+			}
+			int first = atoi(temp);
+			temp	  = strtok_r(token, "-", &token);
+			if (temp == NULL) {
+				ERR_PRINT("Bad port input\n");
+				free(save_ptr);
+				free(*ports);
+				return 0;
+			}
 
-            int second = atoi(temp);
+			int second = atoi(temp);
 
-            if (second < first) {
-                ERR_PRINT("Bad port input\n");
-                free(save_ptr);
-                free(*ports);
-                return 0;
-            }
+			if (second < first) {
+				ERR_PRINT("Bad port input\n");
+				free(save_ptr);
+				free(*ports);
+				return 0;
+			}
 
-            if (first > MAX_PORT || second > MAX_PORT) {
-                ERR_PRINT("Ports larger than %d does not exist\n", MAX_PORT);
-                free(save_ptr);
-                free(*ports);
-                return 0;
-            }
+			if (first > MAX_PORT || second > MAX_PORT) {
+				ERR_PRINT("Ports larger than %d does not exist\n", MAX_PORT);
+				free(save_ptr);
+				free(*ports);
+				return 0;
+			}
 
-            // Count the amount of ports
-            len += second - first + 1;
+			// Count the amount of ports
+			len += second - first + 1;
 
-            *ports = realloc(*ports, len * sizeof(int));
+			*ports = realloc(*ports, len * sizeof(int));
 
-            for (; first <= second; first++) {
+			for (; first <= second; first++) {
 
-                (*ports)[port_index] = first;
-                port_index++;
-            }
-        } else {
-            int temp = atoi(token);
+				(*ports)[port_index] = first;
+				port_index++;
+			}
+		} else {
+			int temp = atoi(token);
 
-            if (temp < 0 || temp > MAX_PORT) {
-                return 0;
-            }
+			if (temp < 0 || temp > MAX_PORT) {
+				return 0;
+			}
 
-            len++;
-            *ports               = realloc(*ports, len * sizeof(int));
-            (*ports)[port_index] = atoi(token);
-            port_index++;
-        }
-    }
-    free(save_ptr);
-    return len;
+			len++;
+			*ports				 = realloc(*ports, len * sizeof(int));
+			(*ports)[port_index] = atoi(token);
+			port_index++;
+		}
+	}
+	free(save_ptr);
+	return len;
 }

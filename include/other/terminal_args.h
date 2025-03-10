@@ -16,18 +16,18 @@
 extern const struct argp_option terminal_options[];
 
 /*
-    0x11 UDP
-    0x06 TCP
+	0x11 UDP
+	0x06 TCP
 */
 
 struct terminal_args {
-    char                    interface[INTERFACE_LEN]; // Risk for overflow or overwriting \0?
-    char                    ports_format[PORTS_FORMAT_LEN];
-    struct sockaddr_storage address;
-    unsigned int            timeout;
-    bool                    no_ping;
-    unsigned int            thread_workers;
-    scan_func_t             scan_info;
+	char interface[INTERFACE_LEN]; // Risk for overflow or overwriting \0?
+	char ports_format[PORTS_FORMAT_LEN];
+	struct sockaddr_storage address;
+	unsigned int			timeout;
+	bool					no_ping;
+	unsigned int			thread_workers;
+	scan_func_t				scan_info;
 };
 
 error_t terminal_parse_opt(int key, char *arg, struct argp_state *state);

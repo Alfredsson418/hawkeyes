@@ -7,11 +7,11 @@
 #include "../ui/print_macro.h"
 
 /*
-    Parameters:
-        str:  The string from where to parse the ports from, can take - and ,
-        ports:  An empty array of integers.
-    Return:
-        Length of array.
+	Parameters:
+		str:  The string from where to parse the ports from, can take - and ,
+		ports:  An empty array of integers.
+	Return:
+		Length of array.
 
 */
 unsigned int parse_ports(char *str, unsigned short **ports);
