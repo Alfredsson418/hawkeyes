@@ -33,7 +33,7 @@ void _copy_addr(struct ifaddrs *ifa, interface_info *ip_addr) {
 												: sizeof(struct sockaddr_in6));
 
 	// Copy name
-	strncpy(ip_addr->name, ifa->ifa_name, strlen(ifa->ifa_name));
+	strcpy(ip_addr->name, ifa->ifa_name);
 }
 
 int get_first_network_interface(interface_info *interface) {
@@ -49,24 +49,20 @@ int get_first_network_interface(interface_info *interface) {
 			continue;
 		}
 
-		// This it to make sure to only get the prefered network family
 		if (interface->s_addr.ss_family != ifaddr->ifa_addr->sa_family) {
 			continue;
 		}
 
-		if (strcmp(ifaddr->ifa_name, "lo") <= 0) {
-			// HERE TO SEE IF TARGET IP IS IN RANGE OF SOURCE
-			// IF THEN SET lo TO INTERFACE
-
-			continue;
-		}
 		if (strlen(ifaddr->ifa_name) > INTERFACE_LEN) {
 			ERR_PRINT("Interface name too long\n");
 			continue;
 		}
 
+		if (strlen(ifaddr->ifa_name) > INTERFACE_LEN) {
+			ERR_PRINT("Interface name too long\n");
+			continue;
+		}
 		_copy_addr(ifaddr, interface);
-
 		return 1;
 	}
 	return -1;
@@ -86,7 +82,16 @@ int guess_interface(struct sockaddr_storage ip_addr,
 	for (struct ifaddrs *ifaddr = network_interfaces; ifaddr != NULL;
 		 ifaddr					= ifaddr->ifa_next) {
 
+		if (ifaddr->ifa_addr == NULL) {
+			continue;
+		}
+
 		if (interface->s_addr.ss_family != ifaddr->ifa_addr->sa_family) {
+			continue;
+		}
+
+		if (strlen(ifaddr->ifa_name) > INTERFACE_LEN) {
+			ERR_PRINT("Interface name too long\n");
 			continue;
 		}
 

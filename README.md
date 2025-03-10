@@ -5,8 +5,6 @@
   <a href="https://discord.gg/76USAhaF8a">Discord</a>
   -
   <a href="https://www.hawkeyes.dev">Website</a>
-  -
-  <a>Matrix (comming soon)</a>
 </div>
 
 <br>
@@ -32,6 +30,9 @@ make release
 
 <h2>Usage</h2>
 
+<p>To see all options, head over to the <a href="docs/USAGE.md">documentation</a>.</p>
+
+
 ```
 Usage:
 ./hawk [options]
@@ -40,7 +41,11 @@ Example:
 ./hawk -t 127.0.0.53 -p 53-55,60 -i lo -m conn
 ```
 
-<p>To see all options, head over to the <a href="docs/USAGE.md">documentation</a>.</p>
+<h3>Example output</h3>
+<p align="center">
+  <img alt="Help output" src="data/images/ex1.png">
+  <img alt="Example usage" src="data/images/ex2.png">
+</p>
 
 
 <h1>Want to contirbute to the project?</h1>

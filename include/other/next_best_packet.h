@@ -17,7 +17,7 @@ typedef struct {
 
 typedef struct {
 	int	  timeout;
-	char  filter[120];
+	char  filter[165];
 	char *interface;
 	bool  setup_complete;
 } next_best_args;

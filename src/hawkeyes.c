@@ -1,14 +1,16 @@
 #include "../include/hawkeyes.h"
 
 int main(int argc, char *argv[]) {
+
+	print_file(MOTD_FILE, MOTD_WIDTH);
+	PRINT("Version: ");
+	print_file(VERSION_FILE, TERMINAL_WIDTH);
+
 	if (argc < 2) {
 
 		ERR_PRINT("%s\n", "No arguments detected! Exiting!\n");
 		exit(0);
 	}
-	print_file(MOTD_FILE, MOTD_WIDTH);
-	PRINT("Version: ");
-	print_file(VERSION_FILE, TERMINAL_WIDTH);
 	/*
 		===========================================================
 		VARIBLES INITIATION
@@ -69,20 +71,36 @@ int main(int argc, char *argv[]) {
 	VERBOSE_MESSAGE("Thread Workers: %d \n", arguments.thread_workers);
 	VERBOSE_MESSAGE("Timeout (s): %d \n", arguments.timeout);
 
+	// Ugly ass spagetti code!!!!
 	if (arguments.interface[0] == '\0') {
 		VERBOSE_MESSAGE("No network interface set \n");
-		if ((!arguments.no_ping && is_root()) &&
-			(guess_interface(arguments.address, &interface) < 0)) {
-			get_first_network_interface(&interface);
-			ERR_PRINT("Failed to ping target, try using --no-ping\n");
+
+		// If root and want to ping
+		if (!arguments.no_ping && is_root()) {
+			VERBOSE_MESSAGE(" -> Guessing interface by pinging target! \n");
+
+			if (guess_interface(arguments.address, &interface) < 0) {
+				ERR_PRINT("Failed to ping target, using the --no-ping flag "
+						  "will skip this step!\n");
+			} else {
+				goto interface_end;
+			}
 		}
-	} else {
+		VERBOSE_MESSAGE(" -> Using first interface, please specify interface "
+						"if its wrong \n");
+
+		get_first_network_interface(&interface);
+
+	} else { // If the user passes a interface
 		strcpy(interface.name, arguments.interface);
 		if (!verify_interface(&interface)) {
 			ERR_PRINT("The given network interface does not exist\n");
 			return -1;
 		}
 	}
+
+interface_end:
+
 	VERBOSE_MESSAGE("Network interface: %s\n", interface.name);
 
 	if (arguments.ports_format[0] == '\0') {

@@ -23,5 +23,5 @@
 #define TCP_SERVICES_FILE "data/services/tcp.txt"
 #define UDP_SERVICES_FILE "data/services/udp.txt"
 
-#define LOWER_BOUND_SRC_PORT 10000
-#define UPPER_BOUND_SRC_PORT 65000
+#define RAND_PORT_UPPER_LIMIT 65535
+#define RAND_PORT_LOWER_LIMIT 49152
