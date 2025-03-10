@@ -4,7 +4,7 @@ int main(int argc, char *argv[]) {
 
 	print_file(MOTD_FILE, MOTD_WIDTH);
 	PRINT("Version: ");
-	print_file(VERSION_FILE, TERMINAL_WIDTH);
+	print_json(VERSION_FILE, TERMINAL_WIDTH, "version");
 
 	if (argc < 2) {
 
