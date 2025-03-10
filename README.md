@@ -41,12 +41,17 @@ Example:
 ./hawk -t 127.0.0.53 -p 53-55,60 -i lo -m conn
 ```
 
-<h3>Example output</h3>
-<p align="center">
-  <img alt="Help output" src="data/images/ex1.png">
-  <img alt="Example usage" src="data/images/ex2.png">
-</p>
-
+<h3>Example pictures</h3>
+ <table>
+  <tr>
+    <td><b>Help output</b></td>
+    <td><b>Example output</b></td>
+  </tr>
+  <tr>
+    <td><img alt="Help output" src="data/images/ex1.png" width="500"></td>
+    <td><img alt="Example usage" src="data/images/ex2.png" width="500"></td>
+  </tr>
+</table> 
 
 <h1>Want to contirbute to the project?</h1>
 <p>Read about contribution to this project over at <a href="CONTRIBUTING.md">CONTRIBUTING.md</a></p>
