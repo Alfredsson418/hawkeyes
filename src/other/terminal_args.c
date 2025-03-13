@@ -12,7 +12,9 @@ const struct argp_option terminal_options[] = {
 	 "Network interface to scan from, e.g lo"},
 	{"port", 'p', "PORT(S)", 0,
 	 "Define what port(s) to scan, e.g -p 22; -p 1-100; -p 22,53,23"},
-	{"target", 't', "IP", 0, "Target IPv4/IPv6"},
+	{"target", 't', "IP", 0,
+	 "Target IPv4/IPv6/domain (Specify :4 or :6 after domain to fetch specific "
+	 "adress type)"},
 	{"timeout", 'w', "TIME(sec)", 0, "Timeout"},
 	{"no-ping", 503, 0, 0, "Do not ping the target"},
 	{"threading-workers", 'n', "WORKERS", 0, "Amount of threading workers"},
@@ -62,6 +64,8 @@ error_t terminal_parse_opt(int key, char *arg, struct argp_state *state) {
 		if (str_to_ipv4(&arguments->address, arg) != -1) {
 			break;
 		} else if (str_to_ipv6(&arguments->address, arg) != -1) {
+			break;
+		} else if (fetch_domain(arg, &arguments->address) >= 0) {
 			break;
 		} else {
 			str_to_ipv4(&arguments->address, "255.255.255.255");

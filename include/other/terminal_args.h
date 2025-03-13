@@ -12,6 +12,7 @@
 #include "../scan_methods/udp/echo_responce.h"
 #include "../ui/print_macro.h"
 #include "ip/convert.h"
+#include "ip/domain.h"
 
 extern const struct argp_option terminal_options[];
 

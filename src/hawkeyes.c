@@ -16,6 +16,7 @@ int main(int argc, char *argv[]) {
 		VARIBLES INITIATION
 		===========================================================
 	*/
+
 	struct terminal_args arguments;
 	interface_info		 interface;
 	memset(&arguments.address, 0, sizeof(struct sockaddr_storage));
