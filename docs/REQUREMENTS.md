@@ -11,6 +11,7 @@ so keep that in mind when compiling and running this program.
 * Makefile
 * libpcap-dev on Debian, libpcap-devel on Fedora
 * argp (Used for parsing arguments from terminal)
+* cjson (https://github.com/DaveGamble/cJSON)
 <!-- * libcap-dev (Used to check permissions) Currently not in use -->
 
 # Optional
