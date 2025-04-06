@@ -56,15 +56,5 @@ $(BUILD)/%.o: $(SRC)/%.c
 clean:
 	@rm -rf $(OBJFILES) $(NAME)
 
-
-# ------------------------------------------------------
-# 					Dependencies
-# ------------------------------------------------------
-# OS = cat /etc/os-release | grep ID -m 1 | cut -d "=" -f 2
-
-# ifeq ($(OS),fedora)
-# 	PKT_MANAGER = dnf
-# 	PKT_FLAGS = -y
-# else ifeq ($(OS,debian)
-#	PKT_MANAGER = apt
-#	PKT_INSTALL = $(PKT_MANAGER) install -y
+fedora:
+	act --rm -W ./.github/workflows/fedora-build.yml

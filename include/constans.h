@@ -20,8 +20,14 @@
 #define MOTD_FILE		  "data/motd.txt"
 #define VERSION_FILE	  "data/version/version.json"
 #define MOTD_WIDTH		  80
-#define TCP_SERVICES_FILE "data/services/tcp.txt"
-#define UDP_SERVICES_FILE "data/services/udp.txt"
+#define TCP_SERVICES_FILE "/tmp/hawkeyes/service/tcp"
+#define UDP_SERVICES_FILE "/tmp/hawkeyes/service/udp"
 
 #define RAND_PORT_UPPER_LIMIT 65535
 #define RAND_PORT_LOWER_LIMIT 49152
+
+// Service parser and storage
+#define TMP_STORAGE		"/tmp/hawkeyes"
+#define SERVICES		"/etc/services"
+#define SERVICE_STORAGE "/tmp/hawkeyes/service/"
+#define SERVICE_CHECK	"/tmp/hawkeyes/service/done"
