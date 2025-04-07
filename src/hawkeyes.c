@@ -23,9 +23,10 @@ int main(int argc, char *argv[]) {
 	memset(arguments.interface, '\0', INTERFACE_LEN);
 	memset(arguments.ports_format, '\0', PORTS_FORMAT_LEN);
 	memset(&arguments.scan_info, 0, sizeof(scan_func_t));
-	arguments.timeout		 = 3;
-	arguments.no_ping		 = false;
-	arguments.thread_workers = 3;
+	arguments.timeout		 = DEFAULT_TIMEOUT;
+	arguments.no_ping		 = DEFAULT_NO_PING;
+	arguments.thread_workers = DEFAULT_THREAD_WORKERS;
+	strncpy(arguments.ports_format, DEFAULT_PORT_INTERVAL, PORTS_FORMAT_LEN);
 
 	unsigned short closed_ports		  = 0;
 	unsigned short error_ports		  = 0;
@@ -104,17 +105,11 @@ interface_end:
 
 	VERBOSE_MESSAGE("Network interface: %s\n", interface.name);
 
-	if (arguments.ports_format[0] == '\0') {
-		strncpy(arguments.ports_format, "1-1000", INTERFACE_LEN);
-		VERBOSE_MESSAGE("Port range was not set, using default %s \n",
-						arguments.ports_format);
-	}
-
 	/*
 		===========================================================
 	*/
 	unsigned short *ports;
-	unsigned int	port_len = parse_ports(arguments.ports_format, &(ports));
+	unsigned int	port_len = parse_ports(arguments.ports_format, &ports);
 	if (port_len == 0) {
 		ERR_PRINT("Failed to parse ports\n");
 		return -1;

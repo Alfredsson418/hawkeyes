@@ -147,25 +147,6 @@ This works mostly on older firewalls because modern firewalls will not responde 
 </table>
 
 
-<h2>Timeout</h2>
-<table>
-    <tr>
-      <th>Short Option</th>
-      <th>Long Option</th>
-      <th>Description</th>
-      <th>Default Value</th>
-      <th>Possible values</th>
-    </tr>
-    <tr>
-      <td>-w TIME</td>
-      <td>--timeout TIME</td>
-      <td>This is the time (in SECONDS) before a port is declared as closed.</td>
-      <td>3 seconds</td>
-      <td>Any positive integer between 0 and MAX_INT</td>
-    </tr>
-</table>
-
-
 <h2>Workers</h2>
 <table>
     <tr>

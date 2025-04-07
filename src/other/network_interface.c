@@ -1,9 +1,10 @@
 #include "../../include/other/network_interface.h"
 
 int _ping(struct ifaddrs *ifa, struct sockaddr_storage ip_addr) {
+	int tries = 2;
 	int respone;
 	VERBOSE_MESSAGE("PING REQUEST: Trying on '%s': ", ifa->ifa_name);
-	for (int i = 1; i <= 2; i++) {
+	for (int i = 0; i < tries; i++) {
 		respone = ping(ip_addr, ifa->ifa_name);
 		if (respone > 0) {
 			VERBOSE_MESSAGE("SUCCESSFULL\n");

@@ -98,11 +98,13 @@ net_packet *next_best_packet(next_best_args *in_args) {
 	// Start scanning for matching packages
 	pcap_dispatch(package_handle, 1, (pcap_handler)loop_back,
 				  (unsigned char *)return_arg);
-	pcap_close(package_handle);
 
 	pthread_cancel(thread_id);
 	// This it to make sure the "sleep" thread exists as expected
 	// pthread_join(thread_id, NULL);
+
+	pcap_freecode(&pcap_filter);
+	pcap_close(package_handle);
 
 	return return_arg;
 }

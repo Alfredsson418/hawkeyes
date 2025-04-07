@@ -7,7 +7,7 @@ typedef struct {
 } waiting_t;
 
 typedef struct {
-	unsigned int   *index;
+	unsigned int	index;
 	unsigned short *ports;
 	unsigned int	port_len; // Not unsigned short to not get a buffer overflow
 	pthread_mutex_t *read_mutex;
@@ -69,24 +69,19 @@ void *worker_function(void *in_arg) {
 
 	// PRINT("Thread start\n");
 	while (1) {
-
 		pthread_mutex_lock(arg.read_mutex);
-		if (*arg.index >= arg.port_len) {
-			// PRINT("EXITS %d %d\n", *arg.index, arg.port_len);
+		if (temp_arg->index >= arg.port_len) {
 			break;
 		}
-		int current_index = *arg.index;
-		(*arg.index)++;
+		int current_index = temp_arg->index++;
+
 		int port = *(arg.ports + current_index);
 		pthread_mutex_unlock(arg.read_mutex);
 
 		arg.func_arg.port = port;
-		// PRINT("Trying to scan on %d\n", port);
+
 		arg.func_info.scan_func(arg.func_arg,
 								(arg.func_result + current_index));
-		// if (arg.func_result[current_index].state > 0) {
-		//     PRINT("Open port on %d\n", port);
-		// }
 	}
 	pthread_mutex_unlock(arg.read_mutex);
 
@@ -109,12 +104,7 @@ int multithread_scanning(scan_func_t *func_info, scan_arg_t *func_arg,
 
 	pthread_mutex_init(&read_mutex, NULL);
 
-	in_arg.index = malloc(sizeof(unsigned int));
-	if (in_arg.index == NULL) {
-		ERR_PRINT("Allocating memory for scanning\n");
-		return -1;
-	}
-	*in_arg.index	   = 0;
+	in_arg.index	   = 0;
 	in_arg.ports	   = ports;
 	in_arg.port_len	   = port_len;
 	in_arg.read_mutex  = &read_mutex;
@@ -140,8 +130,6 @@ int multithread_scanning(scan_func_t *func_info, scan_arg_t *func_arg,
 	pthread_join(waiting_thread, NULL);
 
 	pthread_mutex_destroy(&read_mutex);
-
-	free(in_arg.index);
 
 	return 0;
 }

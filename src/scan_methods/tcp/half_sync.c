@@ -35,8 +35,8 @@ int SYN_scan(scan_arg_t arg, scan_result_t *result) {
 
 		char src_ip[INET_ADDRSTRLEN], dst_ip[INET_ADDRSTRLEN];
 
-		ipv4_to_str(arg.addr, src_ip);
-		ipv4_to_str(&arg.interface->s_addr, dst_ip);
+		ipv4_to_str(arg.addr, dst_ip);
+		ipv4_to_str(&arg.interface->s_addr, src_ip);
 
 		sprintf(recv_packet_args.filter,
 				"(tcp src port %#06x) && (tcp dst port %#06x) && (ip src %s) "
@@ -53,8 +53,8 @@ int SYN_scan(scan_arg_t arg, scan_result_t *result) {
 
 		char src_ip[INET6_ADDRSTRLEN], dst_ip[INET6_ADDRSTRLEN];
 
-		ipv6_to_str(arg.addr, src_ip);
-		ipv6_to_str(&arg.interface->s_addr, dst_ip);
+		ipv6_to_str(arg.addr, dst_ip);
+		ipv6_to_str(&arg.interface->s_addr, src_ip);
 
 		sprintf(recv_packet_args.filter,
 				"(tcp src port %#06x) && (tcp dst port %#06x) && (ip6 src %s) "
@@ -78,6 +78,10 @@ int SYN_scan(scan_arg_t arg, scan_result_t *result) {
 		   get_addr_len(arg.addr));
 
 	pthread_join(thread_id, (void **)&recv_packet);
+
+	clock_gettime(CLOCK_MONOTONIC, &stop);
+	result->scannig_time = time_in_x(start, stop, NANO);
+	socket_close(sock);
 
 	if (recv_packet == NULL) {
 		result->state = -1;
@@ -106,15 +110,14 @@ int SYN_scan(scan_arg_t arg, scan_result_t *result) {
 			result->state = 0; // Port is closed/filtered
 		}
 
-		free(recv_packet->packet_payload);
-		free(recv_packet->packet_header);
-		free(recv_packet);
 	} else {
 		// Did not reponde with either ACK or RST
 		result->state = 0;
 	}
-	clock_gettime(CLOCK_MONOTONIC, &stop);
-	result->scannig_time = time_in_x(start, stop, NANO);
-	socket_close(sock);
+
+	free(recv_packet->packet_payload);
+	free(recv_packet->packet_header);
+	free(recv_packet);
+
 	return 0;
 }

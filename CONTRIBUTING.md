@@ -18,7 +18,7 @@
 </ol>
 
 <h1 id="how-to-contribute">How to find someting to contribute</h1>
-<p>Head over to the <a href="https://github.com/Alfredsson418/hawkeyes/issues">Issues</a> tab and find something you can help with!
+<p>Head over to the <a href="https://github.com/Alfredsson418/hawkeyes/issues">Issues</a> tab or <a href="docs/FUTURE_IDEAS.md">FUTURE_IDEAS.md</a> and find something you can help with!
 You could also create your own Issues with the given templates. <b>Just make sure that you get the go-ahead on the issue before creating your pull request</b>.</p>
 
 <h1>Coding format</h1>

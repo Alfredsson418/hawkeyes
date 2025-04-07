@@ -1,5 +1,22 @@
 #pragma once
 
+/*
+	================================
+		DEFAULT PARAMETER VALUES
+	================================
+*/
+
+#define DEFAULT_TIMEOUT		   3
+#define DEFAULT_NO_PING		   false
+#define DEFAULT_THREAD_WORKERS 3
+#define DEFAULT_PORT_INTERVAL  "1-1000"
+
+/*
+	================================
+		DEFAULT PROGRAM VALUES
+	================================
+*/
+
 #define RESULT_PORT_LEN	   10 // 65535 + /tcp or /udp or other
 #define RESULT_SERVICE_LEN PORT_SERVICE_LEN
 #define RESULT_METHOD_LEN  20

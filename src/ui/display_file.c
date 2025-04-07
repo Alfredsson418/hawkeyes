@@ -31,7 +31,7 @@ void print_json(char *file, int width, char *key) {
 
 	if (json == NULL) {
 		ERR_PRINT("cJSON failed to parse file\n");
-		cJSON_Delete(json);
+		cJSON_free(json);
 		return;
 	}
 
@@ -40,4 +40,5 @@ void print_json(char *file, int width, char *key) {
 	if (cJSON_IsString(string)) {
 		PRINT("%s\n", string->valuestring);
 	}
+	cJSON_Delete(json);
 }

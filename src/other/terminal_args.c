@@ -56,6 +56,7 @@ error_t terminal_parse_opt(int key, char *arg, struct argp_state *state) {
 			ERR_PRINT("Port input to long\n");
 			break;
 		}
+		memset(arguments->ports_format, '\0', PORTS_FORMAT_LEN);
 		strncpy(arguments->ports_format, arg, strlen(arg));
 		break;
 	case 't':
