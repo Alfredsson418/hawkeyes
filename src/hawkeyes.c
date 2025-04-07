@@ -2,9 +2,11 @@
 
 int main(int argc, char *argv[]) {
 
-	print_file(MOTD_FILE, MOTD_WIDTH);
+	print_motd();
 	PRINT("Version: ");
 	print_json(VERSION_FILE, TERMINAL_WIDTH, "version");
+
+	setup_services(true);
 
 	if (argc < 2) {
 
