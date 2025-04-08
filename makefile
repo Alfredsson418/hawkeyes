@@ -73,8 +73,5 @@ setup-hooks:
 	cp ./data/hooks/* ./.git/hooks/
 	chmod +x ./.git/hooks/*
 
-test-fedora:
-	act --rm -W ./.github/workflows/fedora-build.yml
-
-test-ubuntu:
-	act --rm -W ./.github/workflows/ubuntu-build.yml
+test-compile:
+	act --rm -W .github/workflows/compile-test.yml

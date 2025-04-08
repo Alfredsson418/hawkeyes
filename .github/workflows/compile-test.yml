@@ -1,9 +1,10 @@
+# Use to test if a program can compile before merging with dev branch
+# This is too prevent any changes that may result in different errors
+# with other branches
+
 name: Compile test
 
 on:
-  push:
-    branches:
-      - dev
   pull_request:
     branches:
       - dev
@@ -23,10 +24,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Installing program dependencies
-        run: dnf -y install gcc make "pkgconfig(libcjson)" "pkgconfig(libpcap)"
+        run: dnf -y install gcc make jq "pkgconfig(libcjson)" "pkgconfig(libpcap)"
 
       - name: Compiling with debug flags
         run: make debug
+
+      - name: Clean up
+        run: make clean
 
       - name: Compiling with release flags
         run: make release
@@ -45,10 +49,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Installing program dependencies
-        run: sudo apt -y install git gcc make libcjson-dev libpcap-dev
+        run: sudo apt -y install git gcc make jq libcjson-dev libpcap-dev
 
       - name: Compiling with debug flags
         run: make debug
+
+      - name: Clean up
+        run: make clean
 
       - name: Compiling with release flags
         run: make release
