@@ -13,15 +13,20 @@ on:
   workflow_dispatch:
 
 jobs:
-  fedora-build:
+  ubuntu-build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-
       - name: Updating OS
         run: sudo apt update && sudo apt upgrade -y
-      - name: Installing dependencies
+
+      - name: Installing git dependencies
+        run: sudo apt -y install git
+
+      - name: Clone and check out branch
+        uses: actions/checkout@v4
+
+      - name: Installing program dependencies
         run: sudo apt -y install git gcc make libcjson-dev libpcap-dev
 
       - name: Compiling

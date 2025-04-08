@@ -18,10 +18,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Installing git dependencies
+        run: dnf -y install git tar
 
-      - name: Installing dependencies
-        run: dnf -y install git tar gcc make "pkgconfig(libcjson)" "pkgconfig(libpcap)"
+      - name: Clone and check out branch
+        uses: actions/checkout@v4
+
+      - name: Installing program dependencies
+        run: dnf -y install gcc make "pkgconfig(libcjson)" "pkgconfig(libpcap)"
 
       - name: Compiling
         run: make release
