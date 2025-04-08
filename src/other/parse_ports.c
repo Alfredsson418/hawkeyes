@@ -24,7 +24,7 @@ unsigned int parse_ports(char *str, unsigned short **ports) {
 				ERR_PRINT("Bad port input\n");
 				free(save_ptr);
 				free(*ports);
-				return 0;
+				return -2;
 			}
 
 			char *temp = strtok_r(token, "-", &token);
@@ -32,7 +32,7 @@ unsigned int parse_ports(char *str, unsigned short **ports) {
 				ERR_PRINT("Bad port input\n");
 				free(save_ptr);
 				free(*ports);
-				return 0;
+				return -3;
 			}
 			int first = atoi(temp);
 			temp	  = strtok_r(token, "-", &token);
@@ -40,7 +40,7 @@ unsigned int parse_ports(char *str, unsigned short **ports) {
 				ERR_PRINT("Bad port input\n");
 				free(save_ptr);
 				free(*ports);
-				return 0;
+				return -4;
 			}
 
 			int second = atoi(temp);
@@ -49,14 +49,14 @@ unsigned int parse_ports(char *str, unsigned short **ports) {
 				ERR_PRINT("Bad port input\n");
 				free(save_ptr);
 				free(*ports);
-				return 0;
+				return -5;
 			}
 
 			if (first > MAX_PORT || second > MAX_PORT) {
 				ERR_PRINT("Ports larger than %d does not exist\n", MAX_PORT);
 				free(save_ptr);
 				free(*ports);
-				return 0;
+				return -6;
 			}
 
 			// Count the amount of ports

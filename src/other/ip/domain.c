@@ -21,8 +21,8 @@ int fetch_domain(char domain[MAX_DOMAIN_NAME], struct sockaddr_storage *addr) {
 	int res = getaddrinfo(new_context, NULL, &hints, &results);
 
 	if (res != 0) {
-		perror("getaddrinfo");
 		ERR_PRINT("%s\n", gai_strerror(res));
+		return -1;
 	}
 
 	/*
@@ -60,7 +60,7 @@ int fetch_domain(char domain[MAX_DOMAIN_NAME], struct sockaddr_storage *addr) {
 
 	freeaddrinfo(results);
 	if (addr->ss_family == 0 || addr->ss_family == AF_UNSPEC) {
-		return -1;
+		return -2;
 	}
 	return 0;
 }

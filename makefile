@@ -56,5 +56,8 @@ $(BUILD)/%.o: $(SRC)/%.c
 clean:
 	@rm -rf $(OBJFILES) $(NAME)
 
-fedora:
+test-fedora:
 	act --rm -W ./.github/workflows/fedora-build.yml
+
+test-ubuntu:
+	act --rm -W ./.github/workflows/ubuntu-build.yml

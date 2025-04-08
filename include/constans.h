@@ -10,6 +10,7 @@
 #define DEFAULT_NO_PING		   false
 #define DEFAULT_THREAD_WORKERS 3
 #define DEFAULT_PORT_INTERVAL  "1-1000"
+#define DEFAULT_FORCE_PARSE	   false;
 
 /*
 	================================
@@ -46,5 +47,5 @@
 // Service parser and storage
 #define TMP_STORAGE		"/tmp/hawkeyes"
 #define SERVICES		"/etc/services"
-#define SERVICE_STORAGE "/tmp/hawkeyes/service/"
+#define SERVICE_STORAGE "/tmp/hawkeyes/service"
 #define SERVICE_CHECK	"/tmp/hawkeyes/service/done"

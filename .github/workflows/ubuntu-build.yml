@@ -1,0 +1,26 @@
+name: Ubuntu Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  fedora-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Updating OS
+        run: apt update && apt upgrade -y
+      - name: Installing dependencies
+        run: apt -y install git gcc make libcjson-dev libpcap-dev
+
+      - name: Compiling
+        run: make release

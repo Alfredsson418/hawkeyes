@@ -66,9 +66,6 @@ int tcp_hdr_setup(struct tcphdr *tcp_hdr, unsigned short src_port,
 			   sizeof(struct tcphdr));
 
 		tcp_hdr->check = checksum(pseudogram, pseudo_size);
-
-	} else {
-		return 0;
 	}
 
 	return 0;
