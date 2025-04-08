@@ -19,7 +19,12 @@ jobs:
 
       - name: Get tag name
         id: get_tag_name
-        run: echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          else
+            echo "TAG_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+          fi
 
       - name: Create release
         id: create_release
