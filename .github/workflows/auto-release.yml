@@ -12,20 +12,28 @@ on:
 jobs:
   create-release:
     runs-on: ubuntu-latest
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Get tag name
+        id: get_tag_name
+        run: echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
       - name: Create release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref_name }}
-          release_name: Release ${{ github.ref_name }}
+          tag_name: ${{ env.TAG_NAME }}
+          release_name: Release ${{ env.TAG_NAME }}
           draft: false
           prerelease: false
+
+      - name: Set upload URL as environment variable
+        run: echo "UPLOAD_URL=${{ steps.create_release.outputs.upload_url }}" >> $GITHUB_ENV
 
   upload-license:
     needs: create-release
@@ -33,16 +41,16 @@ jobs:
 
     steps:
       - name: Clone and check out branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
       - name: Upload License
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          upload_url: ${{ env.UPLOAD_URL }}
           asset_path: ./LICENSE
-          asset_name: releases/LICENSE
+          asset_name: LICENSE
           asset_content_type: text/plain
 
   fedora-build:
@@ -56,7 +64,7 @@ jobs:
         run: dnf -y install git tar
 
       - name: Clone and check out branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
       - name: Installing program dependencies
         run: dnf -y install gcc make jq "pkgconfig(libcjson)" "pkgconfig(libpcap)"
@@ -69,9 +77,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          upload_url: ${{ env.UPLOAD_URL }}
           asset_path: ./hawk
-          asset_name: releases/fedora/hawk
+          asset_name: hawk-${{ env.TAG_NAME }}.fedora.x86-x64
           asset_content_type: application/x-executable
 
   ubuntu-build:
@@ -87,7 +95,7 @@ jobs:
         run: sudo apt -y install git
 
       - name: Clone and check out branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
       - name: Installing program dependencies
         run: sudo apt -y install git gcc make jq libcjson-dev libpcap-dev
@@ -100,7 +108,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          upload_url: ${{ env.UPLOAD_URL }}
           asset_path: ./hawk
-          asset_name: releases/ubuntu/hawk
+          asset_name: hawk-${{ env.TAG_NAME }}.ubuntu.x86-x64
           asset_content_type: application/x-executable
