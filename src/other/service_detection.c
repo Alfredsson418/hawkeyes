@@ -17,7 +17,7 @@ int find_port(transfer_protocol_t method, unsigned short port,
 
 	if (file_ptr == NULL) {
 		ERR_PRINT("Error opening file \n");
-		return -1;
+		return -2;
 	}
 
 	char a[PORT_SERVICE_LEN];
@@ -28,17 +28,17 @@ int find_port(transfer_protocol_t method, unsigned short port,
 		int	  temp		  = atoi(csv_port);
 		if (temp > MAX_PORT) {
 			ERR_PRINT("Ports bigger that %d not allowed\n", MAX_PORT);
-			return -1;
+			return -3;
 		} else if (temp < 0) {
 			ERR_PRINT("Port to small\n");
-			return -1;
+			return -4;
 		}
 		unsigned short temp_port = temp;
 		if (temp_port == port) {
 			if (strlen(csv_service) > PORT_SERVICE_LEN) {
 				ERR_PRINT("Service name is to long\n");
 				fclose(file_ptr);
-				return -1;
+				return -5;
 			}
 			strncpy(*service, csv_service, PORT_SERVICE_LEN);
 

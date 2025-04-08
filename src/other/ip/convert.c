@@ -23,7 +23,7 @@ int ipv4_to_str(struct sockaddr_storage *addr, char str[INET_ADDRSTRLEN]) {
 
 	if (inet_ntop(AF_INET, &(addr_in->sin_addr), str, INET_ADDRSTRLEN) ==
 		NULL) {
-		return -1;
+		return -2;
 	}
 
 	return 0;
@@ -50,7 +50,7 @@ int ipv6_to_str(struct sockaddr_storage *addr, char str[INET6_ADDRSTRLEN]) {
 
 	if (inet_ntop(AF_INET6, &(addr_in->sin6_addr), str, INET6_ADDRSTRLEN) ==
 		NULL) {
-		return -1;
+		return -2;
 	}
 
 	return 0;

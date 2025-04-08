@@ -18,6 +18,8 @@ const struct argp_option terminal_options[] = {
 	{"timeout", 'w', "TIME(sec)", 0, "Timeout"},
 	{"no-ping", 503, 0, 0, "Do not ping the target"},
 	{"threading-workers", 'n', "WORKERS", 0, "Amount of threading workers"},
+	{"parse-services", 504, 0, 0,
+	 "Force to reparse /etc/services to use in program"},
 	{0}
 };
 
@@ -62,9 +64,9 @@ error_t terminal_parse_opt(int key, char *arg, struct argp_state *state) {
 	case 't':
 		memset(&arguments->address, 0, sizeof(struct sockaddr_storage));
 
-		if (str_to_ipv4(&arguments->address, arg) != -1) {
+		if (str_to_ipv4(&arguments->address, arg) >= 0) {
 			break;
-		} else if (str_to_ipv6(&arguments->address, arg) != -1) {
+		} else if (str_to_ipv6(&arguments->address, arg) >= 0) {
 			break;
 		} else if (fetch_domain(arg, &arguments->address) >= 0) {
 			break;
@@ -103,6 +105,8 @@ error_t terminal_parse_opt(int key, char *arg, struct argp_state *state) {
 	case 'n':
 		arguments->thread_workers = atoi(arg);
 		break;
+	case 504:
+		arguments->force_parse_service_file = true;
 	default:
 		return ARGP_ERR_UNKNOWN;
 	}

@@ -54,7 +54,7 @@ Example:
   </tr>
 </table>
 
-<h1>Want to contirbute to the project?</h1>
+<h1>Want to contribute to the project?</h1>
 <p>Read about contribution to this project over at <a href="CONTRIBUTING.md">CONTRIBUTING.md</a></p>
 
 <h1>Questions</h1>

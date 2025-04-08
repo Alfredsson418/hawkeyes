@@ -184,6 +184,24 @@ This works mostly on older firewalls because modern firewalls will not responde 
     </tr>
 </table>
 
+<h2>Parse Services</h2>
+<table>
+    <tr>
+      <th>Short Option</th>
+      <th>Long Option</th>
+      <th>Description</th>
+      <th>Default Value</th>
+      <th>Possible values</th>
+    </tr>
+    <tr>
+      <td>None</td>
+      <td>--parse-services</td>
+      <td>Will parse /etc/services file to be used in the program for static port detection.</td>
+      <td>false</td>
+      <td>false or true</td>
+    </tr>
+</table>
+
 
 <h1>Examples</h1>
 <table>

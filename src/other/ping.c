@@ -62,14 +62,14 @@ int ping(struct sockaddr_storage ip_addr, const char interface[INTERFACE_LEN]) {
 
 	if (sock < 0) {
 		ERR_PRINT("Failed opening UDP socket for ping\n");
-		return -1;
+		return -2;
 	}
 
 	if (setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) <
 		0) {
 		ERR_PRINT("Failed to set a timeout to socket\n");
 		close(sock);
-		return -1;
+		return -3;
 	}
 
 	// Bind the socket to the specified network interface
@@ -77,7 +77,7 @@ int ping(struct sockaddr_storage ip_addr, const char interface[INTERFACE_LEN]) {
 				   INTERFACE_LEN) < 0) {
 		ERR_PRINT("Failed to bind to device %s\n", interface);
 		close(sock);
-		return -1;
+		return -4;
 	}
 
 	// Pinging adress on interface
@@ -91,14 +91,14 @@ int ping(struct sockaddr_storage ip_addr, const char interface[INTERFACE_LEN]) {
 	} else {
 		ERR_PRINT("Wrong format\n");
 		close(sock);
-		return -1;
+		return -5;
 	}
 
 	if (sent < 0) {
 		perror("sock");
 		ERR_PRINT("Failed to send ICMP/ping packet \n");
 		close(sock);
-		return -1;
+		return -6;
 	}
 
 	// This is needed because the first packet could be the package sent
@@ -109,7 +109,7 @@ int ping(struct sockaddr_storage ip_addr, const char interface[INTERFACE_LEN]) {
 					 (struct sockaddr *)&sender_addr, &sender_addr_len);
 		if (received < 0) {
 			close(sock);
-			return -1;
+			return -7;
 		}
 
 		if (ip_addr.ss_family == AF_INET) {

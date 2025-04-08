@@ -1,0 +1,65 @@
+# Use to test if a program can compile before merging with dev branch
+# This is too prevent any changes that may result in different errors
+# with other branches
+
+name: Compile test
+
+on:
+  pull_request:
+    branches:
+      - dev
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  fedora-build:
+    container: registry.fedoraproject.org/fedora-minimal:latest
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Installing git dependencies
+        run: dnf -y install git tar
+
+      - name: Clone and check out branch
+        uses: actions/checkout@v4
+
+      - name: Installing program dependencies
+        run: dnf -y install gcc make jq "pkgconfig(libcjson)" "pkgconfig(libpcap)"
+
+      - name: Compiling with debug flags
+        run: make debug
+
+      - name: Clean up
+        run: make clean
+
+      - name: Compiling with release flags
+        run: make release
+
+  ubuntu-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Fix possible broken install
+        run: sudo apt --fix-broken install
+
+      - name: Updating OS
+        run: sudo apt update && sudo apt upgrade -y
+
+      - name: Installing git dependencies
+        run: sudo apt -y install git
+
+      - name: Clone and check out branch
+        uses: actions/checkout@v4
+
+      - name: Installing program dependencies
+        run: sudo apt -y install git gcc make jq libcjson-dev libpcap-dev
+
+      - name: Compiling with debug flags
+        run: make debug
+
+      - name: Clean up
+        run: make clean
+
+      - name: Compiling with release flags
+        run: make release

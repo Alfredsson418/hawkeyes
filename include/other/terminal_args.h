@@ -29,6 +29,7 @@ struct terminal_args {
 	bool					no_ping;
 	unsigned int			thread_workers;
 	scan_func_t				scan_info;
+	bool					force_parse_service_file;
 };
 
 error_t terminal_parse_opt(int key, char *arg, struct argp_state *state);

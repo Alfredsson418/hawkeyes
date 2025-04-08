@@ -17,21 +17,21 @@ int socket_init(int socket_type, int protocol, scan_arg_t func_arg) {
 				   sizeof(timeout)) < 0) {
 		ERR_PRINT("TCP Setup timeout send \n");
 		close(sock);
-		return -1;
+		return -2;
 	}
 
 	if (setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char *)&timeout,
 				   sizeof(timeout)) < 0) {
 		ERR_PRINT("TCP Setup timeout rcv \n");
 		close(sock);
-		return -1;
+		return -3;
 	}
 
 	if (setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, func_arg.interface->name,
 				   INTERFACE_LEN) < 0) {
 		ERR_PRINT("TCP Setup interface \n");
 		close(sock);
-		return -1;
+		return -4;
 	}
 
 	return sock;
