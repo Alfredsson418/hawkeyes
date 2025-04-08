@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - main
-      - pre-release
+      - dev
   pull_request:
     branches:
       - main
-      - pre-release
+      - dev
 
   workflow_dispatch:
 
