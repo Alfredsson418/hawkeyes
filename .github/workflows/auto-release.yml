@@ -1,0 +1,108 @@
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+  pull_request:
+    branches:
+      - main
+    tags:
+      - "v*"
+
+  workflow_dispatch:
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+
+    steps:
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+  upload-license:
+    needs: create-release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone and check out branch
+        uses: actions/checkout@v4
+
+      - name: Upload License
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./LICENSE
+          asset_name: LICENSE
+
+  fedora-build:
+    needs: create-release
+
+    container: registry.fedoraproject.org/fedora-minimal:latest
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Installing git dependencies
+        run: dnf -y install git tar
+
+      - name: Clone and check out branch
+        uses: actions/checkout@v4
+
+      - name: Installing program dependencies
+        run: dnf -y install gcc make "pkgconfig(libcjson)" "pkgconfig(libpcap)"
+
+      - name: Compiling
+        run: make release
+
+      - name: Upload Fedora executable
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./hawk
+          asset_name: fedora/hawk
+          asset_content_type: application/x-executable
+
+  ubuntu-build:
+    needs: create-release
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Updating OS
+        run: sudo apt update && sudo apt upgrade -y
+
+      - name: Installing git dependencies
+        run: sudo apt -y install git
+
+      - name: Clone and check out branch
+        uses: actions/checkout@v4
+
+      - name: Installing program dependencies
+        run: sudo apt -y install git gcc make libcjson-dev libpcap-dev
+
+      - name: Compiling with release flags
+        run: make release
+
+      - name: Upload Ubuntu executable
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./hawk
+          asset_name: ubuntu/hawk
+          asset_content_type: application/x-executable

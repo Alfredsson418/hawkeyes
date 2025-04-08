@@ -6,5 +6,7 @@
 echo "Updating patch"
 ./data/version/increase.sh 0 0 1
 
+
+
 # Because he files change, we need to add it again before the commit
 git add data/version/version.json

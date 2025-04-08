@@ -42,13 +42,13 @@ debug: $(OBJFILES)
 # Target to build the executable with release flags
 build_release: CFLAGS = $(RELEASE_CFLAGS)
 build_release: $(OBJFILES)
-	@$(MAKE) setup-version --no-print-directory
 	@echo "Building $(NAME) in release mode"
 	@$(CC) $(CFLAGS) $^ -o $(NAME) $(LDFLAGS)
 	@echo "Done!"
 
 # To clean out debug code
 release:
+	@$(MAKE) setup-version --no-print-directory
 	@$(MAKE) clean --no-print-directory
 	@$(MAKE) build_release --no-print-directory
 
@@ -67,6 +67,11 @@ setup-version:
 	@echo "Setting up version"
 	@echo "#pragma once" > $(VERSION_HEADER_FILE)
 	@echo '#define VERSION $(VERSION)' >> $(VERSION_HEADER_FILE)
+
+setup-hooks:
+	@echo "Setting up git hooks"
+	cp ./data/hooks/* ./.git/hooks/
+	chmod +x ./.git/hooks/*
 
 test-fedora:
 	act --rm -W ./.github/workflows/fedora-build.yml
