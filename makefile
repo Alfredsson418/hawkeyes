@@ -8,6 +8,11 @@ NAME = hawk
 BUILD = build
 SRC = src
 
+# Files
+VERSION_FILE = ./data/version/version.json
+VERSION_HEADER_FILE = ./include/version.h
+VERSION = $(shell jq .version $(VERSION_FILE))
+
 # ------------------------------------------------------
 # 					Code compilation
 # ------------------------------------------------------
@@ -23,11 +28,12 @@ SRCFILES = $(shell find $(SRC) -name '*.c')
 # Generate object file names from source file names
 OBJFILES = $(patsubst $(SRC)/%.c, $(BUILD)/%.o, $(SRCFILES))
 
-.PHONY: debug release clean
+.PHONY: debug release clean setup-version
 
 # Target to build the executable with debug flags
 debug: CFLAGS = $(DEBUG_CFLAGS)
 debug: $(OBJFILES)
+	@$(MAKE) setup-version --no-print-directory
 	@echo "Building $(NAME) in debug mode"
 	@$(CC) $(CFLAGS) $^ -o $(NAME) $(LDFLAGS)
 	@echo "Done!"
@@ -42,6 +48,7 @@ build_release: $(OBJFILES)
 
 # To clean out debug code
 release:
+	@$(MAKE) setup-version --no-print-directory
 	@$(MAKE) clean --no-print-directory
 	@$(MAKE) build_release --no-print-directory
 
@@ -56,8 +63,15 @@ $(BUILD)/%.o: $(SRC)/%.c
 clean:
 	@rm -rf $(OBJFILES) $(NAME)
 
-test-fedora:
-	act --rm -W ./.github/workflows/fedora-build.yml
+setup-version:
+	@echo "Setting up version"
+	@echo "#pragma once" > $(VERSION_HEADER_FILE)
+	@echo '#define VERSION $(VERSION)' >> $(VERSION_HEADER_FILE)
 
-test-ubuntu:
-	act --rm -W ./.github/workflows/ubuntu-build.yml
+setup-hooks:
+	@echo "Setting up git hooks"
+	cp ./data/hooks/* ./.git/hooks/
+	chmod +x ./.git/hooks/*
+
+test-compile:
+	act --rm -W .github/workflows/compile-test.yml

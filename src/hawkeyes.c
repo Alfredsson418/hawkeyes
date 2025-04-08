@@ -3,8 +3,7 @@
 int main(int argc, char *argv[]) {
 
 	print_motd();
-	PRINT("Version: ");
-	print_json(VERSION_FILE, TERMINAL_WIDTH, "version");
+	PRINT("Version: %s\n", VERSION);
 
 	if (argc < 2) {
 		ERR_PRINT("%s\n", "No arguments detected! Exiting!\n");

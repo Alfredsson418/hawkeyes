@@ -20,3 +20,4 @@
 #include "ui/motd.h"
 #include "ui/print_macro.h"
 #include "ui/terminal_display.h"
+#include "version.h"
