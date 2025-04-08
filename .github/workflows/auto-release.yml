@@ -53,7 +53,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ env.UPLOAD_URL }}
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./LICENSE
           asset_name: LICENSE
           asset_content_type: text/plain
@@ -82,8 +82,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ env.UPLOAD_URL }}
-          asset_path: ./hawk
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_name: hawk-${{ env.TAG_NAME }}.fedora.x86-x64
           asset_content_type: application/x-executable
 
@@ -113,7 +112,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ env.UPLOAD_URL }}
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./hawk
           asset_name: hawk-${{ env.TAG_NAME }}.ubuntu.x86-x64
           asset_content_type: application/x-executable
