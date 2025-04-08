@@ -1,12 +1,10 @@
 #!/bin/bash
 
-# Add this file to ./git/hooks/ to auto increase the version number pre commit
+echo "PRE COMMIT"
 
-
-echo "Updating patch"
+echo "Updating patch to:"
 ./data/version/increase.sh 0 0 1
-
-
+jq .version data/version/version.json -r
 
 # Because he files change, we need to add it again before the commit
 git add data/version/version.json

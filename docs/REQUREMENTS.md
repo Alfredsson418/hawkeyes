@@ -12,4 +12,6 @@ so keep that in mind when compiling and running this program.
 * libpcap-dev on Debian, libpcap-devel on Fedora
 * argp (Used for parsing arguments from terminal)
 * libcjson-dev on Debian, libpcap-devel on Fedora (https://github.com/DaveGamble/cJSON)
-<!-- * libcap-dev (Used to check permissions) Currently not in use -->
+
+# Development requirements
+* jq (Commandline json parser)

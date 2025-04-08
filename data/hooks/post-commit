@@ -1,7 +1,10 @@
 #!/bin/bash
+echo "POST COMMIT"
 
+echo "Adding tag"
 v="v"
-num=$(jq .version data/version/version.json)
+num=$(jq .version data/version/version.json -r)
 version=$v$num
+echo $version
 
 git tag $version
