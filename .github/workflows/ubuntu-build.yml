@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Updating OS
-        run: sudo apt update && apt upgrade -y
+        run: sudo apt update && sudo apt upgrade -y
       - name: Installing dependencies
         run: sudo apt -y install git gcc make libcjson-dev libpcap-dev
 
