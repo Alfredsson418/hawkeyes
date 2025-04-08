@@ -1,8 +1,8 @@
 #!/bin/bash
 
-path="data/version/version.json"
+path="./data/version/version.json"
 
-old=$(jq ".version" version.json -r)
+old=$(jq ".version" $path -r)
 
 old_release=$(echo $old | cut -d '.' -f 1)
 old_version=$(echo $old | cut -d '.' -f 2)
