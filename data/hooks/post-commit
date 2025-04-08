@@ -1,4 +1,5 @@
 #!/bin/bash
+echo "-----------"
 echo "POST COMMIT"
 
 echo "Adding tag"
@@ -8,3 +9,4 @@ version=$v$num
 echo $version
 
 git tag $version
+echo "-----------"

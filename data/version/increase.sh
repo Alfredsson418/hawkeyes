@@ -2,16 +2,16 @@
 
 path="./data/version/version.json"
 
-old=$(jq ".version" $path -r)
+old=$(jq -r ".version" "$path")
 
-old_release=$(echo $old | cut -d '.' -f 1)
-old_version=$(echo $old | cut -d '.' -f 2)
-old_patch=$(echo $old | cut -d '.' -f 3)
+old_release=$(echo "$old" | cut -d '.' -f 1)
+old_version=$(echo "$old" | cut -d '.' -f 2)
+old_patch=$(echo "$old" | cut -d '.' -f 3)
 
 
 new_release=$((old_release + $1))
 new_version=$((old_version + $2))
-new_patch=$((old_patch + $2))
+new_patch=$((old_patch + $3))
 
 
 

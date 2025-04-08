@@ -1,10 +1,14 @@
 #!/bin/bash
-
+echo "-----------"
 echo "PRE COMMIT"
 
-echo "Updating patch to:"
+echo "Updating patch from:"
+jq .version data/version/version.json -r
 ./data/version/increase.sh 0 0 1
+echo "to:"
 jq .version data/version/version.json -r
 
 # Because he files change, we need to add it again before the commit
 git add data/version/version.json
+
+echo "-----------"
