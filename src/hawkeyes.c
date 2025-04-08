@@ -2,12 +2,11 @@
 
 int main(int argc, char *argv[]) {
 
-	print_file(MOTD_FILE, MOTD_WIDTH);
+	print_motd();
 	PRINT("Version: ");
 	print_json(VERSION_FILE, TERMINAL_WIDTH, "version");
 
 	if (argc < 2) {
-
 		ERR_PRINT("%s\n", "No arguments detected! Exiting!\n");
 		exit(0);
 	}
@@ -27,6 +26,7 @@ int main(int argc, char *argv[]) {
 	arguments.no_ping		 = DEFAULT_NO_PING;
 	arguments.thread_workers = DEFAULT_THREAD_WORKERS;
 	strncpy(arguments.ports_format, DEFAULT_PORT_INTERVAL, PORTS_FORMAT_LEN);
+	arguments.force_parse_service_file = DEFAULT_FORCE_PARSE;
 
 	unsigned short closed_ports		  = 0;
 	unsigned short error_ports		  = 0;
@@ -36,6 +36,10 @@ int main(int argc, char *argv[]) {
 	*/
 
 	argp_parse(&terminal_argp, argc, argv, 0, 0, &arguments);
+
+	if (setup_services(arguments.force_parse_service_file) == 1) {
+		VERBOSE_MESSAGE("Services already parsed\n");
+	}
 
 	interface.s_addr.ss_family = arguments.address.ss_family;
 
@@ -65,7 +69,7 @@ int main(int argc, char *argv[]) {
 		VERBOSE_MESSAGE("Target (IPv6): %s \n", str);
 	} else {
 		ERR_PRINT("Wrong input format\n");
-		return -1;
+		exit(0);
 	}
 
 	VERBOSE_MESSAGE("Can ping before scan(?): %s \n",
@@ -97,7 +101,7 @@ int main(int argc, char *argv[]) {
 		strcpy(interface.name, arguments.interface);
 		if (!verify_interface(&interface)) {
 			ERR_PRINT("The given network interface does not exist\n");
-			return -1;
+			exit(0);
 		}
 	}
 
@@ -112,7 +116,7 @@ interface_end:
 	unsigned int	port_len = parse_ports(arguments.ports_format, &ports);
 	if (port_len == 0) {
 		ERR_PRINT("Failed to parse ports\n");
-		return -1;
+		exit(0);
 	}
 
 	PRINT("Scanning on ports: %s (%d)\n", arguments.ports_format, port_len);

@@ -64,9 +64,10 @@ int get_first_network_interface(interface_info *interface) {
 			continue;
 		}
 		_copy_addr(ifaddr, interface);
-		return 1;
+		break;
 	}
-	return -1;
+	freeifaddrs(ifaddr);
+	return 0;
 }
 
 int guess_interface(struct sockaddr_storage ip_addr,
@@ -128,8 +129,9 @@ int verify_interface(interface_info *interface) {
 		}
 		if (strcmp(interface->name, ifaddr->ifa_name) == 0) {
 			_copy_addr(ifaddr, interface);
-			return 1;
+			break;
 		}
 	}
+	freeifaddrs(ifaddr);
 	return 0;
 }

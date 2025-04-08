@@ -1,0 +1,27 @@
+name: Fedora Build
+
+on:
+  push:
+    branches:
+      - main
+      - pre-release
+  pull_request:
+    branches:
+      - main
+      - pre-release
+
+  workflow_dispatch:
+
+jobs:
+  fedora-build:
+    container: registry.fedoraproject.org/fedora-minimal:latest
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Installing dependencies
+        run: dnf -y install git gcc make "pkgconfig(libcjson)" "pkgconfig(libpcap)"
+
+      - name: Compiling
+        run: make release

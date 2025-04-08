@@ -63,7 +63,7 @@ int icmp_responce_scan(scan_arg_t arg, scan_result_t *result) {
 			   get_addr_len(arg.addr)) < 0) {
 		ERR_PRINT("Failed to send UDP package\n");
 		result->state = -1;
-		return result->state;
+		return -2;
 	}
 
 	pthread_join(thread_id, (void **)&packet);
