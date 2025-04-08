@@ -11,10 +11,6 @@ on:
 
 jobs:
   create-release:
-    if: |
-      github.ref_type == 'tag' &&
-      startsWith(github.ref, 'refs/tags/v')
-
     runs-on: ubuntu-latest
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
