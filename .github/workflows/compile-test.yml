@@ -8,6 +8,7 @@ on:
   pull_request:
     branches:
       - dev
+      - main
 
   workflow_dispatch:
 
@@ -39,6 +40,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Fix possible broken install
+        run: sudo apt --fix-broken install
+
       - name: Updating OS
         run: sudo apt update && sudo apt upgrade -y
 
