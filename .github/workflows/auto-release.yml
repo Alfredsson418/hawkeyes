@@ -19,11 +19,11 @@ jobs:
       short_sha: ${{ steps.run_short_sha.outputs.sha_short }}
       version: ${{ steps.run_version.outputs.version }}
     steps:
+      - name: Installing dependencies
+        run: dnf -y install jq tar
+
       - name: Checkout repository
         uses: actions/checkout@v2
-
-      - name: Installing dependencies
-        run: dnf -y install jq
 
       - name: Set sha_short
         id: run_short_sha
