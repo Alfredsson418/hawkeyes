@@ -1,11 +1,5 @@
 #include "../../../include/scan_methods/udp/echo_responce.h"
 
-void *run_next_best_packet(void *arg) {
-	next_best_args *args = (next_best_args *)arg;
-
-	return (void *)next_best_packet(args);
-}
-
 /*
 	The method in this funtion to find open ports it to
 	scan for "Port Unreachable" or "Destination Unreachable"
@@ -29,23 +23,25 @@ int icmp_responce_scan(scan_arg_t arg, scan_result_t *result) {
 
 	next_best_args packet_capture_arg;
 
+	memset(&packet_capture_arg, 0, sizeof(packet_capture_arg));
+
 	packet_capture_arg.timeout		  = arg.timeout;
 	packet_capture_arg.interface	  = arg.interface->name;
 	packet_capture_arg.setup_complete = false;
 
-	if (arg.addr->ss_family == AF_INET) {
-		((struct sockaddr_in *)arg.addr)->sin_port = htons(arg.port);
+	if (arg.addr.ss_family == AF_INET) {
+		((struct sockaddr_in *)&arg.addr)->sin_port = htons(arg.port);
 		sprintf(packet_capture_arg.filter,
 				"(icmp[30:2] == %#06x) && (icmp[0] == 3) && (icmp[1] == 3)",
 				arg.port);
-	} else if (arg.addr->ss_family == AF_INET6) {
-		((struct sockaddr_in6 *)arg.addr)->sin6_port = htons(arg.port);
+	} else if (arg.addr.ss_family == AF_INET6) {
+		((struct sockaddr_in6 *)&arg.addr)->sin6_port = htons(arg.port);
 		sprintf(packet_capture_arg.filter,
 				"(icmp6[50:2] == %#06x) && (icmp6[0] == 1) && (icmp6[1] == 4)",
 				arg.port);
 	}
 
-	if (pthread_create(&thread_id, NULL, run_next_best_packet,
+	if (pthread_create(&thread_id, NULL, (void *)next_best_packet,
 					   &packet_capture_arg) != 0) {
 		ERR_PRINT("Failed to create capture thread \n");
 		return -1;
@@ -59,7 +55,7 @@ int icmp_responce_scan(scan_arg_t arg, scan_result_t *result) {
 		;
 	}
 
-	if (sendto(sock, 0, 0, 0, (struct sockaddr *)arg.addr,
+	if (sendto(sock, 0, 0, 0, (struct sockaddr *)&arg.addr,
 			   get_addr_len(arg.addr)) < 0) {
 		ERR_PRINT("Failed to send UDP package\n");
 		result->state = -1;

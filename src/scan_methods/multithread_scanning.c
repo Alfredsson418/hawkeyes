@@ -64,26 +64,25 @@ void *waiting_on_scan(void *wait) {
 }
 
 void *worker_function(void *in_arg) {
-	worker_arg *temp_arg = in_arg;
-	worker_arg	arg		 = *temp_arg; // Look at issue 21 on github for why
+	worker_arg *global_arg = in_arg;
+	worker_arg	local_arg  = *global_arg; // Look at issue 21 on github for why
 
-	// PRINT("Thread start\n");
 	while (1) {
-		pthread_mutex_lock(arg.read_mutex);
-		if (temp_arg->index >= arg.port_len) {
+		pthread_mutex_lock(global_arg->read_mutex);
+		if (global_arg->index >= local_arg.port_len) {
 			break;
 		}
-		int current_index = temp_arg->index++;
+		int current_index = global_arg->index++;
 
-		int port = *(arg.ports + current_index);
-		pthread_mutex_unlock(arg.read_mutex);
+		int port = *(local_arg.ports + current_index);
+		pthread_mutex_unlock(global_arg->read_mutex);
 
-		arg.func_arg.port = port;
+		local_arg.func_arg.port = port;
 
-		arg.func_info.scan_func(arg.func_arg,
-								(arg.func_result + current_index));
+		local_arg.func_info.scan_func(local_arg.func_arg,
+									  (local_arg.func_result + current_index));
 	}
-	pthread_mutex_unlock(arg.read_mutex);
+	pthread_mutex_unlock(global_arg->read_mutex);
 
 	return 0;
 }
