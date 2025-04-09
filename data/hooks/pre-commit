@@ -1,14 +1,23 @@
 #!/bin/bash
 echo "-----------"
 echo "PRE COMMIT"
-
+: '
+branch=$(git branch --show-current)
 echo "Updating patch from:"
 jq .version data/version/version.json -r
-./data/version/increase.sh 0 0 1
+if [[ $branch == "main" ]]; then
+    ./data/version/increase.sh 0 1 0
+    ./data/version/set.sh -1 -1 0
+elif [[ $branch == "dev" ]]; then
+    ./data/version/increase.sh 0 0 1
+    # ./data/version/set.sh -1 -1 0
+fi
 echo "to:"
 jq .version data/version/version.json -r
 
-# Because he files change, we need to add it again before the commit
-git add data/version/version.json
 
+make setup-version
+git add include/version.h
+git add data/version/version.json
+'
 echo "-----------"

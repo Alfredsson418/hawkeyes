@@ -3,42 +3,46 @@
 name: Auto Release
 
 on:
-  push:
-    branches:
-      - main
+  #   push:
+  #     branches:
+  #       - main
 
   workflow_dispatch:
 
 jobs:
   create-release:
+    container: registry.fedoraproject.org/fedora-minimal:latest
     runs-on: ubuntu-latest
 
+    outputs:
+      upload_url: ${{ steps.release.outputs.upload_url }}
+      short_sha: ${{ steps.run_short_sha.outputs.sha_short }}
+      version: ${{ steps.run_version.outputs.version }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Get tag name
-        id: get_tag_name
-        run: |
-          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
-            echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-          else
-            echo "TAG_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-          fi
+      - name: Installing dependencies
+        run: dnf -y install jq
+
+      - name: Set sha_short
+        id: run_short_sha
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Set version
+        id: run_version
+        run: echo "version=$(jq .version data/version/version.json -r)" >> $GITHUB_OUTPUT
 
       - name: Create release
-        id: create_release
+        id: release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.TAG_NAME }}
-          release_name: Release ${{ env.TAG_NAME }}
+          tag_name: ${{ steps.run_short_sha.outputs.sha_short }}
+          release_name: ${{ steps.run_version.outputs.version }}
           draft: false
           prerelease: false
-
-      - name: Set upload URL as environment variable
-        run: echo "UPLOAD_URL=${{ steps.create_release.outputs.upload_url }}" >> $GITHUB_ENV
 
   upload-license:
     needs: create-release
@@ -53,7 +57,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
           asset_path: ./LICENSE
           asset_name: LICENSE
           asset_content_type: text/plain
@@ -82,8 +86,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_name: hawk-${{ env.TAG_NAME }}.fedora.x86-x64
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./hawk
+          asset_name: hawk-${{ needs.create-release.outputs.short_sha }}.fedora.x86-x64
           asset_content_type: application/x-executable
 
   ubuntu-build:
@@ -112,7 +117,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
           asset_path: ./hawk
-          asset_name: hawk-${{ env.TAG_NAME }}.ubuntu.x86-x64
+          asset_name: hawk-${{ needs.create-release.outputs.short_sha }}.ubuntu.x86-x64
           asset_content_type: application/x-executable

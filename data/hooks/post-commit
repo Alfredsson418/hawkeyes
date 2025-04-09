@@ -2,6 +2,7 @@
 echo "-----------"
 echo "POST COMMIT"
 
+: '
 branch=$(git branch --show-current)
 
 if [[ $branch == "main" ]]; then
@@ -14,5 +15,5 @@ if [[ $branch == "main" ]]; then
     git tag $version
     git push origin $version
 fi
-
+'
 echo "-----------"
