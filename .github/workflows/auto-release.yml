@@ -27,7 +27,7 @@ jobs:
 
       - name: Set sha_short
         id: run_short_sha
-        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        run: echo "sha_short=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
 
       - name: Set version
         id: run_version
