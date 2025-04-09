@@ -20,7 +20,7 @@ jobs:
       version: ${{ steps.run_version.outputs.version }}
     steps:
       - name: Installing dependencies
-        run: dnf -y install jq tar gzip
+        run: dnf -y install jq tar gzip git
 
       - name: Checkout repository
         uses: actions/checkout@v2
