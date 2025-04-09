@@ -7,7 +7,7 @@
 int SYN_scan(scan_arg_t arg, scan_result_t *result) {
 	struct timespec start, stop;
 	clock_gettime(CLOCK_MONOTONIC, &start);
-	unsigned int   ip_hdr_len  = arg.addr->ss_family == AF_INET
+	unsigned int   ip_hdr_len  = arg.addr.ss_family == AF_INET
 									 ? sizeof(struct iphdr)
 									 : sizeof(struct ip6_hdr);
 	unsigned int   packet_size = sizeof(struct tcphdr) + ip_hdr_len;
@@ -17,7 +17,7 @@ int SYN_scan(scan_arg_t arg, scan_result_t *result) {
 	next_best_args recv_packet_args;
 	pthread_t	   thread_id;
 	net_packet	  *recv_packet = NULL;
-	unsigned short src_port	   = unique_port(arg.addr->ss_family);
+	unsigned short src_port	   = unique_port(arg.addr.ss_family);
 
 	recv_packet_args.timeout		= arg.timeout;
 	recv_packet_args.interface		= arg.interface->name;
@@ -25,17 +25,17 @@ int SYN_scan(scan_arg_t arg, scan_result_t *result) {
 
 	int sock = socket_init(SOCK_RAW, IPPROTO_RAW, arg);
 
-	if (arg.addr->ss_family == AF_INET) {
-		((struct sockaddr_in *)arg.addr)->sin_port = htons(arg.port);
-		ip_hdr									   = (struct iphdr *)packet;
+	if (arg.addr.ss_family == AF_INET) {
+		((struct sockaddr_in *)&arg.addr)->sin_port = htons(arg.port);
+		ip_hdr										= (struct iphdr *)packet;
 		ip_hdr_setup((struct iphdr *)ip_hdr,
 					 (struct sockaddr_in *)&arg.interface->s_addr,
-					 (struct sockaddr_in *)arg.addr, 100000,
+					 (struct sockaddr_in *)&arg.addr, 100000,
 					 sizeof(struct tcphdr));
 
 		char src_ip[INET_ADDRSTRLEN], dst_ip[INET_ADDRSTRLEN];
 
-		ipv4_to_str(arg.addr, dst_ip);
+		ipv4_to_str(&arg.addr, dst_ip);
 		ipv4_to_str(&arg.interface->s_addr, src_ip);
 
 		sprintf(recv_packet_args.filter,
@@ -43,17 +43,17 @@ int SYN_scan(scan_arg_t arg, scan_result_t *result) {
 				"&& (ip dst %s)",
 				arg.port, src_port, dst_ip,
 				src_ip); // Src and Dst switches places
-	} else if (arg.addr->ss_family == AF_INET6) {
-		((struct sockaddr_in6 *)arg.addr)->sin6_port = htons(arg.port);
-		ip_hdr										 = (struct ip6_hdr *)packet;
+	} else if (arg.addr.ss_family == AF_INET6) {
+		((struct sockaddr_in6 *)&arg.addr)->sin6_port = htons(arg.port);
+		ip_hdr = (struct ip6_hdr *)packet;
 		ip6_hdr_setup((struct ip6_hdr *)ip_hdr,
 					  (struct sockaddr_in6 *)&arg.interface->s_addr,
-					  (struct sockaddr_in6 *)arg.addr, 100000,
+					  (struct sockaddr_in6 *)&arg.addr, 100000,
 					  sizeof(struct tcphdr));
 
 		char src_ip[INET6_ADDRSTRLEN], dst_ip[INET6_ADDRSTRLEN];
 
-		ipv6_to_str(arg.addr, dst_ip);
+		ipv6_to_str(&arg.addr, dst_ip);
 		ipv6_to_str(&arg.interface->s_addr, src_ip);
 
 		sprintf(recv_packet_args.filter,
@@ -70,11 +70,11 @@ int SYN_scan(scan_arg_t arg, scan_result_t *result) {
 	}
 
 	tcp_hdr_setup(tcp_hdr, src_port, arg.port, 1105024978,
-				  &arg.interface->s_addr, arg.addr);
+				  &arg.interface->s_addr, &arg.addr);
 	while ((!recv_packet_args.setup_complete)) {
 		;
 	}
-	sendto(sock, packet, packet_size, 0, (struct sockaddr *)arg.addr,
+	sendto(sock, packet, packet_size, 0, (struct sockaddr *)&arg.addr,
 		   get_addr_len(arg.addr));
 
 	pthread_join(thread_id, (void **)&recv_packet);
@@ -90,7 +90,7 @@ int SYN_scan(scan_arg_t arg, scan_result_t *result) {
 		// The second is only run when its not empty
 	} else if (recv_packet->packet_header != NULL &&
 			   recv_packet->packet_header->len > 0) {
-		result->state = -1;
+		result->state = -2;
 
 		const u_char *payload = (u_char *)recv_packet->packet_payload;
 

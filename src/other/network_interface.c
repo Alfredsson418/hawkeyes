@@ -41,29 +41,29 @@ int get_first_network_interface(interface_info *interface) {
 	struct ifaddrs *ifaddr;
 
 	if (getifaddrs(&ifaddr) < 0) {
-		ERR_PRINT("Failed to featch network interfaces\n");
+		ERR_PRINT("An error occured then trying to fetch network interfaces\n");
 		return -1;
 	}
 
-	for (; ifaddr != NULL; ifaddr = ifaddr->ifa_next) {
-		if (ifaddr->ifa_addr == NULL) {
+	for (struct ifaddrs *i = ifaddr; i != NULL; i = i->ifa_next) {
+		if (i->ifa_addr == NULL) {
 			continue;
 		}
 
-		if (interface->s_addr.ss_family != ifaddr->ifa_addr->sa_family) {
+		if (interface->s_addr.ss_family != i->ifa_addr->sa_family) {
 			continue;
 		}
 
-		if (strlen(ifaddr->ifa_name) > INTERFACE_LEN) {
+		if (strlen(i->ifa_name) > INTERFACE_LEN) {
 			ERR_PRINT("Interface name too long\n");
 			continue;
 		}
 
-		if (strlen(ifaddr->ifa_name) > INTERFACE_LEN) {
+		if (strlen(i->ifa_name) > INTERFACE_LEN) {
 			ERR_PRINT("Interface name too long\n");
 			continue;
 		}
-		_copy_addr(ifaddr, interface);
+		_copy_addr(i, interface);
 		break;
 	}
 	freeifaddrs(ifaddr);
@@ -74,35 +74,35 @@ int guess_interface(struct sockaddr_storage ip_addr,
 					interface_info		   *interface) {
 
 	// Get network interfaces
-	struct ifaddrs *network_interfaces;
-	if (getifaddrs(&network_interfaces) < 0) {
-		ERR_PRINT("Failed to featch network interfaces\n");
+	struct ifaddrs *ifaddr;
+
+	if (getifaddrs(&ifaddr) < 0) {
+		ERR_PRINT("An error occured then trying to fetch network interfaces\n");
 		return -1;
 	}
 
 	// Start looping though interfaces to ping
-	for (struct ifaddrs *ifaddr = network_interfaces; ifaddr != NULL;
-		 ifaddr					= ifaddr->ifa_next) {
+	for (struct ifaddrs *i = ifaddr; i != NULL; i = i->ifa_next) {
 
-		if (ifaddr->ifa_addr == NULL) {
+		if (i->ifa_addr == NULL) {
 			continue;
 		}
 
-		if (interface->s_addr.ss_family != ifaddr->ifa_addr->sa_family) {
+		if (interface->s_addr.ss_family != i->ifa_addr->sa_family) {
 			continue;
 		}
 
-		if (strlen(ifaddr->ifa_name) > INTERFACE_LEN) {
+		if (strlen(i->ifa_name) > INTERFACE_LEN) {
 			ERR_PRINT("Interface name too long\n");
 			continue;
 		}
 
-		if (is_root() && _ping(ifaddr, ip_addr)) {
-			_copy_addr(ifaddr, interface);
+		if (is_root() && _ping(i, ip_addr)) {
+			_copy_addr(i, interface);
 			break;
 		}
 	}
-	freeifaddrs(network_interfaces);
+	freeifaddrs(ifaddr);
 	return 0;
 }
 
@@ -110,26 +110,27 @@ int verify_interface(interface_info *interface) {
 	struct ifaddrs *ifaddr;
 
 	if (getifaddrs(&ifaddr) < 0) {
-		ERR_PRINT("Failed to featch network interfaces\n");
+		ERR_PRINT("An error occured then trying to fetch network interfaces\n");
 		return -1;
 	}
 
-	for (; ifaddr != NULL; ifaddr = ifaddr->ifa_next) {
-		if (ifaddr->ifa_addr == NULL) {
+	for (struct ifaddrs *i = ifaddr; i != NULL; i = i->ifa_next) {
+		if (i->ifa_addr == NULL) {
 			continue;
 		}
 
-		if (interface->s_addr.ss_family != ifaddr->ifa_addr->sa_family) {
+		if (interface->s_addr.ss_family != i->ifa_addr->sa_family) {
 			continue;
 		}
 
-		if (strlen(ifaddr->ifa_name) > INTERFACE_LEN) {
+		if (strlen(i->ifa_name) > INTERFACE_LEN) {
 			ERR_PRINT("Interface name too long\n");
 			continue;
 		}
-		if (strcmp(interface->name, ifaddr->ifa_name) == 0) {
-			_copy_addr(ifaddr, interface);
-			break;
+		if (strcmp(interface->name, i->ifa_name) == 0) {
+			_copy_addr(i, interface);
+			freeifaddrs(ifaddr);
+			return 1;
 		}
 	}
 	freeifaddrs(ifaddr);

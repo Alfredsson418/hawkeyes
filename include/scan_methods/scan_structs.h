@@ -18,10 +18,10 @@ typedef struct {
 
 // Used as a universal argument for every scanning method
 typedef struct {
-	struct sockaddr_storage *addr;
-	interface_info			*interface;
-	unsigned int			 timeout;
-	unsigned short			 port;
+	struct sockaddr_storage addr;
+	interface_info		   *interface;
+	unsigned int			timeout;
+	unsigned short			port;
 } scan_arg_t;
 
 // Used to store information about a scanning functions

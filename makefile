@@ -20,7 +20,7 @@ VERSION = $(shell jq .version $(VERSION_FILE))
 # Flags for compiling
 DEBUG_CFLAGS = -Wall -g
 RELEASE_CFLAGS =
-LDFLAGS = -lpcap -pthread -lcjson
+LDFLAGS = -lpcap --pthread -lcjson
 
 # Get all the source files in the SRC directory and its subdirectories
 SRCFILES = $(shell find $(SRC) -name '*.c')
