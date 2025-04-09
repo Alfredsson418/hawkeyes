@@ -98,7 +98,7 @@ int main(int argc, char *argv[]) {
 
 	} else { // If the user passes a interface
 		strcpy(interface.name, arguments.interface);
-		if (!verify_interface(&interface)) {
+		if (verify_interface(&interface) < 1) {
 			ERR_PRINT("The given network interface does not exist\n");
 			exit(0);
 		}
@@ -124,7 +124,7 @@ interface_end:
 	scan_result_t scan_result[port_len];
 
 	memset(scan_result, -1, sizeof(scan_result));
-	function_argument.addr		= &arguments.address;
+	function_argument.addr		= arguments.address;
 	function_argument.interface = &interface;
 	function_argument.timeout	= arguments.timeout;
 	// This will be where the scanning starts

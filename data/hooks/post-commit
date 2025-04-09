@@ -2,11 +2,18 @@
 echo "-----------"
 echo "POST COMMIT"
 
-echo "Adding tag"
-v="v"
-num=$(jq .version data/version/version.json -r)
-version=$v$num
-echo $version
+: '
+branch=$(git branch --show-current)
 
-git tag $version
+if [[ $branch == "main" ]]; then
+    echo "Adding tag"
+    v="v"
+    num=$(jq .version data/version/version.json -r)
+    version=$v$num
+    echo $version
+
+    git tag $version
+    git push origin $version
+fi
+'
 echo "-----------"

@@ -6,7 +6,7 @@ int socket_init(int socket_type, int protocol, scan_arg_t func_arg) {
 	timeout.tv_sec	= func_arg.timeout;
 	timeout.tv_usec = 0; // Should be easy to and more specific timeout
 
-	int sock = socket(func_arg.addr->ss_family, socket_type, protocol);
+	int sock = socket(func_arg.addr.ss_family, socket_type, protocol);
 
 	if (sock < 0) {
 		ERR_PRINT("Failed to create TCP socket \n");
@@ -39,11 +39,11 @@ int socket_init(int socket_type, int protocol, scan_arg_t func_arg) {
 
 void socket_close(int socket) { close(socket); }
 
-unsigned int get_addr_len(struct sockaddr_storage *addr) {
+unsigned int get_addr_len(struct sockaddr_storage addr) {
 
-	if (addr->ss_family == AF_INET) {
+	if (addr.ss_family == AF_INET) {
 		return sizeof(struct sockaddr_in);
-	} else if (addr->ss_family == AF_INET6) {
+	} else if (addr.ss_family == AF_INET6) {
 		return sizeof(struct sockaddr_in6);
 	}
 	ERR_PRINT("Unknown address family\n");

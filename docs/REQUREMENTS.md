@@ -7,11 +7,11 @@ OBS: Some libraries used in this project only work for linux based systems (argp
 so keep that in mind when compiling and running this program.
 
 # Software requirements
-* C compiler (like gcc)
-* Makefile
 * libpcap-dev on Debian, libpcap-devel on Fedora
 * argp (Used for parsing arguments from terminal)
 * libcjson-dev on Debian, libpcap-devel on Fedora (https://github.com/DaveGamble/cJSON)
 
 # Development requirements
 * jq (Commandline json parser)
+* C compiler (like gcc)
+* Makefile

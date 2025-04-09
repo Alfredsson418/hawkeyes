@@ -3,31 +3,44 @@
 name: Auto Release
 
 on:
-  push:
-    branches:
-      - main
+  #   push:
+  #     branches:
+  #       - main
 
   workflow_dispatch:
 
 jobs:
   create-release:
-    if: |
-      github.ref_type == 'tag' &&
-      startsWith(github.ref, 'refs/tags/v')
-
+    container: registry.fedoraproject.org/fedora-minimal:latest
     runs-on: ubuntu-latest
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
 
+    outputs:
+      upload_url: ${{ steps.release.outputs.upload_url }}
+      short_sha: ${{ steps.run_short_sha.outputs.sha_short }}
+      version: ${{ steps.run_version.outputs.version }}
     steps:
+      - name: Installing dependencies
+        run: dnf -y install jq tar gzip git
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set sha_short
+        id: run_short_sha
+        run: echo "sha_short=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+
+      - name: Set version
+        id: run_version
+        run: echo "version=$(jq .version data/version/version.json -r)" >> $GITHUB_OUTPUT
+
       - name: Create release
-        id: create_release
+        id: release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: ${{ steps.run_short_sha.outputs.sha_short }}
+          release_name: ${{ steps.run_version.outputs.version }}
           draft: false
           prerelease: false
 
@@ -37,7 +50,7 @@ jobs:
 
     steps:
       - name: Clone and check out branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
       - name: Upload License
         uses: actions/upload-release-asset@v1
@@ -47,6 +60,7 @@ jobs:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
           asset_path: ./LICENSE
           asset_name: LICENSE
+          asset_content_type: text/plain
 
   fedora-build:
     needs: create-release
@@ -56,10 +70,10 @@ jobs:
 
     steps:
       - name: Installing git dependencies
-        run: dnf -y install git tar
+        run: dnf -y install git tar gzip
 
       - name: Clone and check out branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
       - name: Installing program dependencies
         run: dnf -y install gcc make jq "pkgconfig(libcjson)" "pkgconfig(libpcap)"
@@ -74,7 +88,7 @@ jobs:
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
           asset_path: ./hawk
-          asset_name: fedora/hawk
+          asset_name: hawk-${{ needs.create-release.outputs.short_sha }}.fedora.x86-x64
           asset_content_type: application/x-executable
 
   ubuntu-build:
@@ -90,7 +104,7 @@ jobs:
         run: sudo apt -y install git
 
       - name: Clone and check out branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
       - name: Installing program dependencies
         run: sudo apt -y install git gcc make jq libcjson-dev libpcap-dev
@@ -105,5 +119,5 @@ jobs:
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
           asset_path: ./hawk
-          asset_name: ubuntu/hawk
+          asset_name: hawk-${{ needs.create-release.outputs.short_sha }}.ubuntu.x86-x64
           asset_content_type: application/x-executable
