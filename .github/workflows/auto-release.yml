@@ -11,6 +11,7 @@ on:
 
 jobs:
   create-release:
+    container: registry.fedoraproject.org/fedora-minimal:latest
     runs-on: ubuntu-latest
 
     outputs:
@@ -18,6 +19,9 @@ jobs:
       short_sha: ${{ steps.run_short_sha.outputs.sha_short }}
       version: ${{ steps.run_version.outputs.version }}
     steps:
+      - name: Installing dependencies
+        run: dnf -y install jq tar gzip
+
       - name: Checkout repository
         uses: actions/checkout@v2
 
@@ -66,7 +70,7 @@ jobs:
 
     steps:
       - name: Installing git dependencies
-        run: dnf -y install git tar
+        run: dnf -y install git tar gzip
 
       - name: Clone and check out branch
         uses: actions/checkout@v2
