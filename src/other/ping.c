@@ -4,12 +4,11 @@
 int ping(struct sockaddr_storage ip_addr, const char interface[INTERFACE_LEN]) {
 	// Set a timeout for recvfrom
 	struct timeval timeout;
-	timeout.tv_sec			   = 5; // 5 seconds timeout
+	timeout.tv_sec			   = 2; // 2 seconds timeout
 	timeout.tv_usec			   = 0;
 	int				   echo_ID = 8765;
 	int				   sock;
 	int				   tries = 2;
-	char			   buffer[1024];
 	struct sockaddr_in sender_addr;
 	socklen_t		   sender_addr_len = sizeof(sender_addr);
 	struct sockaddr	   addr;
@@ -41,12 +40,12 @@ int ping(struct sockaddr_storage ip_addr, const char interface[INTERFACE_LEN]) {
 		// Setting up ICMP6 echo package
 		memset(&icmp6, 0, sizeof(icmp6));
 		icmp6.icmp6_type = ICMP6_ECHO_REQUEST;
-		// icmp6_hdr.icmp6_id = echo_ID; // Unique ID
-		//  icmp6_hdr.icmp6_seq = htons(1);               // Sequence number
-		icmp6.icmp6_dataun.icmp6_un_data16[0] = echo_ID;
-		icmp6.icmp6_dataun.icmp6_un_data16[1] = htons(1);
-		icmp6.icmp6_code					  = 0;
-		icmp6.icmp6_cksum					  = checksum(&icmp6, sizeof(icmp6));
+		icmp6.icmp6_id	 = echo_ID;	 // Unique ID
+		icmp6.icmp6_seq	 = htons(1); // Sequence number
+		// icmp6.icmp6_dataun.icmp6_un_data16[0] = echo_ID;
+		// icmp6.icmp6_dataun.icmp6_un_data16[1] = htons(1);
+		icmp6.icmp6_code  = 0;
+		icmp6.icmp6_cksum = checksum(&icmp6, sizeof(icmp6));
 
 		sock = socket(AF_INET6, SOCK_RAW, IPPROTO_ICMPV6);
 
@@ -96,7 +95,7 @@ int ping(struct sockaddr_storage ip_addr, const char interface[INTERFACE_LEN]) {
 
 	if (sent < 0) {
 		perror("sock");
-		ERR_PRINT("Failed to send ICMP/ping packet \n");
+		ERR_PRINT("Failed to send ICMP/ping packet\n");
 		close(sock);
 		return -6;
 	}
@@ -104,12 +103,13 @@ int ping(struct sockaddr_storage ip_addr, const char interface[INTERFACE_LEN]) {
 	// This is needed because the first packet could be the package sent
 	for (int i = 0; i < tries; i++) {
 		// Recovering echo packet
+		char buffer[1500];
+
 		ssize_t received =
 			recvfrom(sock, buffer, sizeof(buffer), 0,
 					 (struct sockaddr *)&sender_addr, &sender_addr_len);
 		if (received < 0) {
-			close(sock);
-			return -7;
+			continue;
 		}
 
 		if (ip_addr.ss_family == AF_INET) {
@@ -128,7 +128,7 @@ int ping(struct sockaddr_storage ip_addr, const char interface[INTERFACE_LEN]) {
 			struct icmp6_hdr *icmp6_header = (struct icmp6_hdr *)(buffer);
 
 			if (icmp6_header->icmp6_type == ICMP6_ECHO_REPLY &&
-				icmp6_header->icmp6_dataun.icmp6_un_data16[0] == echo_ID) {
+				icmp6_header->icmp6_id == echo_ID) {
 				close(sock);
 				return 1;
 			}

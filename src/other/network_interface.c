@@ -3,6 +3,7 @@
 int _ping(struct ifaddrs *ifa, struct sockaddr_storage ip_addr) {
 	int tries = 2;
 	int respone;
+
 	VERBOSE_MESSAGE("PING REQUEST: Trying on '%s': ", ifa->ifa_name);
 	for (int i = 0; i < tries; i++) {
 		respone = ping(ip_addr, ifa->ifa_name);
@@ -76,6 +77,8 @@ int guess_interface(struct sockaddr_storage ip_addr,
 	// Get network interfaces
 	struct ifaddrs *ifaddr;
 
+	int exitcode = 0;
+
 	if (getifaddrs(&ifaddr) < 0) {
 		ERR_PRINT("An error occured then trying to fetch network interfaces\n");
 		return -1;
@@ -99,11 +102,14 @@ int guess_interface(struct sockaddr_storage ip_addr,
 
 		if (is_root() && _ping(i, ip_addr)) {
 			_copy_addr(i, interface);
+			exitcode = 0;
 			break;
+		} else {
+			exitcode = -1;
 		}
 	}
 	freeifaddrs(ifaddr);
-	return 0;
+	return exitcode;
 }
 
 int verify_interface(interface_info *interface) {
@@ -127,6 +133,7 @@ int verify_interface(interface_info *interface) {
 			ERR_PRINT("Interface name too long\n");
 			continue;
 		}
+
 		if (strcmp(interface->name, i->ifa_name) == 0) {
 			_copy_addr(i, interface);
 			freeifaddrs(ifaddr);

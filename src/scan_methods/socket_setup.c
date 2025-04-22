@@ -27,7 +27,7 @@ int socket_init(int socket_type, int protocol, scan_arg_t func_arg) {
 		return -3;
 	}
 
-	if (setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, func_arg.interface->name,
+	if (setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, func_arg.interface.name,
 				   INTERFACE_LEN) < 0) {
 		ERR_PRINT("TCP Setup interface \n");
 		close(sock);
