@@ -26,7 +26,7 @@ int icmp_responce_scan(scan_arg_t arg, scan_result_t *result) {
 	memset(&packet_capture_arg, 0, sizeof(packet_capture_arg));
 
 	packet_capture_arg.timeout		  = arg.timeout;
-	packet_capture_arg.interface	  = arg.interface->name;
+	packet_capture_arg.interface	  = arg.interface.name;
 	packet_capture_arg.setup_complete = false;
 
 	if (arg.addr.ss_family == AF_INET) {

@@ -1,6 +1,6 @@
 #include "../../include/other/parse_ports.h"
 
-unsigned int parse_ports(char *str, unsigned short **ports) {
+unsigned int parse_ports(const char *str, unsigned short **ports) {
 	int len = 0;
 
 	// Return array
