@@ -8,7 +8,6 @@ so keep that in mind when compiling and running this program.
 
 # Software requirements
 * libpcap-dev on Debian, libpcap-devel on Fedora
-* argp (Used for parsing arguments from terminal)
 * libcjson-dev on Debian, libpcap-devel on Fedora (https://github.com/DaveGamble/cJSON)
 
 # Development requirements
