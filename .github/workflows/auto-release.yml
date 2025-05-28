@@ -62,7 +62,7 @@ jobs:
           asset_name: LICENSE
           asset_content_type: text/plain
 
-  fedora-build:
+  fedora-upload:
     needs: create-release
 
     container: registry.fedoraproject.org/fedora-minimal:latest
@@ -91,7 +91,7 @@ jobs:
           asset_name: hawk-${{ needs.create-release.outputs.short_sha }}.fedora.x86-x64
           asset_content_type: application/x-executable
 
-  ubuntu-build:
+  ubuntu-upload:
     needs: create-release
 
     runs-on: ubuntu-latest

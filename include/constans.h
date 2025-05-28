@@ -35,17 +35,36 @@
 
 #define MAX_PACKET_SIZE 65663
 
-#define MOTD_FILE		  "data/motd.txt"
-#define VERSION_FILE	  "data/version/version.json"
-#define MOTD_WIDTH		  80
+#define MOTD_WIDTH 80
+
+#ifdef _WIN32
+
+#define TCP_SERVICES_FILE "C:\\Users\\Temp\\hawkeyes\\service\\tcp"
+#define UDP_SERVICES_FILE "C:\\Users\\Temp\\hawkeyes\\service\\udp"
+
+#else
+
 #define TCP_SERVICES_FILE "/tmp/hawkeyes/service/tcp"
 #define UDP_SERVICES_FILE "/tmp/hawkeyes/service/udp"
+
+#endif
 
 #define RAND_PORT_UPPER_LIMIT 65535
 #define RAND_PORT_LOWER_LIMIT 49152
 
 // Service parser and storage
+#ifdef _WIN32
+
+#define TMP_STORAGE		"C:\\Users\\Temp"
+#define SERVICES		"C:\\Windows\\System32\\drivers\\etc\\services"
+#define SERVICE_STORAGE "C:\\Users\\Temp\\service"
+#define SERVICE_CHECK	"C:\\Users\\Temp\\service\\done"
+
+#else
+
 #define TMP_STORAGE		"/tmp/hawkeyes"
 #define SERVICES		"/etc/services"
 #define SERVICE_STORAGE "/tmp/hawkeyes/service"
 #define SERVICE_CHECK	"/tmp/hawkeyes/service/done"
+
+#endif
